@@ -49,6 +49,7 @@ const App = () => {
       .join("\n");
 
     try {
+      console.log("Отправка запроса на сервер...");
       const response = await fetch("https://alfa-shopping.onrender.com/send-to-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
