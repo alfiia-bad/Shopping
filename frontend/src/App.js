@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Text, View, Image, TouchableOpacity, FlatList, ScrollView } from "react-native";
+import { Text, View, Image, TouchableOpacity, FlatList, ScrollView } from "react-native";
 import './index.css'; // Подключение стилей
 
 const products = [
