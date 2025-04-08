@@ -9,8 +9,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
-# Включаем CORS для маршрута /send-to-telegram
-CORS(app, resources={r"/send-to-telegram": {"origins": "*"}})  # Разрешаем доступ с любого домена для этого маршрута
+# Включаем CORS для всех маршрутов
+CORS(app, resources={r"/*": {"origins": "*"}})  # Разрешаем доступ с любого домена для всех маршрутов
 
 # Получаем токен и chat_id из окружения
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
