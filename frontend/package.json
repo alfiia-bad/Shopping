@@ -7,13 +7,13 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.0",
     "react-native-web": "^0.18.10",
-    "serve": "^14.0.1"  // Добавляем пакет для сервера статики
+    "serve": "^14.0.1"
   },
   "scripts": {
-    "start": "serve -s build",  // Используем serve для обслуживания статических файлов
-    "build": "react-scripts build",  // Команда для сборки
-    "test": "react-scripts test",  // Тестирование
-    "eject": "react-scripts eject"  // Выполнение ejected конфигурации
+    "start": "serve -s build",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
