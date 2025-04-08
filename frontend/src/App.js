@@ -49,7 +49,7 @@ const App = () => {
       .join("\n");
 
     try {
-      const response = await fetch("/send-to-telegram", {
+      const response = await fetch("https://alfa-shopping.onrender.com/send-to-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: message }),
