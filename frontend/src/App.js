@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Button, Text, View, Image, TouchableOpacity, FlatList, ScrollView } from "react-native";
+import './index.css'; // Подключение стилей
 
 const products = [
   { id: "1", name: "Бананы", image: "https://via.placeholder.com/50" },
   { id: "2", name: "Вода", image: "https://via.placeholder.com/50" },
   { id: "3", name: "Кофе", image: "https://via.placeholder.com/50" },
-  // Добавьте все ваши продукты
 ];
 
 const App = () => {
@@ -47,7 +47,7 @@ const App = () => {
     const message = cart
       .map((item) => `- ${item.name} x${item.quantity}`)
       .join("\n");
-  
+
     try {
       const response = await fetch("/send-to-telegram", {
         method: "POST",
@@ -86,9 +86,11 @@ const App = () => {
                 <View>
                   <Image source={{ uri: item.image }} />
                   <Text>{item.name}</Text>
-                  <Button title="-" onPress={() => removeFromCart(item.id)} />
-                  <Text>{quantity}</Text>
-                  <Button title="+" onPress={() => addToCart(item)} />
+                  <div className="button-container">
+                    <button className="button" onClick={() => removeFromCart(item.id)}>-</button>
+                    <Text>{quantity}</Text>
+                    <button className="button" onClick={() => addToCart(item)}>+</button>
+                  </div>
                 </View>
               );
             }}
@@ -100,8 +102,10 @@ const App = () => {
           {cart.map((item) => (
             <View key={item.id}>
               <Text>{item.name} x{item.quantity}</Text>
-              <Button title="+" onPress={() => addToCart(item)} />
-              <Button title="-" onPress={() => removeFromCart(item.id)} />
+              <div className="button-container">
+                <button className="button" onClick={() => addToCart(item)}>+</button>
+                <button className="button" onClick={() => removeFromCart(item.id)}>-</button>
+              </div>
             </View>
           ))}
 
