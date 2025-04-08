@@ -4,3 +4,27 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+
+.button {
+  width: 40px;
+  height: 40px;
+  background-color: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  color: white;
+  font-size: 18px;
+  border: none;
+}
+
+.button:focus {
+  outline: none;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
