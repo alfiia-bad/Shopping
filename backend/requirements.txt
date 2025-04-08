@@ -1,4 +1,5 @@
 Flask==2.2.2
 requests==2.28.1
 python-dotenv==0.21.0
-flask-cors==2.1.0  # или flask-cors==3.0.10
+flask-cors==2.1.0
+Werkzeug==2.2.2  # Обнови до совместимой версии
