@@ -18,6 +18,7 @@ CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 @app.route('/send-to-telegram', methods=['POST'])
 def send_to_telegram():
+    logging.info("Получен запрос на /send-to-telegram")
     data = request.json
     print(f"📦 Получен запрос: {data}")
     print(f"🔐 TOKEN задан: {'Да' if TOKEN else 'Нет'}, CHAT_ID: {CHAT_ID}")
