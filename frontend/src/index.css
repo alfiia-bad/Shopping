@@ -83,8 +83,8 @@ body {
 }
 
 .cart-with-badge .item-count-badge {
-  top: 6px;    /* выше на 2px */
-  right: 18px; /* правее на 6px */
+  top: -3px;    /* выше на 2px - иконка Корзина */
+  right: -1px; /* правее на 6px */
 }
 
 /* Для кнопки Очистить */
@@ -95,8 +95,8 @@ body {
 }
 
 .header-right .item-count-badge {
-  top: 6px;    /* выше на 2px */
-  right: 2px;  /* правее на 2px */
+  top: -5px;    /* выше на 2px - иконка Очистить */
+  right: -5px;  /* правее на 2px */
 }
 
 /* Кнопка Назад */
