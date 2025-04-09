@@ -113,6 +113,24 @@ body {
   background-color: #A56AB4; /* Такой же цвет, как у кнопок "-" и "+" */
   border-radius: 6px;
   padding: 6px;
+  position: relative;
+}
+
+/* Маленький круг с количеством товаров */
+.item-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 18px;
+  height: 18px;
+  background-color: #F44336; /* Красный цвет для круга */
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button {
