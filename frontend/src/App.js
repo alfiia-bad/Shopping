@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './index.css';
+import "./index.css";
 
 const products = [
   { id: "1", name: "Бананы", image: "/images/banana.png" },
@@ -13,13 +13,13 @@ const App = () => {
 
   useEffect(() => {
     fetch("https://alfa-shopping.onrender.com/cart")
-      .then(res => res.json())
-      .then(data => setCart(data))
-      .catch(error => console.error("Ошибка загрузки корзины:", error));
+      .then((res) => res.json())
+      .then((data) => setCart(data))
+      .catch((error) => console.error("Ошибка загрузки корзины:", error));
   }, []);
 
-  const getQuantity = (productId) => {
-    const item = cart.find((item) => item.id === productId);
+  const getQuantity = (id) => {
+    const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
   };
 
@@ -29,25 +29,28 @@ const App = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newCart),
-    }).catch(err => console.error("Ошибка сохранения:", err));
+    }).catch((err) => console.error("Ошибка сохранения:", err));
   };
 
   const addToCart = (product) => {
-    const itemIndex = cart.findIndex((item) => item.id === product.id);
-    let newCart;
-    if (itemIndex > -1) {
-      newCart = [...cart];
-      newCart[itemIndex].quantity += 1;
-    } else {
-      newCart = [...cart, { ...product, quantity: 1 }];
-    }
+    const existingIndex = cart.findIndex((item) => item.id === product.id);
+    const newCart =
+      existingIndex > -1
+        ? cart.map((item, i) =>
+            i === existingIndex
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...cart, { ...product, quantity: 1 }];
     updateCart(newCart);
   };
 
   const removeFromCart = (productId) => {
     const newCart = cart
       .map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
+        item.id === productId
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
       )
       .filter((item) => item.quantity > 0);
     updateCart(newCart);
@@ -60,16 +63,20 @@ const App = () => {
 
   const sendToTelegram = async () => {
     if (cart.length === 0) return alert("Корзина пуста");
+
     const message = cart
       .map((item) => `- ${item.name} x${item.quantity}`)
       .join("\n");
 
     try {
-      const response = await fetch("https://alfa-shopping.onrender.com/send-to-telegram", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message }),
-      });
+      const response = await fetch(
+        "https://alfa-shopping.onrender.com/send-to-telegram",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cart: message }),
+        }
+      );
       const data = await response.json();
       if (!response.ok || !data.success) {
         alert("❌ Не удалось отправить сообщение в Telegram");
@@ -85,104 +92,104 @@ const App = () => {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div id="root">
-      <header className="header">
+    <div className="app-container">
+      <header className="app-header">
         {viewCart ? (
           <>
             <div className="header-left">
-              <button className="back-button" onClick={() => setViewCart(false)}>←</button>
-              <span className="gap" />
-              <h2 className="title">Корзина</h2>
+              <button className="back-button" onClick={() => setViewCart(false)}>
+                ←
+              </button>
+              <h2 className="header-title">Корзина</h2>
             </div>
             <div className="header-right">
-              <img
-                src="/images/delete.svg"
-                alt="Очистить"
-                className="icon-button"
-                onClick={clearCart}
-              />
+              <button className="icon-button" onClick={clearCart}>
+                <img src="/images/delete.svg" alt="Очистить" />
+              </button>
               {totalItems > 0 && (
-                <div className="item-count">
-                  {totalItems}
-                </div>
+                <div className="item-count-badge">{totalItems}</div>
               )}
             </div>
           </>
         ) : (
           <>
-            <h2 className="title">Список товаров</h2>
-            <button
-              className="cart-button"
-              onClick={() => setViewCart(true)}
-            >
+            <h2 className="header-title">Список товаров</h2>
+            <button className="cart-button" onClick={() => setViewCart(true)}>
               Корзина ({totalItems})
             </button>
           </>
         )}
       </header>
 
-      {!viewCart ? (
-        <div className="product-list">
-          {products.map((item) => {
-            const quantity = getQuantity(item.id);
-            return (
-              <div className="product-item" key={item.id}>
-                <img src={item.image} alt={item.name} loading="lazy" />
-                <p className="name">{item.name}</p>
-                <div className="quantity">
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    disabled={quantity === 0}
-                    className={`minus-button ${quantity === 0 ? "disabled" : ""}`}
-                  >
-                    -
-                  </button>
-                  <p>{quantity}</p>
-                  <button onClick={() => addToCart(item)}>+</button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="cart">
-          {cart.length === 0 ? (
-            <p className="cart-empty">Корзина пуста</p>
-          ) : (
-            <>
-              {cart.map((item) => (
-                <div className="item" key={item.id}>
-                  <p className="name">{item.name}</p>
-                  <div className="quantity">
+      <main className="main-content">
+        {!viewCart ? (
+          <div className="product-list">
+            {products.map((product) => {
+              const quantity = getQuantity(product.id);
+              return (
+                <div className="product-card" key={product.id}>
+                  <img src={product.image} alt={product.name} />
+                  <p className="product-name">{product.name}</p>
+                  <div className="quantity-controls">
                     <button
-                      onClick={() => removeFromCart(item.id)}
-                      disabled={item.quantity === 0}
-                      className={`minus-button ${item.quantity === 0 ? "disabled" : ""}`}
+                      onClick={() => removeFromCart(product.id)}
+                      disabled={quantity === 0}
+                      className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
                     >
                       -
                     </button>
-                    <p>{item.quantity}</p>
-                    <button onClick={() => addToCart(item)}>+</button>
+                    <span className="quantity">{quantity}</span>
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="qty-button plus"
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
-              ))}
-              <button className="button" onClick={sendToTelegram}>
-                <img
-                  src="/images/icons_tg.svg"
-                  alt="Telegram"
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    marginRight: "8px",
-                    verticalAlign: "middle"
-                  }}
-                />
-                Отправить в Telegram
-              </button>
-            </>
-          )}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        ) : (
+          <div className="cart-list">
+            {cart.length === 0 ? (
+              <p className="cart-empty">Корзина пуста</p>
+            ) : (
+              <>
+                {cart.map((item) => (
+                  <div className="cart-item" key={item.id}>
+                    <p className="product-name">{item.name}</p>
+                    <div className="quantity-controls">
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        disabled={item.quantity === 0}
+                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
+                      >
+                        -
+                      </button>
+                      <span className="quantity">{item.quantity}</span>
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="qty-button plus"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button className="send-button" onClick={sendToTelegram}>
+                  <img
+                    src="/images/icons_tg.svg"
+                    alt="Telegram"
+                    className="telegram-icon"
+                  />
+                  Отправить в Telegram
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </main>
     </div>
   );
 };
