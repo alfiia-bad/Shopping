@@ -114,9 +114,14 @@ const App = () => {
         ) : (
           <>
             <h2 className="header-title">Список товаров</h2>
-            <button className="cart-button" onClick={() => setViewCart(true)}>
-              Корзина ({totalItems})
-            </button>
+            <div className="cart-with-badge">
+              <button className="cart-button" onClick={() => setViewCart(true)}>
+                <img src="/images/cart.svg" alt="Корзина" />
+              </button>
+              {totalItems > 0 && (
+                <div className="item-count-badge">{totalItems}</div>
+              )}
+            </div>
           </>
         )}
       </header>
