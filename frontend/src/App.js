@@ -96,7 +96,7 @@ const App = () => {
               />
             </div>
             <div className="header-center">
-              <button className="button back-button" onClick={() => setViewCart(false)}>←</button>
+              <button className="back-button" onClick={() => setViewCart(false)}>←</button>
               <h2 className="title">Корзина</h2>
             </div>
             <div className="header-right" />
@@ -106,7 +106,6 @@ const App = () => {
             <h2 className="title">Список товаров</h2>
             <button
               className="cart-button"
-              style={{ fontSize: '16px' }}
               onClick={() => setViewCart(true)}
             >
               Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})
