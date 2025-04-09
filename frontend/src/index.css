@@ -48,7 +48,7 @@ body {
   background-color: #A56AB4;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 50%;
   padding: 8px 12px;
   font-size: 16px;
   cursor: pointer;
@@ -88,6 +88,26 @@ body {
 .icon-button img {
   width: 24px;
   height: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Место для счетчика товаров */
+.item-count-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  background-color: #A56AB4;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Main content */
@@ -179,39 +199,36 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Пустая корзина */
 .cart-empty {
-  text-align: center;
-  color: #aaa;
   font-size: 16px;
-  margin-top: 40px;
+  font-weight: 500;
+  text-align: center;
+  color: #777;
 }
 
-/* Кнопка отправки в телеграм */
 .send-button {
-  margin-top: 24px;
-  background-color: #A56AB4;
+  background-color: #4c8bf5;
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
   display: flex;
-  align-items: center;
-  gap: 8px;
   justify-content: center;
+  align-items: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .send-button:hover {
-  background-color: #934fb1;
+  background-color: #4072c0;
 }
 
 .telegram-icon {
-  width: 20px;
-  height: 20px;
+  margin-right: 10px;
 }
