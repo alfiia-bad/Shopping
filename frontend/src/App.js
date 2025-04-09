@@ -16,8 +16,8 @@ const App = () => {
     fetch("https://alfa-shopping.onrender.com/cart")
       .then(res => res.json())
       .then(data => {
-        console.log("🛒 Получено с сервера:", data.cart);
-        setCart(data.cart);
+        console.log("🛒 Получено с сервера:", data);  // Убираем .cart, так как данные приходят в правильном формате
+        setCart(data);  // Теперь напрямую используем полученные данные
       })
       .catch(error => console.error("Ошибка загрузки корзины:", error));
   }, []);
@@ -32,7 +32,7 @@ const App = () => {
     fetch("https://alfa-shopping.onrender.com/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cart: newCart }),
+      body: JSON.stringify(newCart),  // Отправляем корзину без обертки в { cart: newCart }
     }).catch(err => console.error("Ошибка сохранения:", err));
   };
 
