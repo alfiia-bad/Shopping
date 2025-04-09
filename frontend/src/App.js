@@ -98,7 +98,7 @@ const App = () => {
           <>
             <div className="header-left">
               <button className="back-button" onClick={() => setViewCart(false)}>
-                ←
+                <img src="/images/back.svg" alt="Назад" />
               </button>
               <h2 className="header-title">Корзина</h2>
             </div>
