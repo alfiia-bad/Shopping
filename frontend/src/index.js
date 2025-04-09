@@ -1,14 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { AppRegistry } from 'react-native';
+import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css'; // Стили для веб-версии
+import './index.css';
 
-// Регистрация приложения для веба с использованием React Native Web
-AppRegistry.registerComponent('App', () => App);
-AppRegistry.runApplication('App', {
-  initialProps: {},
-  rootTag: document.getElementById('root'),
-});
-
-ReactDOM.render(<App />, document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
