@@ -279,6 +279,10 @@ body {
   outline: none;
 }
 
+.search-bar input::placeholder {
+  color: #ddd; /* Цвет плейсхолдера */
+}
+
 .search-input-wrapper {
   display: flex;
   align-items: center;
