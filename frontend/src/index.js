@@ -1,11 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom/client";  // Для React 18+ используется ReactDOM.createRoot
-import App from "./App";  // Импорт вашего основного компонента App.js
-import "./index.css";  // Если у вас есть стили для всего приложения (по желанию)
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { AppRegistry } from 'react-native';
+import App from './App';
+import './index.css'; // Стили для веб-версии
 
-const root = ReactDOM.createRoot(document.getElementById("root"));  // Находим элемент с id "root" в HTML
-root.render(
-  <React.StrictMode>
-    <App />  {/* Рендерим компонент App, который является главным */}
-  </React.StrictMode>
-);
+// Регистрация приложения для веба с использованием React Native Web
+AppRegistry.registerComponent('App', () => App);
+AppRegistry.runApplication('App', {
+  initialProps: {},
+  rootTag: document.getElementById('root'),
+});
+
+ReactDOM.render(<App />, document.getElementById('root'));
