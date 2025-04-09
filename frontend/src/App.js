@@ -7,12 +7,15 @@ const products = [
   { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
 ];
 
+const API_URL = "";
+
 const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetch("https://alfa-shopping.onrender.com/cart")
+    fetch(`${API_URL}/cart`)
       .then((res) => res.json())
       .then((data) => setCart(data))
       .catch((error) => console.error("Ошибка загрузки корзины:", error));
@@ -25,7 +28,7 @@ const App = () => {
 
   const updateCart = (newCart) => {
     setCart(newCart);
-    fetch("https://alfa-shopping.onrender.com/cart", {
+    fetch(`${API_URL}/cart`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newCart),
@@ -33,13 +36,11 @@ const App = () => {
   };
 
   const addToCart = (product) => {
-    const existingIndex = cart.findIndex((item) => item.id === product.id);
+    const index = cart.findIndex((item) => item.id === product.id);
     const newCart =
-      existingIndex > -1
+      index > -1
         ? cart.map((item, i) =>
-            i === existingIndex
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
+            i === index ? { ...item, quantity: item.quantity + 1 } : item
           )
         : [...cart, { ...product, quantity: 1 }];
     updateCart(newCart);
@@ -69,14 +70,11 @@ const App = () => {
       .join("\n");
 
     try {
-      const response = await fetch(
-        "https://alfa-shopping.onrender.com/send-to-telegram",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart: message }),
-        }
-      );
+      const response = await fetch(`${API_URL}/send-to-telegram`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart: message }),
+      });
       const data = await response.json();
       if (!response.ok || !data.success) {
         alert("❌ Не удалось отправить сообщение в Telegram");
@@ -90,6 +88,22 @@ const App = () => {
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Поиск
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredProducts =
+    searchTerm.length >= 3
+      ? products.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : products;
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
 
   return (
     <div className="app-container">
@@ -128,33 +142,55 @@ const App = () => {
 
       <main className="main-content">
         {!viewCart ? (
-          <div className="product-list">
-            {products.map((product) => {
-              const quantity = getQuantity(product.id);
-              return (
-                <div className="product-card" key={product.id}>
-                  <img src={product.image} alt={product.name} />
-                  <p className="product-name">{product.name}</p>
-                  <div className="quantity-controls">
-                    <button
-                      onClick={() => removeFromCart(product.id)}
-                      disabled={quantity === 0}
-                      className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
-                    >
-                      -
-                    </button>
-                    <span className="quantity">{quantity}</span>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="qty-button plus"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <>
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Поиск товаров..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              {searchTerm && (
+                <button className="clear-button" onClick={handleClearSearch}>
+                  ✕
+                </button>
+              )}
+            </div>
+
+            <div className="product-list">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => {
+                  const quantity = getQuantity(product.id);
+                  return (
+                    <div className="product-card" key={product.id}>
+                      <img src={product.image} alt={product.name} />
+                      <p className="product-name">{product.name}</p>
+                      <div className="quantity-controls">
+                        <button
+                          onClick={() => removeFromCart(product.id)}
+                          disabled={quantity === 0}
+                          className={`qty-button minus ${
+                            quantity === 0 ? "disabled" : ""
+                          }`}
+                        >
+                          -
+                        </button>
+                        <span className="quantity">{quantity}</span>
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="qty-button plus"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="no-results">Ничего не найдено</p>
+              )}
+            </div>
+          </>
         ) : (
           <div className="cart-list">
             {cart.length === 0 ? (
@@ -168,7 +204,9 @@ const App = () => {
                       <button
                         onClick={() => removeFromCart(item.id)}
                         disabled={item.quantity === 0}
-                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
+                        className={`qty-button minus ${
+                          item.quantity === 0 ? "disabled" : ""
+                        }`}
                       >
                         -
                       </button>
