@@ -89,16 +89,18 @@ const App = () => {
           <>
             <div className="header-left">
               <button className="back-button" onClick={() => setViewCart(false)}>←</button>
-              <span className="gap" /> {/* Добавляем пропуск между кнопкой и названием */}
+              <span className="gap" />
               <h2 className="title">Корзина</h2>
             </div>
             <div className="header-right">
-              <img
-                src="/images/delete.svg"
-                alt="Очистить"
-                className="icon-button"
-                onClick={clearCart}
-              />
+              <div className="clear-button-wrapper">
+                <img
+                  src="/images/delete.svg"
+                  alt="Очистить"
+                  className="icon-button"
+                  onClick={clearCart}
+                />
+              </div>
             </div>
           </>
         ) : (
@@ -120,10 +122,10 @@ const App = () => {
             const quantity = getQuantity(item.id);
             return (
               <div className="product-item" key={item.id}>
-                <img src={item.image} alt={item.name} />
+                <img src={item.image} alt={item.name} loading="lazy" />
                 <p className="name">{item.name}</p>
                 <div className="quantity">
-                  <button onClick={() => removeFromCart(item.id)} disabled={quantity === 0}>-</button>
+                  <button onClick={() => removeFromCart(item.id)} disabled={quantity === 0} className={quantity === 0 ? "disabled" : ""}>-</button>
                   <p>{quantity}</p>
                   <button onClick={() => addToCart(item)}>+</button>
                 </div>
