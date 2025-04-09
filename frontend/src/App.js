@@ -82,6 +82,9 @@ const App = () => {
     }
   };
 
+  // Сумма всех товаров в корзине
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <div id="root">
       <header className="header">
@@ -100,6 +103,11 @@ const App = () => {
                   className="icon-button"
                   onClick={clearCart}
                 />
+                {totalItems > 0 && (
+                  <div className="item-count">
+                    {totalItems}
+                  </div>
+                )}
               </div>
             </div>
           </>
@@ -110,7 +118,7 @@ const App = () => {
               className="cart-button"
               onClick={() => setViewCart(true)}
             >
-              Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})
+              Корзина ({totalItems})
             </button>
           </>
         )}
