@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './index.css';  // Обновленные стили
+import './index.css';
 
 const products = [
   { id: "1", name: "Бананы", image: "https://via.placeholder.com/50" },
@@ -11,13 +11,11 @@ const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
 
-  // Подгружаем корзину при загрузке страницы
   useEffect(() => {
     fetch("https://alfa-shopping.onrender.com/cart")
       .then(res => res.json())
       .then(data => {
-        console.log("🛒 Получено с сервера:", data);  // Убираем .cart, так как данные приходят в правильном формате
-        setCart(data);  // Теперь напрямую используем полученные данные
+        setCart(data);
       })
       .catch(error => console.error("Ошибка загрузки корзины:", error));
   }, []);
@@ -32,7 +30,7 @@ const App = () => {
     fetch("https://alfa-shopping.onrender.com/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newCart),  // Отправляем корзину без обертки в { cart: newCart }
+      body: JSON.stringify(newCart),
     }).catch(err => console.error("Ошибка сохранения:", err));
   };
 
@@ -83,49 +81,53 @@ const App = () => {
 
   return (
     <div id="root">
-      {!viewCart ? (
-        <>
-          <h2>Список товаров</h2>
-          <button className="button" onClick={() => setViewCart(true)}>
-            Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})
-          </button>
+      <header className="header">
+        {viewCart ? (
+          <>
+            <button className="back-button" onClick={() => setViewCart(false)}>←</button>
+            <h2 className="title">Корзина</h2>
+          </>
+        ) : (
+          <>
+            <h2 className="title">Список товаров</h2>
+            <button className="cart-button" onClick={() => setViewCart(true)}>
+              Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})
+            </button>
+          </>
+        )}
+      </header>
 
-          <div className="product-list">
-            {products.map((item) => {
-              const quantity = getQuantity(item.id);
-              return (
-                <div className="product-item" key={item.id}>
-                  <img src={item.image} alt={item.name} />
-                  <p className="name">{item.name}</p>
-                  <div className="quantity">
-                    <button onClick={() => removeFromCart(item.id)}>-</button>
-                    <p>{quantity}</p>
-                    <button onClick={() => addToCart(item)}>+</button>
-                  </div>
+      {!viewCart ? (
+        <div className="product-list">
+          {products.map((item) => {
+            const quantity = getQuantity(item.id);
+            return (
+              <div className="product-item" key={item.id}>
+                <img src={item.image} alt={item.name} />
+                <p className="name">{item.name}</p>
+                <div className="quantity">
+                  <button onClick={() => removeFromCart(item.id)}>-</button>
+                  <p>{quantity}</p>
+                  <button onClick={() => addToCart(item)}>+</button>
                 </div>
-              );
-            })}
-          </div>
-        </>
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="cart">
-          <h3>Корзина</h3>
           {cart.map((item) => (
             <div className="item" key={item.id}>
               <p className="name">{item.name}</p>
               <div className="quantity">
-                <button onClick={() => addToCart(item)}>+</button>
                 <button onClick={() => removeFromCart(item.id)}>-</button>
+                <p>{item.quantity}</p>
+                <button onClick={() => addToCart(item)}>+</button>
               </div>
             </div>
           ))}
-
           <button className="button" onClick={sendToTelegram}>
             Отправить в Telegram
-          </button>
-
-          <button className="button" onClick={() => setViewCart(false)}>
-            ← Назад
           </button>
         </div>
       )}
