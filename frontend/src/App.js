@@ -144,17 +144,20 @@ const App = () => {
         {!viewCart ? (
           <>
             <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Поиск товаров..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-              {searchTerm && (
-                <button className="clear-button" onClick={handleClearSearch}>
-                  ✕
-                </button>
-              )}
+              <div className="search-input-wrapper">
+                <img src="/images/search.svg" alt="Поиск" className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Поиск товаров..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                {searchTerm && (
+                  <button className="clear-button-icon" onClick={handleClearSearch}>
+                    <img src="/images/close.svg" alt="Очистить" />
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="product-list">
