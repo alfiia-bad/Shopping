@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import requests
 import os
 import logging
@@ -7,14 +7,19 @@ from flask_cors import CORS
 # Настройка логирования
 logging.basicConfig(level=logging.DEBUG)
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="../frontend/build",  # Путь к собранному фронтенду
+    static_url_path=""  # Статика будет доступна с корня сайта
+)
 
 # Включаем CORS для всех маршрутов
-CORS(app, resources={r"/*": {"origins": "*"}})  # Разрешаем доступ с любого домена для всех маршрутов
+CORS(app, resources={r"/send-to-telegram": {"origins": "*"}})  # Разрешаем CORS только для API
 
 # Получаем токен и chat_id из окружения
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+
 
 @app.route('/send-to-telegram', methods=['POST'])
 def send_to_telegram():
@@ -50,6 +55,18 @@ def send_to_telegram():
     except requests.exceptions.RequestException as e:
         logging.error(f"💥 Ошибка при отправке запроса: {e}")
         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
+
+
+# Отдача React-фронтенда
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    full_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(full_path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
