@@ -140,7 +140,7 @@ body {
 /* Main content */
 .main-content {
   flex: 1;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 /* Список товаров */
@@ -264,9 +264,10 @@ body {
 }
 
 .search-bar {
-  margin-top: 20px;
+  margin-top: 0px;
   display: flex;
   justify-content: flex-start;
+  margin-bottom: 16px;
 }
 
 .search-bar input {
