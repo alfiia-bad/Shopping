@@ -14,9 +14,7 @@ const App = () => {
   useEffect(() => {
     fetch("https://alfa-shopping.onrender.com/cart")
       .then(res => res.json())
-      .then(data => {
-        setCart(data);
-      })
+      .then(data => setCart(data))
       .catch(error => console.error("Ошибка загрузки корзины:", error));
   }, []);
 
@@ -55,6 +53,11 @@ const App = () => {
     updateCart(newCart);
   };
 
+  const clearCart = () => {
+    updateCart([]);
+    setViewCart(false);
+  };
+
   const sendToTelegram = async () => {
     if (cart.length === 0) return alert("Корзина пуста");
     const message = cart
@@ -84,13 +87,18 @@ const App = () => {
       <header className="header">
         {viewCart ? (
           <>
-            <button className="back-button" onClick={() => setViewCart(false)}>←</button>
+            <button className="button back-button" onClick={() => setViewCart(false)}>←</button>
             <h2 className="title">Корзина</h2>
+            <button className="button clear-button" onClick={clearCart}>Очистить</button>
           </>
         ) : (
           <>
             <h2 className="title">Список товаров</h2>
-            <button className="cart-button" onClick={() => setViewCart(true)}>
+            <button
+              className="cart-button"
+              style={{ fontSize: '16px' }}
+              onClick={() => setViewCart(true)}
+            >
               Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})
             </button>
           </>
