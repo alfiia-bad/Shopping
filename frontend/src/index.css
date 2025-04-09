@@ -43,15 +43,55 @@ body {
   margin: 0;
 }
 
+/* Кнопка корзины */
 .cart-button {
-  background-color: #A56AB4;
-  color: white;
+  background-color: transparent;  /* Убираем фиолетовую обертку */
+  color: #A56AB4;  /* Иконка корзины теперь фиолетовая */
   border: none;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+}
+
+.cart-button:hover {
+  background-color: #f0f0f0;
+}
+
+.cart-button img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Значок количества товаров */
+.item-count-badge {
+  position: absolute;
+  top: 10px;  /* Сдвинуто на 2 пикселя вверх */
+  right: 14px;  /* Сдвинуто на 2 пикселя вправо */
+  width: 22px;
+  height: 22px;
+  background-color: #A56AB4;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Корзина с иконкой */
+.cart-with-badge {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+/* Исправляем позиционирование счетчика на кнопке корзины */
+.cart-with-badge .item-count-badge {
+  top: 8px;  /* Сдвинуто на 4 пикселя вверх */
+  right: 16px;  /* Сдвинуто на 4 пикселя вправо */
 }
 
 /* Кнопка Назад */
@@ -79,23 +119,6 @@ body {
   height: 16px;  /* Изменено на 16px */
 }
 
-/* Значок количества товаров */
-.item-count-badge {
-  position: absolute;
-  top: 12px;  /* Изменено на 12px */
-  right: 12px;  /* Изменено на 12px */
-  width: 22px;
-  height: 22px;
-  background-color: #A56AB4;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 /* Иконка удаления */
 .icon-button {
   background: none;
@@ -105,18 +128,6 @@ body {
 }
 
 .icon-button img {
-  width: 24px;
-  height: 24px;
-}
-
-/* Корзина с иконкой */
-.cart-with-badge {
-  display: flex;
-  position: relative;
-  align-items: center;
-}
-
-.cart-button img {
   width: 24px;
   height: 24px;
 }
