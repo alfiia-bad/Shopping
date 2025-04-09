@@ -60,6 +60,12 @@ body {
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+/* Дизейблинг кнопки "-" */
+.quantity button.disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
 .back-button {
   background-color: #A56AB4;
   color: white;
@@ -100,6 +106,13 @@ body {
 
 .clear-button:hover {
   background-color: #d32f2f;
+}
+
+/* Обертка для иконки очистки */
+.clear-button-wrapper {
+  background-color: #A56AB4; /* Такой же цвет, как у кнопок "-" и "+" */
+  border-radius: 6px;
+  padding: 6px;
 }
 
 .button {
@@ -186,6 +199,11 @@ body {
 }
 
 .product-item .quantity button:hover {
+  background-color: #934fb1;
+}
+
+/* Действия при наведении на кнопки "-" и "+" */
+.product-item .quantity button:hover:not(.disabled) {
   background-color: #934fb1;
 }
 
