@@ -87,9 +87,19 @@ const App = () => {
       <header className="header">
         {viewCart ? (
           <>
-            <button className="button back-button" onClick={() => setViewCart(false)}>←</button>
-            <h2 className="title">Корзина</h2>
-            <button className="button clear-button" onClick={clearCart}>Очистить</button>
+            <div className="header-left">
+              <img
+                src="/images/delete.svg"
+                alt="Очистить"
+                className="icon-button"
+                onClick={clearCart}
+              />
+            </div>
+            <div className="header-center">
+              <button className="button back-button" onClick={() => setViewCart(false)}>←</button>
+              <h2 className="title">Корзина</h2>
+            </div>
+            <div className="header-right" />
           </>
         ) : (
           <>
@@ -124,24 +134,30 @@ const App = () => {
         </div>
       ) : (
         <div className="cart">
-          {cart.map((item) => (
-            <div className="item" key={item.id}>
-              <p className="name">{item.name}</p>
-              <div className="quantity">
-                <button onClick={() => removeFromCart(item.id)}>-</button>
-                <p>{item.quantity}</p>
-                <button onClick={() => addToCart(item)}>+</button>
-              </div>
-            </div>
-          ))}
-          <button className="button" onClick={sendToTelegram}>
-            <img
-              src="/images/icons_tg.svg"
-              alt="Telegram"
-              style={{ width: "20px", height: "20px", marginRight: "8px", verticalAlign: "middle" }}
-            />
-            Отправить в Telegram
-          </button>
+          {cart.length === 0 ? (
+            <p className="cart-empty">Корзина пуста</p>
+          ) : (
+            <>
+              {cart.map((item) => (
+                <div className="item" key={item.id}>
+                  <p className="name">{item.name}</p>
+                  <div className="quantity">
+                    <button onClick={() => removeFromCart(item.id)}>-</button>
+                    <p>{item.quantity}</p>
+                    <button onClick={() => addToCart(item)}>+</button>
+                  </div>
+                </div>
+              ))}
+              <button className="button" onClick={sendToTelegram}>
+                <img
+                  src="/images/icons_tg.svg"
+                  alt="Telegram"
+                  style={{ width: "20px", height: "20px", marginRight: "8px", verticalAlign: "middle" }}
+                />
+                Отправить в Telegram
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
