@@ -264,10 +264,9 @@ body {
 }
 
 .search-bar {
+  margin-top: 20px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px;
+  justify-content: flex-start;
 }
 
 .search-bar input {
@@ -279,6 +278,33 @@ body {
   outline: none;
 }
 
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 10px 40px 10px 36px; /* отступ под иконку */
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  outline: none;
+  background-color: #fff;
+}
+
+/* Иконка лупы внутри инпута */
+.search-icon {
+  position: absolute;
+  left: 10px;
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+}
+
 .clear-button {
   margin-left: 10px;
   padding: 6px 10px;
@@ -287,6 +313,26 @@ body {
   border-radius: 50%;
   cursor: pointer;
   font-size: 18px;
+}
+
+/* Кнопка очистки похожая на кнопку Назад */
+.clear-button-icon {
+  position: absolute;
+  right: 6px;
+  background-color: #A56AB4;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.clear-button-icon img {
+  width: 14px;
+  height: 14px;
 }
 
 .no-results {
