@@ -26,7 +26,6 @@ body {
   z-index: 10;
 }
 
-/* Новая структура хедера */
 .header-left,
 .header-right {
   display: flex;
@@ -34,11 +33,8 @@ body {
   flex: 1;
 }
 
-
 .header-left {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Отступ между кнопкой и заголовком */
+  gap: 8px;
   flex: 1;
 }
 
@@ -53,17 +49,21 @@ body {
 
 .back-button,
 .cart-button,
-.clear-button,
 .button,
 .product-item .quantity button,
 .cart .item .quantity button {
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-/* Дизейблинг кнопки "-" */
-.quantity button.disabled {
-  background-color: #ddd;
+/* Кнопка "-" отключена */
+.minus-button.disabled {
+  background-color: #D5D5D5;
+  color: white;
   cursor: not-allowed;
+}
+
+.minus-button.disabled:hover {
+  background-color: #D5D5D5;
 }
 
 .back-button {
@@ -92,45 +92,6 @@ body {
 
 .cart-button:hover {
   background-color: #934fb1;
-}
-
-.clear-button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.clear-button:hover {
-  background-color: #d32f2f;
-}
-
-/* Обертка для иконки очистки */
-.clear-button-wrapper {
-  background-color: #A56AB4; /* Такой же цвет, как у кнопок "-" и "+" */
-  border-radius: 6px;
-  padding: 6px;
-  position: relative;
-}
-
-/* Маленький круг с количеством товаров */
-.item-count {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 18px;
-  height: 18px;
-  background-color: #F44336; /* Красный цвет для круга */
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .button {
@@ -163,6 +124,30 @@ body {
 
 .icon-button:hover {
   transform: scale(1.1);
+}
+
+/* Маленький фиолетовый круг с количеством товаров */
+.item-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  background-color: #A56AB4;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+/* Убираем фон и отступы вокруг иконки очистки */
+.clear-button-wrapper {
+  background-color: transparent;
+  padding: 0;
 }
 
 /* Products grid */
@@ -216,11 +201,6 @@ body {
   cursor: pointer;
 }
 
-.product-item .quantity button:hover {
-  background-color: #934fb1;
-}
-
-/* Действия при наведении на кнопки "-" и "+" */
 .product-item .quantity button:hover:not(.disabled) {
   background-color: #934fb1;
 }
@@ -257,11 +237,11 @@ body {
   cursor: pointer;
 }
 
-.cart .item .quantity button:hover {
+.cart .item .quantity button:hover:not(.disabled) {
   background-color: #934fb1;
 }
 
-/* Empty cart message */
+/* Пустая корзина */
 .cart-empty {
   text-align: center;
   margin-top: 40px;
