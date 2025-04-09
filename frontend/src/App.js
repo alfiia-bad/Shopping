@@ -82,7 +82,6 @@ const App = () => {
     }
   };
 
-  // Сумма всех товаров в корзине
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -96,19 +95,17 @@ const App = () => {
               <h2 className="title">Корзина</h2>
             </div>
             <div className="header-right">
-              <div className="clear-button-wrapper">
-                <img
-                  src="/images/delete.svg"
-                  alt="Очистить"
-                  className="icon-button"
-                  onClick={clearCart}
-                />
-                {totalItems > 0 && (
-                  <div className="item-count">
-                    {totalItems}
-                  </div>
-                )}
-              </div>
+              <img
+                src="/images/delete.svg"
+                alt="Очистить"
+                className="icon-button"
+                onClick={clearCart}
+              />
+              {totalItems > 0 && (
+                <div className="item-count">
+                  {totalItems}
+                </div>
+              )}
             </div>
           </>
         ) : (
@@ -133,7 +130,13 @@ const App = () => {
                 <img src={item.image} alt={item.name} loading="lazy" />
                 <p className="name">{item.name}</p>
                 <div className="quantity">
-                  <button onClick={() => removeFromCart(item.id)} disabled={quantity === 0} className={quantity === 0 ? "disabled" : ""}>-</button>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    disabled={quantity === 0}
+                    className={`minus-button ${quantity === 0 ? "disabled" : ""}`}
+                  >
+                    -
+                  </button>
                   <p>{quantity}</p>
                   <button onClick={() => addToCart(item)}>+</button>
                 </div>
@@ -151,7 +154,13 @@ const App = () => {
                 <div className="item" key={item.id}>
                   <p className="name">{item.name}</p>
                   <div className="quantity">
-                    <button onClick={() => removeFromCart(item.id)}>-</button>
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      disabled={item.quantity === 0}
+                      className={`minus-button ${item.quantity === 0 ? "disabled" : ""}`}
+                    >
+                      -
+                    </button>
                     <p>{item.quantity}</p>
                     <button onClick={() => addToCart(item)}>+</button>
                   </div>
@@ -161,7 +170,12 @@ const App = () => {
                 <img
                   src="/images/icons_tg.svg"
                   alt="Telegram"
-                  style={{ width: "20px", height: "20px", marginRight: "8px", verticalAlign: "middle" }}
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    marginRight: "8px",
+                    verticalAlign: "middle"
+                  }}
                 />
                 Отправить в Telegram
               </button>
