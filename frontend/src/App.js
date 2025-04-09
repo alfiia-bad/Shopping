@@ -88,6 +88,11 @@ const App = () => {
         {viewCart ? (
           <>
             <div className="header-left">
+              <button className="back-button" onClick={() => setViewCart(false)}>←</button>
+              <span className="gap" /> {/* Добавляем пропуск между кнопкой и названием */}
+              <h2 className="title">Корзина</h2>
+            </div>
+            <div className="header-right">
               <img
                 src="/images/delete.svg"
                 alt="Очистить"
@@ -95,11 +100,6 @@ const App = () => {
                 onClick={clearCart}
               />
             </div>
-            <div className="header-center">
-              <button className="back-button" onClick={() => setViewCart(false)}>←</button>
-              <h2 className="title">Корзина</h2>
-            </div>
-            <div className="header-right" />
           </>
         ) : (
           <>
