@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./index.css";
+import './index.css';  // Обновленные стили
 
 const products = [
   { id: "1", name: "Бананы", image: "https://via.placeholder.com/50" },
@@ -11,39 +11,47 @@ const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
 
+  // Подгружаем корзину при загрузке страницы
   useEffect(() => {
-    fetch("/cart")
-      .then((res) => res.json())
-      .then((data) => setCart(data))
-      .catch((err) => console.error("Ошибка загрузки корзины:", err));
+    fetch("https://alfa-shopping.onrender.com/cart")
+      .then(res => res.json())
+      .then(data => {
+        console.log("🛒 Получено с сервера:", data.cart);
+        setCart(data.cart);
+      })
+      .catch(error => console.error("Ошибка загрузки корзины:", error));
   }, []);
 
-  const getQuantity = (id) => cart.find((item) => item.id === id)?.quantity || 0;
+  const getQuantity = (productId) => {
+    const item = cart.find((item) => item.id === productId);
+    return item ? item.quantity : 0;
+  };
 
   const updateCart = (newCart) => {
     setCart(newCart);
-    fetch("/cart", {
+    fetch("https://alfa-shopping.onrender.com/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newCart),
-    }).catch((err) => console.error("Ошибка сохранения:", err));
+      body: JSON.stringify({ cart: newCart }),
+    }).catch(err => console.error("Ошибка сохранения:", err));
   };
 
   const addToCart = (product) => {
     const itemIndex = cart.findIndex((item) => item.id === product.id);
-    const newCart = [...cart];
+    let newCart;
     if (itemIndex > -1) {
+      newCart = [...cart];
       newCart[itemIndex].quantity += 1;
     } else {
-      newCart.push({ ...product, quantity: 1 });
+      newCart = [...cart, { ...product, quantity: 1 }];
     }
     updateCart(newCart);
   };
 
-  const removeFromCart = (id) => {
+  const removeFromCart = (productId) => {
     const newCart = cart
       .map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
       )
       .filter((item) => item.quantity > 0);
     updateCart(newCart);
@@ -51,59 +59,75 @@ const App = () => {
 
   const sendToTelegram = async () => {
     if (cart.length === 0) return alert("Корзина пуста");
-    const message = cart.map((item) => `- ${item.name} x${item.quantity}`).join("\n");
+    const message = cart
+      .map((item) => `- ${item.name} x${item.quantity}`)
+      .join("\n");
+
     try {
-      const res = await fetch("/send-to-telegram", {
+      const response = await fetch("https://alfa-shopping.onrender.com/send-to-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: message }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        alert("❌ Не удалось отправить сообщение");
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        alert("❌ Не удалось отправить сообщение в Telegram");
       } else {
         alert("✅ Отправлено в Telegram!");
       }
-    } catch {
-      alert("⚠️ Ошибка соединения");
+    } catch (error) {
+      console.error("Ошибка при отправке запроса:", error);
+      alert("⚠️ Ошибка соединения с сервером");
     }
   };
 
   return (
-    <div className="container">
+    <div id="root">
       {!viewCart ? (
         <>
           <h2>Список товаров</h2>
-          <button onClick={() => setViewCart(true)}>Корзина ({cart.reduce((sum, i) => sum + i.quantity, 0)})</button>
-          <div className="products">
-            {products.map((item) => (
-              <div key={item.id} className="product">
-                <img src={item.image} alt={item.name} />
-                <p>{item.name}</p>
-                <div className="button-container">
-                  <button className="button" onClick={() => removeFromCart(item.id)}>-</button>
-                  <span>{getQuantity(item.id)}</span>
-                  <button className="button" onClick={() => addToCart(item)}>+</button>
+          <button className="button" onClick={() => setViewCart(true)}>
+            Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})
+          </button>
+
+          <div className="product-list">
+            {products.map((item) => {
+              const quantity = getQuantity(item.id);
+              return (
+                <div className="product-item" key={item.id}>
+                  <img src={item.image} alt={item.name} />
+                  <p className="name">{item.name}</p>
+                  <div className="quantity">
+                    <button onClick={() => removeFromCart(item.id)}>-</button>
+                    <p>{quantity}</p>
+                    <button onClick={() => addToCart(item)}>+</button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       ) : (
-        <>
-          <h2>Корзина</h2>
+        <div className="cart">
+          <h3>Корзина</h3>
           {cart.map((item) => (
-            <div key={item.id} className="product">
-              <p>{item.name} x{item.quantity}</p>
-              <div className="button-container">
-                <button className="button" onClick={() => addToCart(item)}>+</button>
-                <button className="button" onClick={() => removeFromCart(item.id)}>-</button>
+            <div className="item" key={item.id}>
+              <p className="name">{item.name}</p>
+              <div className="quantity">
+                <button onClick={() => addToCart(item)}>+</button>
+                <button onClick={() => removeFromCart(item.id)}>-</button>
               </div>
             </div>
           ))}
-          <button onClick={sendToTelegram}>Отправить в Telegram</button>
-          <button onClick={() => setViewCart(false)}>← Назад</button>
-        </>
+
+          <button className="button" onClick={sendToTelegram}>
+            Отправить в Telegram
+          </button>
+
+          <button className="button" onClick={() => setViewCart(false)}>
+            ← Назад
+          </button>
+        </div>
       )}
     </div>
   );
