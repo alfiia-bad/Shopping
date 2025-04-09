@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import './index.css';
 
 const products = [
-  { id: "1", name: "Бананы", image: "https://via.placeholder.com/50" },
-  { id: "2", name: "Вода", image: "https://via.placeholder.com/50" },
-  { id: "3", name: "Кофе", image: "https://via.placeholder.com/50" },
+  { id: "1", name: "Бананы", image: "/images/banana.png" },
+  { id: "2", name: "Вода", image: "/images/water3.webp" },
+  { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
 ];
 
 const App = () => {
@@ -127,6 +127,11 @@ const App = () => {
             </div>
           ))}
           <button className="button" onClick={sendToTelegram}>
+            <img
+              src="/images/icons_tg.svg"
+              alt="Telegram"
+              style={{ width: "20px", height: "20px", marginRight: "8px", verticalAlign: "middle" }}
+            />
             Отправить в Telegram
           </button>
         </div>
