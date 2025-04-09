@@ -26,6 +26,28 @@ body {
   z-index: 10;
 }
 
+/* Новая структура хедера */
+.header-left,
+.header-center,
+.header-right {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.header-center {
+  justify-content: center;
+  gap: 8px;
+}
+
+.header-left {
+  justify-content: flex-start;
+}
+
+.header-right {
+  justify-content: flex-end;
+}
+
 .header .title {
   font-size: 20px;
   font-weight: bold;
@@ -101,6 +123,19 @@ body {
   outline: none;
 }
 
+/* Иконка удаления */
+.icon-button {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.icon-button:hover {
+  transform: scale(1.1);
+}
+
 /* Products grid */
 .product-list {
   display: grid;
@@ -128,6 +163,7 @@ body {
   width: 100px;
   height: 100px;
   object-fit: cover;
+  border-radius: 4px;
 }
 
 .product-item .name {
