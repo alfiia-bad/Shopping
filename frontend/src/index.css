@@ -275,7 +275,7 @@ body {
   padding: 10px;
   font-size: 16px;
   border-radius: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   outline: none;
 }
 
@@ -292,7 +292,7 @@ body {
   padding: 10px 40px 10px 36px; /* отступ под иконку */
   font-size: 16px;
   border-radius: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   outline: none;
   background-color: #fff;
 }
@@ -309,7 +309,7 @@ body {
 .clear-button {
   margin-left: 10px;
   padding: 6px 10px;
-  background-color: #ccc;
+  background-color: #ddd;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -340,5 +340,5 @@ body {
   text-align: center;
   margin-top: 20px;
   font-size: 18px;
-  color: #888;
+  color: #aaa;
 }
