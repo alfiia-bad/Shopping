@@ -1,21 +1,29 @@
+/* Общие стили для всех устройств */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background-color: #f8f8f8;
 }
 
-.button {
-  width: 40px;
-  height: 40px;
-  background-color: #4CAF50;
+#root {
   display: flex;
-  align-items: center;
   justify-content: center;
-  border-radius: 5px;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Стили для кнопок */
+.button {
+  background-color: #4CAF50;
   color: white;
-  font-size: 18px;
   border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .button:focus {
@@ -25,6 +33,99 @@ body {
 .button-container {
   display: flex;
   justify-content: center;
+  gap: 10px;
+}
+
+/* Стили для товаров */
+.product-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  width: 100%;
+  max-width: 200px;
+}
+
+.product-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.product-item .name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.product-item .quantity {
+  display: flex;
+  justify-content: center;
   align-items: center;
   gap: 10px;
+}
+
+.product-item .quantity button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.product-item .quantity button:hover {
+  background-color: #45a049;
+}
+
+/* Адаптивные стили для мобильных устройств */
+@media screen and (max-width: 600px) {
+  .button-container {
+    flex-direction: column;
+  }
+
+  .product-item {
+    width: 100%;
+  }
+
+  .quantity {
+    font-size: 14px;
+  }
+}
+
+/* Стили для корзины */
+.cart {
+  width: 100%;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cart .item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cart .item .name {
+  font-weight: bold;
+}
+
+.cart .item .quantity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart .item .quantity button {
+  background-color: #f44336;
+}
+
+.cart .item .quantity button:hover {
+  background-color: #e53935;
 }
