@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Image, TouchableOpacity, FlatList, ScrollView } from "react-native";
-import './index.css';
+import './index.css';  // Этот файл стоит оставить для общих стилей
 
 const products = [
   { id: "1", name: "Бананы", image: "https://via.placeholder.com/50" },
@@ -83,15 +83,13 @@ const App = () => {
   };
 
   return (
-    <View>
+    <View style={{ padding: 20 }}>
       {!viewCart ? (
         <>
-          <View>
-            <Text>Список товаров</Text>
-            <TouchableOpacity onPress={() => setViewCart(true)}>
-              <Text>Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})</Text>
-            </TouchableOpacity>
-          </View>
+          <Text>Список товаров</Text>
+          <TouchableOpacity onPress={() => setViewCart(true)}>
+            <Text>Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)})</Text>
+          </TouchableOpacity>
 
           <FlatList
             data={products}
@@ -99,14 +97,18 @@ const App = () => {
             renderItem={({ item }) => {
               const quantity = getQuantity(item.id);
               return (
-                <View>
-                  <Image source={{ uri: item.image }} />
+                <View style={{ marginBottom: 20 }}>
+                  <Image source={{ uri: item.image }} style={{ width: 50, height: 50 }} />
                   <Text>{item.name}</Text>
-                  <div className="button-container">
-                    <button className="button" onClick={() => removeFromCart(item.id)}>-</button>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                    <TouchableOpacity onPress={() => removeFromCart(item.id)} style={{ backgroundColor: '#4CAF50', padding: 10 }}>
+                      <Text style={{ color: 'white' }}>-</Text>
+                    </TouchableOpacity>
                     <Text>{quantity}</Text>
-                    <button className="button" onClick={() => addToCart(item)}>+</button>
-                  </div>
+                    <TouchableOpacity onPress={() => addToCart(item)} style={{ backgroundColor: '#4CAF50', padding: 10 }}>
+                      <Text style={{ color: 'white' }}>+</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               );
             }}
@@ -116,12 +118,16 @@ const App = () => {
         <ScrollView>
           <Text>Корзина</Text>
           {cart.map((item) => (
-            <View key={item.id}>
+            <View key={item.id} style={{ marginBottom: 20 }}>
               <Text>{item.name} x{item.quantity}</Text>
-              <div className="button-container">
-                <button className="button" onClick={() => addToCart(item)}>+</button>
-                <button className="button" onClick={() => removeFromCart(item.id)}>-</button>
-              </div>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <TouchableOpacity onPress={() => addToCart(item)} style={{ backgroundColor: '#4CAF50', padding: 10 }}>
+                  <Text style={{ color: 'white' }}>+</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => removeFromCart(item.id)} style={{ backgroundColor: '#4CAF50', padding: 10 }}>
+                  <Text style={{ color: 'white' }}>-</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ))}
 
