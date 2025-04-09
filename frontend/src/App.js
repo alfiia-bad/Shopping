@@ -106,7 +106,7 @@ const App = () => {
                 <img src={item.image} alt={item.name} />
                 <p className="name">{item.name}</p>
                 <div className="quantity">
-                  <button onClick={() => removeFromCart(item.id)}>-</button>
+                  <button onClick={() => removeFromCart(item.id)} disabled={quantity === 0}>-</button>
                   <p>{quantity}</p>
                   <button onClick={() => addToCart(item)}>+</button>
                 </div>
