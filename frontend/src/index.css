@@ -28,20 +28,18 @@ body {
 
 /* Новая структура хедера */
 .header-left,
-.header-center,
 .header-right {
   display: flex;
   align-items: center;
   flex: 1;
 }
 
-.header-center {
-  justify-content: center;
-  gap: 8px;
-}
 
 .header-left {
-  justify-content: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Отступ между кнопкой и заголовком */
+  flex: 1;
 }
 
 .header-right {
