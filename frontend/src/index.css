@@ -43,7 +43,6 @@ body {
   margin: 0;
 }
 
-.back-button,
 .cart-button {
   background-color: #A56AB4;
   color: white;
@@ -55,16 +54,36 @@ body {
   transition: background-color 0.2s ease;
 }
 
+/* Кнопка Назад */
+.back-button {
+  background-color: #A56AB4;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
 .back-button:hover,
 .cart-button:hover {
   background-color: #934fb1;
 }
 
-/* Значок количества */
+.back-button img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Значок количества товаров */
 .item-count-badge {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: 14px;  /* Переместил на 4px вниз */
+  right: 14px;  /* Переместил на 4px влево */
   width: 22px;
   height: 22px;
   background-color: #A56AB4;
