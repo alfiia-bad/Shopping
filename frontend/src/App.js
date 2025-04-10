@@ -12,7 +12,7 @@ const products = [
   { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
 ];
 
-const API_URL = "";
+const API_URL = "https://alfa-shopping.onrender.com";
 
 const App = () => {
   const [cart, setCart] = useState([]);
