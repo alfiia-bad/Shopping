@@ -4,8 +4,8 @@ import { FiSearch, FiShoppingBag, FiHeart, FiBell } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 import { LuShoppingCart } from 'react-icons/lu';
 
-// Основной компонент
-const App = () => {
+// Определите API_URL с адресом вашего сервера
+const API_URL = 'https://alfa-shopping.onrender.com';
   // Состояния...
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
