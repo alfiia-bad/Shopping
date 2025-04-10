@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch } from "react-icons/fi";
 import { MdArrowBackIos, MdClose } from "react-icons/md";
-import { RiTelegram2Fill } from 'react-icons/ri';
+import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete } from "react-icons/md";
 
@@ -79,7 +79,7 @@ const App = () => {
   };
 
   const sendToTelegram = async () => {
-    if (cart.length === 0) return alert("Корзина пуста");
+    if (cart.length === 0) return;
 
     const message = cart
       .map((item) => `- ${item.name} x${item.quantity}`)
@@ -93,7 +93,7 @@ const App = () => {
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        alert("❌ Не удалось отправить сообщение в Telegram");
+        console.error("Ошибка отправки в Telegram");
       } else {
         setShowNotification(true);
         const timeout = setTimeout(() => setShowNotification(false), 5000);
@@ -101,7 +101,6 @@ const App = () => {
       }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
-      alert("⚠️ Ошибка соединения с сервером");
     }
   };
 
@@ -111,13 +110,13 @@ const App = () => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleClearSearch = () => {
     setSearchTerm("");
   };
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="app-container">
@@ -128,33 +127,27 @@ const App = () => {
               <button className="back-button" onClick={() => setViewCart(false)}>
                 <MdArrowBackIos className="icon" />
               </button>
-              <h2 className={`header-title ${viewCart ? 'cart-title' : 'products-title'}`}>Корзина</h2>
+              <h2 className="header-title">Корзина</h2>
             </div>
             <div className="header-right">
               <button className="icon-button" onClick={() => setIsModalOpen(true)}>
                 <MdOutlineDelete className="icon" />
               </button>
-              {totalItems > 0 && (
-                <div className="item-count-badge">{totalItems}</div>
-              )}
+              {totalItems > 0 && <div className="item-count-badge">{totalItems}</div>}
             </div>
           </>
         ) : (
           <>
-            <h2 className={`header-title ${viewCart ? 'cart-title' : 'products-title'}`}>Список товаров</h2>
+            <h2 className="header-title">Список товаров</h2>
             <div className="cart-with-badge">
               <button className="cart-button" onClick={() => setViewCart(true)}>
                 <LuShoppingCart className="icon" />
               </button>
-              {totalItems > 0 && (
-                <div className="item-count-badge">{totalItems}</div>
-              )}
+              {totalItems > 0 && <div className="item-count-badge">{totalItems}</div>}
             </div>
           </>
         )}
       </header>
-
-      <div className="header-backdrop" />
 
       <main className="main-content">
         {!viewCart ? (
@@ -259,10 +252,9 @@ const App = () => {
         </div>
       )}
 
-      {/* Уведомление о Telegram */}
       {showNotification && (
         <div className="telegram-notification">
-          ✅ Отправлено в Telegram!
+           Отправлено в Telegram!
           <button className="close-notification" onClick={handleCloseNotification}>
             <MdClose className="icon" />
           </button>
