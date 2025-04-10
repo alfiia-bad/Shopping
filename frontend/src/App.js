@@ -169,7 +169,7 @@ const App = () => {
                   <MdOutlineDelete className="icon" />
                 </button>
               )}
-              {totalItems > 0 && (
+              {viewCart && totalItems > 0 && (
                 <div className="item-count-badge">{totalItems}</div>
               )}
             </div>
@@ -184,7 +184,7 @@ const App = () => {
               >
                 <LuShoppingCart className="icon" />
               </button>
-              {totalItems > 0 && (
+              {!viewCart && totalItems > 0 && (
                 <div className="item-count-badge">{totalItems}</div>
               )}
             </div>
