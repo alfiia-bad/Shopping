@@ -51,6 +51,7 @@ body {
   padding: 8px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .cart-button img {
@@ -58,7 +59,7 @@ body {
   height: 24px;
 }
 
-/* Значок количества товаров - общий стиль */
+/* Значок количества товаров */
 .item-count-badge {
   position: absolute;
   width: 22px;
@@ -74,7 +75,6 @@ body {
   border: 1px solid white;
 }
 
-/* Для корзины */
 .cart-with-badge {
   display: flex;
   position: relative;
@@ -82,11 +82,10 @@ body {
 }
 
 .cart-with-badge .item-count-badge {
-  top: -3px;    /* выше на 2px - иконка Корзина */
-  right: -1px; /* правее на 6px */
+  top: -3px;
+  right: -1px;
 }
 
-/* Для кнопки Очистить */
 .header-right {
   position: relative;
   display: flex;
@@ -94,8 +93,8 @@ body {
 }
 
 .header-right .item-count-badge {
-  top: -5px;    /* выше на 2px - иконка Очистить */
-  right: -5px;  /* правее на 2px */
+  top: -5px;
+  right: -5px;
 }
 
 /* Кнопка Назад */
@@ -122,15 +121,19 @@ body {
   height: 16px;
 }
 
-/* Иконка удаления */
-.icon-button {
+/* Иконки */
+.icon-button, .clear-button-icon {
   background: none;
   border: none;
   padding: 4px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
 }
 
-.icon-button img {
+.icon-button img, .clear-button-icon img {
   width: 24px;
   height: 24px;
 }
@@ -173,40 +176,6 @@ body {
 .product-name {
   margin: 10px 0;
   font-weight: 600;
-  text-align: center;
-}
-
-/* Количество + - */
-.quantity-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.qty-button {
-  background-color: #A56AB4;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.qty-button:hover:not(.disabled) {
-  background-color: #934fb1;
-}
-
-.qty-button.disabled {
-  background-color: #d5d5d5;
-  color: white;
-  cursor: not-allowed;
-}
-
-.quantity {
-  min-width: 20px;
   text-align: center;
 }
 
@@ -261,6 +230,7 @@ body {
   height: 20px;
 }
 
+/* Поиск */
 .search-bar {
   margin-top: 0px;
   display: flex;
@@ -278,7 +248,7 @@ body {
 }
 
 .search-bar input::placeholder {
-  color: #ddd; /* Цвет плейсхолдера */
+  color: #ddd;
 }
 
 .search-input-wrapper {
@@ -286,12 +256,11 @@ body {
   align-items: center;
   position: relative;
   width: 100%;
-  max-width: 100%;
 }
 
 .search-input-wrapper input {
   width: 100%;
-  padding: 10px 40px 10px 36px; /* отступ под иконку */
+  padding: 10px 40px 10px 36px;
   font-size: 16px;
   border-radius: 12px;
   border: 1px solid #ddd;
@@ -299,7 +268,6 @@ body {
   background-color: #fff;
 }
 
-/* Иконка лупы внутри инпута */
 .search-icon {
   position: absolute;
   left: 10px;
@@ -318,33 +286,7 @@ body {
   font-size: 18px;
 }
 
-/* Кнопка очистки похожая на кнопку Назад */
-.clear-button-icon {
-  position: absolute;
-  right: 6px;
-  background-color: #A56AB4;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.clear-button-icon img {
-  width: 14px;
-  height: 14px;
-}
-
-.no-results {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 18px;
-  color: #aaa;
-}
-
+/* Навигация */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -379,43 +321,26 @@ body {
   color: purple;
 }
 
-/* Для фиолетового цвета текста на заголовках */
-.products-title {
-  color: #000; /* Черный или другой цвет для обычных заголовков */
-}
-
+/* Заголовки */
 .cart-title {
-  color: #934fb1; /* Фиолетовый цвет для заголовка корзины */
+  color: #934fb1;
 }
 
-/* Можно также задать для "Список товаров" фиолетовый цвет, если хотите */
 .products-title {
   color: #934fb1;
 }
 
-/* Увеличиваем размеры иконок в хедере */
-.header-right .icon-button svg,
-.cart-button svg {
-  font-size: 24px; /* Устанавливаем размер иконки корзины */
-}
+/* Мобильная адаптивность */
+@media (max-width: 600px) {
+  .search-bar input {
+    width: 100%;
+  }
 
-/* Для иконки очистки */
-.clear-button-icon svg {
-  font-size: 24px; /* Устанавливаем размер иконки очистки */
-}
+  .product-list {
+    grid-template-columns: 1fr;
+  }
 
-.cart-button img {
-  width: 24px;  /* Увеличиваем размер изображения корзины */
-  height: 24px; /* Увеличиваем размер изображения корзины */
-}
-
-.clear-button-icon img {
-  width: 24px;  /* Увеличиваем размер изображения иконки очистки */
-  height: 24px; /* Увеличиваем размер изображения иконки очистки */
-}
-
-/* Специально увеличиваем иконку Назад */
-.back-button .icon {
-  width: 32px;
-  height: 32px;
+  .bottom-nav {
+    height: 60px;
+  }
 }

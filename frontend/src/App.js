@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
-import { FiShoppingBag, FiHeart, FiBell } from "react-icons/fi";
+import { FiShoppingBag, FiHeart, FiBell, FiSearch } from "react-icons/fi";
 import { FaShoppingCart } from "react-icons/fa";
-import { MdArrowBackIos } from "react-icons/md";
+import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { FaTelegram } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete } from "react-icons/md";
@@ -150,7 +150,7 @@ const App = () => {
           <>
             <div className="search-bar">
               <div className="search-input-wrapper">
-                <img src="/images/search.svg" alt="Поиск" className="search-icon" />
+                <FiSearch className="search-icon" />
                 <input
                   type="text"
                   placeholder="Поиск товаров..."
@@ -159,7 +159,7 @@ const App = () => {
                 />
                 {searchTerm && (
                   <button className="clear-button-icon" onClick={handleClearSearch}>
-                    <MdOutlineDelete className="icon" />
+                    <MdClose className="icon" />
                   </button>
                 )}
               </div>
