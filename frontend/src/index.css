@@ -103,13 +103,14 @@ body {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 40px;  /* Увеличиваем размер кнопки */
+  height: 40px; /* Увеличиваем размер кнопки */
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  position: relative; /* Добавляем позиционирование для сдвига */
 }
 
 .back-button:hover {
@@ -117,8 +118,10 @@ body {
 }
 
 .back-button svg {
-  width: 16px;
-  height: 16px;
+  width: 18px; /* Увеличиваем размер иконки */
+  height: 18px; /* Увеличиваем размер иконки */
+  position: absolute;
+  left: 2px;
 }
 
 /* Иконки */
@@ -282,6 +285,7 @@ body {
   width: 18px;
   height: 18px;
   opacity: 0.6;
+  color: #ddd;
 }
 
 .clear-button {
@@ -377,6 +381,19 @@ body {
 
   .product-card {
     width: 100%;
+  }
+}
+
+/* Мобильная адаптивность для кнопки Назад */
+@media (max-width: 600px) {
+  .back-button {
+    width: 50px; /* Увеличиваем кнопку на мобильных устройствах */
+    height: 50px; /* Увеличиваем кнопку на мобильных устройствах */
+  }
+
+  .back-button svg {
+    width: 22px; /* Увеличиваем размер иконки на мобильных */
+    height: 22px; /* Увеличиваем размер иконки на мобильных */
   }
 }
 
