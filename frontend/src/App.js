@@ -17,7 +17,6 @@ const API_URL = "";
 const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
-  const [viewNotifications, setViewNotifications] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -105,28 +104,6 @@ const App = () => {
     }
   };
 
-  const sendUpdateRequest = async () => {
-    try {
-      const response = await fetch(`${API_URL}/send-to-telegram`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: "🚨 Прошу обновить список покупок 🚨" }),
-      });
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        setShowNotification(true);
-        setNotificationTimeout(setTimeout(() => setShowNotification(false), 5000));
-      } else {
-        setShowNotification(true);
-        setNotificationTimeout(setTimeout(() => setShowNotification(false), 5000));
-      }
-    } catch (error) {
-      console.error("Ошибка при отправке запроса:", error);
-      setShowNotification(true);
-      setNotificationTimeout(setTimeout(() => setShowNotification(false), 5000));
-    }
-  };
-
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSearchChange = (e) => {
@@ -144,56 +121,36 @@ const App = () => {
   return (
     <div className="app-container">
       <header className="app-header">
-        {viewCart || viewNotifications ? (
+        {viewCart ? (
           <>
             <div className="header-left">
-              <button
-                className="back-button"
-                onClick={() => {
-                  setViewCart(false);
-                  setViewNotifications(false);
-                }}
-              >
+              <button className="back-button" onClick={() => setViewCart(false)}>
                 <MdArrowBackIos className="icon" />
               </button>
-              <h2 className="header-title">
-                {viewNotifications ? "Уведомления" : "Корзина"}
-              </h2>
+              <h2 className="header-title">Корзина</h2>
             </div>
             <div className="header-right">
-              {viewCart && (
-                <button
-                  className="icon-button"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <MdOutlineDelete className="icon" />
-                </button>
-              )}
-              {totalItems > 0 && (
-                <div className="item-count-badge">{totalItems}</div>
-              )}
+              <button className="icon-button" onClick={() => setIsModalOpen(true)}>
+                <MdOutlineDelete className="icon" />
+              </button>
+              {totalItems > 0 && <div className="item-count-badge">{totalItems}</div>}
             </div>
           </>
         ) : (
           <>
             <h2 className="header-title">Список товаров</h2>
             <div className="cart-with-badge">
-              <button
-                className="cart-button"
-                onClick={() => setViewCart(true)}
-              >
+              <button className="cart-button" onClick={() => setViewCart(true)}>
                 <LuShoppingCart className="icon" />
               </button>
-              {totalItems > 0 && (
-                <div className="item-count-badge">{totalItems}</div>
-              )}
+              {totalItems > 0 && <div className="item-count-badge">{totalItems}</div>}
             </div>
           </>
         )}
       </header>
 
       <main className="main-content">
-        {!viewCart && !viewNotifications ? (
+        {!viewCart ? (
           <>
             <div className="search-bar">
               <div className="search-input-wrapper">
@@ -205,10 +162,7 @@ const App = () => {
                   onChange={handleSearchChange}
                 />
                 {searchTerm && (
-                  <button
-                    className="clear-button-icon"
-                    onClick={handleClearSearch}
-                  >
+                  <button className="clear-button-icon" onClick={handleClearSearch}>
                     <MdClose className="icon" />
                   </button>
                 )}
@@ -229,9 +183,7 @@ const App = () => {
                         <button
                           onClick={() => removeFromCart(product.id)}
                           disabled={quantity === 0}
-                          className={`qty-button minus ${
-                            quantity === 0 ? "disabled" : ""
-                          }`}
+                          className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
                         >
                           -
                         </button>
@@ -251,14 +203,6 @@ const App = () => {
               )}
             </div>
           </>
-        ) : viewNotifications ? (
-          <div className="notifications-view">
-            <h2 className="header-title">Уведомления</h2>
-            <button className="send-button" onClick={sendUpdateRequest}>
-              <RiTelegram2Fill className="telegram-icon" />
-              Запросить обновление
-            </button>
-          </div>
         ) : (
           <div className="cart-list">
             {cart.length === 0 ? (
@@ -272,9 +216,7 @@ const App = () => {
                       <button
                         onClick={() => removeFromCart(item.id)}
                         disabled={item.quantity === 0}
-                        className={`qty-button minus ${
-                          item.quantity === 0 ? "disabled" : ""
-                        }`}
+                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
                       >
                         -
                       </button>
@@ -292,6 +234,9 @@ const App = () => {
                   <RiTelegram2Fill className="telegram-icon" />
                   Отправить в Telegram
                 </button>
+                <button className="update-button" onClick={sendToTelegram}>
+                  Запросить обновление
+                </button>
               </>
             )}
           </div>
@@ -303,15 +248,8 @@ const App = () => {
           <div className="modal">
             <p>Удаление безвозвратно. Вы уверены?</p>
             <div className="modal-actions">
-              <button onClick={clearCart} className="modal-confirm">
-                Удалить
-              </button>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="modal-cancel"
-              >
-                Отмена
-              </button>
+              <button onClick={clearCart} className="modal-confirm">Удалить</button>
+              <button onClick={() => setIsModalOpen(false)} className="modal-cancel">Отмена</button>
             </div>
           </div>
         </div>
@@ -319,7 +257,7 @@ const App = () => {
 
       {showNotification && (
         <div className="telegram-notification">
-          Отправлено в Telegram!
+           Отправлено в Telegram!
           <button className="close-notification" onClick={handleCloseNotification}>
             <MdClose className="icon" />
           </button>
@@ -327,13 +265,7 @@ const App = () => {
       )}
 
       <nav className="bottom-nav">
-        <button
-          className={`nav-item ${!viewCart && !viewNotifications ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(false);
-          }}
-        >
+        <button className={`nav-item ${!viewCart ? "active" : ""}`} onClick={() => setViewCart(false)}>
           <FiShoppingBag className="icon" />
           <span className="label">Товары</span>
         </button>
@@ -341,23 +273,11 @@ const App = () => {
           <FiHeart className="icon" />
           <span className="label">Избранное</span>
         </button>
-        <button
-          className={`nav-item ${viewCart ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(true);
-            setViewNotifications(false);
-          }}
-        >
+        <button className={`nav-item ${viewCart ? "active" : ""}`} onClick={() => setViewCart(true)}>
           <LuShoppingCart className="icon" />
           <span className="label">Корзина</span>
         </button>
-        <button
-          className={`nav-item ${viewNotifications ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(true);
-          }}
-        >
+        <button className="nav-item" disabled>
           <FiBell className="icon" />
           <span className="label">Уведомления</span>
         </button>
