@@ -528,7 +528,7 @@ body {
   left: 20px;
   background-color: #934fb1; /* Фиолетовый */
   color: white;
-  padding: 8px 16px;
+  padding: 6px 16px;
   border-radius: 8px;
   font-size: 16px;
   z-index: 1000;
@@ -620,4 +620,16 @@ body {
 .clear-search-button .icon {
   width: 18px;
   height: 18px;
+}
+
+@media screen and (max-width: 500px) {
+  .clear-search-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .clear-search-button .icon {
+    width: 22px;
+    height: 22px;
+  }
 }
