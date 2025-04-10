@@ -45,11 +45,11 @@ body {
 /* Кнопка корзины */
 .cart-button {
   background-color: transparent;
-  color: #A56AB4;
+  color: #333;
   border: none;
   border-radius: 8px;
   padding: 8px;
-  font-size: 16px;
+  font-size: 24px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -116,7 +116,7 @@ body {
   background-color: #934fb1;
 }
 
-.back-button img {
+.back-button svg {
   width: 16px;
   height: 16px;
 }
@@ -131,6 +131,8 @@ body {
   justify-content: center;
   align-items: center;
   transition: background-color 0.2s ease;
+  font-size: 24px;
+  color: #333;
 }
 
 .icon-button img, .clear-button-icon img {
@@ -146,20 +148,26 @@ body {
 
 /* Список товаров */
 .product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
 }
 
+/* Карточки товаров */
 .product-card {
-  background-color: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.2s ease;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  text-align: center;
+  margin: 10px;
+  flex-shrink: 0;
 }
 
 .product-card:hover {
@@ -167,10 +175,9 @@ body {
 }
 
 .product-card img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 6px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
 .product-name {
@@ -345,6 +352,29 @@ body {
   }
 }
 
+/* Медиазапросы для мобильных устройств */
+@media (max-width: 575px) {
+  .product-card {
+    width: 100px;
+    padding: 12px;
+  }
+
+  .product-list {
+    gap: 8px;
+  }
+
+  .qty-button {
+    font-size: 16px;
+    padding: 8px 16px;
+    width: 35px;
+    height: 35px;
+  }
+  
+  .app-container {
+    padding: 10px;
+  }
+}
+
 /* Модальное окно */
 .modal-overlay {
   position: fixed;
@@ -402,3 +432,38 @@ body {
 .modal-cancel:hover {
   background-color: #bbb;
 }
+
+/* Общие стили для кнопок */
+.qty-button {
+  background-color: #a56ab4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.qty-button.plus {
+  background-color: #A56AB4;
+}
+
+.qty-button.minus {
+  background-color: #A56AB4;
+}
+
+.qty-button:hover {
+  background-color: #934fb1;
+}
+
+.qty-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
