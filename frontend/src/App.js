@@ -12,12 +12,11 @@ const products = [
   { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
 ];
 
-const API_URL = "https://alfa-shopping.onrender.com";
+const API_URL = "";
 
 const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
-  const [viewNotifications, setViewNotifications] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -105,24 +104,6 @@ const App = () => {
     }
   };
 
-  const handleBackupDownload = async () => {
-    try {
-      const response = await fetch(`${API_URL}/backup`, {
-        method: "POST",
-      });
-      const data = await response.json();
-      if (data.success) {
-        setShowNotification(true);
-        const timeout = setTimeout(() => setShowNotification(false), 5000);
-        setNotificationTimeout(timeout);
-      } else {
-        alert("Не удалось отправить бэкап в Telegram");
-      }
-    } catch (error) {
-      console.error("Ошибка при отправке бэкапа:", error);
-    }
-  };
-
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSearchChange = (e) => {
@@ -156,21 +137,20 @@ const App = () => {
             </div>
           </>
         ) : (
-          <h2 className="header-title">
-            {viewNotifications ? "Уведомления" : "Список товаров"}
-          </h2>
+          <>
+            <h2 className="header-title">Список товаров</h2>
+            <div className="cart-with-badge">
+              <button className="cart-button" onClick={() => setViewCart(true)}>
+                <LuShoppingCart className="icon" />
+              </button>
+              {totalItems > 0 && <div className="item-count-badge">{totalItems}</div>}
+            </div>
+          </>
         )}
       </header>
 
       <main className="main-content">
-        {viewNotifications ? (
-          <div className="notifications-page">
-            <h3 className="section-title">Уведомления</h3>
-            <button className="backup-button" onClick={handleBackupDownload}>
-              📦 Выгрузить и отправить бэкап в Telegram
-            </button>
-          </div>
-        ) : !viewCart ? (
+        {!viewCart ? (
           <>
             <div className="search-bar">
               <div className="search-input-wrapper">
@@ -274,7 +254,7 @@ const App = () => {
 
       {showNotification && (
         <div className="telegram-notification">
-          Отправлено в Telegram!
+           Отправлено в Telegram!
           <button className="close-notification" onClick={handleCloseNotification}>
             <MdClose className="icon" />
           </button>
@@ -282,13 +262,7 @@ const App = () => {
       )}
 
       <nav className="bottom-nav">
-        <button
-          className={`nav-item ${!viewCart && !viewNotifications ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(false);
-          }}
-        >
+        <button className={`nav-item ${!viewCart ? "active" : ""}`} onClick={() => setViewCart(false)}>
           <FiShoppingBag className="icon" />
           <span className="label">Товары</span>
         </button>
@@ -296,23 +270,11 @@ const App = () => {
           <FiHeart className="icon" />
           <span className="label">Избранное</span>
         </button>
-        <button
-          className={`nav-item ${viewCart ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(true);
-            setViewNotifications(false);
-          }}
-        >
+        <button className={`nav-item ${viewCart ? "active" : ""}`} onClick={() => setViewCart(true)}>
           <LuShoppingCart className="icon" />
           <span className="label">Корзина</span>
         </button>
-        <button
-          className={`nav-item ${viewNotifications ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(true);
-          }}
-        >
+        <button className="nav-item" disabled>
           <FiBell className="icon" />
           <span className="label">Уведомления</span>
         </button>
