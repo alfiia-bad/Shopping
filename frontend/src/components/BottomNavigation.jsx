@@ -16,7 +16,7 @@ const BottomNavigation = () => {
         <span className="label">Избранное</span>
       </NavLink>
       <NavLink to="/cart" className="nav-item">
-        <FaShoppingCart className="icon" />
+        <FiShoppingCart className="icon" />
         <span className="label">Корзина</span>
       </NavLink>
       <NavLink to="/notifications" className="nav-item">
