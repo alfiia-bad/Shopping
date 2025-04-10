@@ -254,6 +254,9 @@ const App = () => {
         ) : viewNotifications ? (
           <div className="notifications-view">
             <h2 className="header-title">Уведомления</h2>
+            <p style={{ fontSize: "14px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
+              Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
+            </p>
             <button className="send-button" onClick={sendUpdateRequest}>
               <RiTelegram2Fill className="telegram-icon" />
               Запросить обновление
