@@ -575,3 +575,22 @@ body {
   font-size: 16px;
   text-align: center;
 }
+
+.notifications-page {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.backup-button {
+  background-color: #6a1b9a;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.backup-button:hover {
+  background-color: #4a148c;
+}

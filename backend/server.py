@@ -83,3 +83,24 @@ def serve_react(path):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host="0.0.0.0", port=port)
+
+@app.route('/backup', methods=['POST'])
+def send_backup_to_telegram():
+    file_path = DB_PATH
+    if not os.path.exists(file_path):
+        return jsonify({"success": False, "message": "Файл базы данных не найден"}), 404
+
+    url = f"https://api.telegram.org/bot{TOKEN}/sendDocument"
+    with open(file_path, 'rb') as file:
+        try:
+            response = requests.post(
+                url,
+                data={'chat_id': CHAT_ID},
+                files={'document': (os.path.basename(file_path), file)}
+            )
+            if response.status_code == 200:
+                return jsonify({"success": True, "message": "Бэкап отправлен в Telegram"})
+            else:
+                return jsonify({"success": False, "message": "Ошибка при отправке файла"}), 500
+        except requests.exceptions.RequestException as e:
+            return jsonify({"success": False, "message": str(e)}), 500
