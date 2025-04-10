@@ -1,3 +1,9 @@
+// Импорты
+import React, { useState, useEffect } from 'react';
+import { FiSearch, FiShoppingBag, FiHeart, FiBell } from 'react-icons/fi';
+import { MdClose } from 'react-icons/md';
+import { LuShoppingCart } from 'react-icons/lu';
+
 // Основной компонент
 const App = () => {
   // Состояния...
@@ -7,13 +13,21 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationTimeout, setNotificationTimeout] = useState(null);
+  const [products, setProducts] = useState([]); // Добавил состояние для продуктов
 
-  // Загрузка корзины
+  // Загрузка корзины и продуктов
   useEffect(() => {
+    // Загружаем корзину
     fetch(`${API_URL}/cart`)
       .then((res) => res.json())
       .then((data) => setCart(data))
       .catch((error) => console.error("Ошибка загрузки корзины:", error));
+
+    // Загружаем продукты
+    fetch(`${API_URL}/products`)
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((error) => console.error("Ошибка загрузки продуктов:", error));
   }, []);
 
   // Обработчик отправки уведомления
@@ -50,6 +64,17 @@ const App = () => {
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Очистка корзины (функция для модального окна)
+  const clearCart = () => setCart([]);
+
+  // Закрытие уведомления
+  const handleCloseNotification = () => {
+    setShowNotification(false);
+    if (notificationTimeout) {
+      clearTimeout(notificationTimeout);
+    }
+  };
 
   return (
     <div className="app-container">
