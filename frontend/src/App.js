@@ -6,7 +6,9 @@ import { LuShoppingCart } from 'react-icons/lu';
 
 // Определите API_URL с адресом вашего сервера
 const API_URL = 'https://alfa-shopping.onrender.com';
-  // Состояния...
+
+// Основной компонент
+const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -168,4 +170,6 @@ const API_URL = 'https://alfa-shopping.onrender.com';
       </nav>
     </div>
   );
+};
+
 export default App;
