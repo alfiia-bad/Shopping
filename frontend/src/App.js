@@ -173,7 +173,9 @@ const App = () => {
                   const quantity = getQuantity(product.id);
                   return (
                     <div className="product-card" key={product.id}>
-                      <img src={product.image} alt={product.name} />
+                      <div className="image-container">
+                        <img src={product.image} alt={product.name} />
+                      </div>
                       <p className="product-name">{product.name}</p>
                       <div className="quantity-controls">
                         <button
