@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
+import { FiShoppingBag, FiHeart, FiBell } from "react-icons/fi";
+import { FaShoppingCart } from "react-icons/fa";
 
 const products = [
   { id: "1", name: "Бананы", image: "/images/banana.png" },
@@ -89,7 +91,6 @@ const App = () => {
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Поиск
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -236,6 +237,26 @@ const App = () => {
           </div>
         )}
       </main>
+
+      {/* Нижний футер */}
+      <nav className="bottom-nav">
+        <button className={`nav-item ${!viewCart ? "active" : ""}`} onClick={() => setViewCart(false)}>
+          <FiShoppingBag className="icon" />
+          <span className="label">Товары</span>
+        </button>
+        <button className="nav-item" disabled>
+          <FiHeart className="icon" />
+          <span className="label">Избранное</span>
+        </button>
+        <button className={`nav-item ${viewCart ? "active" : ""}`} onClick={() => setViewCart(true)}>
+          <FaShoppingCart className="icon" />
+          <span className="label">Корзина</span>
+        </button>
+        <button className="nav-item" disabled>
+          <FiBell className="icon" />
+          <span className="label">Уведомления</span>
+        </button>
+      </nav>
     </div>
   );
 };
