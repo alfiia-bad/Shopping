@@ -27,7 +27,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 50px;
+  height: 60px;
   padding: 0 12px;
   z-index: 1001;
   background-color: #f8f8f8; /* Добавляем цвет подложки */
@@ -109,8 +109,8 @@ body {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 35px;  /* Увеличиваем размер кнопки */
-  height: 35px; /* Увеличиваем размер кнопки */
+  width: 30px;  /* Увеличиваем размер кнопки */
+  height: 30px; /* Увеличиваем размер кнопки */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -595,3 +595,30 @@ body {
   font-size: 24px;
   color: #ffffff;
 }
+
+/* Крестик для поиска */
+.clear-search-button {
+  background-color: #A56AB4;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: absolute;
+  right: 8px; /* Позиция внутри поля поиска */
+}
+
+.clear-search-button:hover {
+  background-color: #934fb1;
+}
+
+.clear-search-button .icon {
+  width: 18px;
+  height: 18px;
+}
+  

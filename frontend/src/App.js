@@ -206,7 +206,7 @@ const App = () => {
                 />
                 {searchTerm && (
                   <button
-                    className="clear-button-icon"
+                    className="clear-search-button"
                     onClick={handleClearSearch}
                   >
                     <MdClose className="icon" />
