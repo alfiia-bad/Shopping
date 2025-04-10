@@ -148,10 +148,12 @@ body {
 
 /* Список товаров */
 .product-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке */
   gap: 20px;
+  justify-items: stretch; /* Растягиваем карточки по ширине */
+  padding: 0 12px; /* Отступы от краев */
+  width: 100%;
 }
 
 /* Карточки товаров */
@@ -164,10 +166,9 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 150px;
   text-align: center;
-  margin: 10px;
   flex-shrink: 0;
+  width: 100%; /* Растягиваем карточки по ширине */
 }
 
 .product-card:hover {
@@ -339,28 +340,14 @@ body {
 
 /* Мобильная адаптивность */
 @media (max-width: 600px) {
-  .search-bar input {
-    width: 100%;
-  }
-
   .product-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 1 карточка в строке на маленьких экранах */
+    gap: 16px;
   }
 
-  .bottom-nav {
-    height: 60px;
-  }
-}
-
-/* Медиазапросы для мобильных устройств */
-@media (max-width: 575px) {
   .product-card {
-    width: 100px;
-    padding: 12px;
-  }
-
-  .product-list {
-    gap: 8px;
+    width: auto; /* Автоматическая ширина для мобильных устройств */
+    padding: 16px; /* Уменьшаем отступы */
   }
 
   .qty-button {
@@ -369,9 +356,27 @@ body {
     width: 35px;
     height: 35px;
   }
-  
-  .app-container {
-    padding: 10px;
+}
+
+/* Средний экран (например, для iPhone 13 mini) */
+@media (max-width: 768px) {
+  .product-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке на средних экранах */
+  }
+
+  .product-card {
+    width: 100%; /* Растягиваем карточки */
+  }
+}
+
+/* Большой экран (например, для iPhone 15 Pro и десктопа) */
+@media (min-width: 769px) {
+  .product-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке */
+  }
+
+  .product-card {
+    width: 100%;
   }
 }
 

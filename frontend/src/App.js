@@ -3,7 +3,7 @@ import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch } from "react-icons/fi";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdArrowBackIos, MdClose } from "react-icons/md";
-import { FaTelegram } from "react-icons/fa";
+import { RiTelegram2Fill } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete } from "react-icons/md";
 
@@ -227,7 +227,7 @@ const App = () => {
                   </div>
                 ))}
                 <button className="send-button" onClick={sendToTelegram}>
-                  <FaTelegram className="telegram-icon" />
+                  <RiTelegram2Fill className="telegram-icon" />
                   Отправить в Telegram
                 </button>
               </>
