@@ -3,7 +3,7 @@ import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch } from "react-icons/fi";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdArrowBackIos, MdClose } from "react-icons/md";
-import { RiTelegram2Fill } from "react-icons/fa";
+import { RiTelegram2Fill } from 'react-icons/ri';
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete } from "react-icons/md";
 
