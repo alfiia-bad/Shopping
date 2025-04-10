@@ -168,6 +168,4 @@ const API_URL = 'https://alfa-shopping.onrender.com';
       </nav>
     </div>
   );
-};
-
 export default App;
