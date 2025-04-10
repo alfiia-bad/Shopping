@@ -251,6 +251,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  width: 100%; /* Растягиваем кнопку на всю ширину */
 }
 
 .send-button:hover {
@@ -525,7 +526,7 @@ body {
   position: fixed;
   bottom: 90px;
   left: 20px;
-  background-color: #A56AB4; /* Фиолетовый */
+  background-color: #934fb1; /* Фиолетовый */
   color: white;
   padding: 10px 16px;
   border-radius: 6px;
