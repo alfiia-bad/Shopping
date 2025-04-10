@@ -48,10 +48,11 @@ body {
   color: #333;
   border: none;
   border-radius: 8px;
-  padding: 8px;
+  padding: 0px;
   font-size: 24px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-right: 8px; /* Немного отступа от текста */
 }
 
 .cart-button img {
@@ -77,8 +78,8 @@ body {
 
 .cart-with-badge {
   display: flex;
+  align-items: center; /* Выравниваем по вертикали */
   position: relative;
-  align-items: center;
 }
 
 .cart-with-badge .item-count-badge {
@@ -103,8 +104,8 @@ body {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;  /* Увеличиваем размер кнопки */
-  height: 40px; /* Увеличиваем размер кнопки */
+  width: 30px;  /* Увеличиваем размер кнопки */
+  height: 30px; /* Увеличиваем размер кнопки */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -121,7 +122,7 @@ body {
   width: 18px; /* Увеличиваем размер иконки */
   height: 18px; /* Увеличиваем размер иконки */
   position: absolute;
-  left: 2px;
+  left: 10px;
 }
 
 /* Иконки */
@@ -152,10 +153,10 @@ body {
 /* Список товаров */
 .product-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке */
+  grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке по умолчанию */
   gap: 20px;
-  justify-items: stretch; /* Растягиваем карточки по ширине */
-  padding: 0 12px; /* Отступы от краев */
+  justify-items: stretch;
+  padding: 0 12px;
   width: 100%;
 }
 
@@ -373,10 +374,10 @@ body {
   }
 }
 
-/* Большой экран (например, для iPhone 15 Pro и десктопа) */
-@media (min-width: 769px) {
+/* Для больших экранов (десктоп) - количество карточек в строке увеличится */
+@media (min-width: 768px) {
   .product-list {
-    grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 
   .product-card {
@@ -460,7 +461,7 @@ body {
   background-color: #a56ab4;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 6px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 18px;
@@ -470,6 +471,17 @@ body {
   justify-content: center;
   width: 40px;
   height: 40px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Расстояние между кнопками */
+}
+
+.quantity {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .qty-button.plus {
