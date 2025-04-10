@@ -18,6 +18,7 @@ const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
   const [viewNotifications, setViewNotifications] = useState(false);
+  const [viewFavorites, setViewFavorites] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -144,7 +145,7 @@ const App = () => {
   return (
     <div className="app-container">
       <header className="app-header">
-        {viewCart || viewNotifications ? (
+        {viewCart || viewNotifications || viewFavorites ? (
           <>
             <div className="header-left">
               <button
@@ -152,12 +153,13 @@ const App = () => {
                 onClick={() => {
                   setViewCart(false);
                   setViewNotifications(false);
+                  setViewFavorites(false);
                 }}
               >
                 <MdArrowBackIos className="icon" />
               </button>
               <h2 className="header-title">
-                {viewNotifications ? "Уведомления" : "Корзина"}
+                {viewFavorites ? "Избранное" : viewNotifications ? "Уведомления" : "Корзина"}
               </h2>
             </div>
             <div className="header-right">
@@ -193,7 +195,7 @@ const App = () => {
       </header>
 
       <main className="main-content">
-        {!viewCart && !viewNotifications ? (
+        {!viewCart && !viewNotifications && !viewFavorites ? (
           <>
             <div className="search-bar">
               <div className="search-input-wrapper">
@@ -229,9 +231,7 @@ const App = () => {
                         <button
                           onClick={() => removeFromCart(product.id)}
                           disabled={quantity === 0}
-                          className={`qty-button minus ${
-                            quantity === 0 ? "disabled" : ""
-                          }`}
+                          className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
                         >
                           -
                         </button>
@@ -251,6 +251,12 @@ const App = () => {
               )}
             </div>
           </>
+        ) : viewFavorites ? (
+          <div className="favorites-view">
+            <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
+              Страница находит в разработке. Ждите обновление
+            </p>
+          </div>
         ) : viewNotifications ? (
           <div className="notifications-view">
             <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
@@ -274,9 +280,7 @@ const App = () => {
                       <button
                         onClick={() => removeFromCart(item.id)}
                         disabled={item.quantity === 0}
-                        className={`qty-button minus ${
-                          item.quantity === 0 ? "disabled" : ""
-                        }`}
+                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
                       >
                         -
                       </button>
@@ -330,16 +334,24 @@ const App = () => {
 
       <nav className="bottom-nav">
         <button
-          className={`nav-item ${!viewCart && !viewNotifications ? "active" : ""}`}
+          className={`nav-item ${!viewCart && !viewNotifications && !viewFavorites ? "active" : ""}`}
           onClick={() => {
             setViewCart(false);
             setViewNotifications(false);
+            setViewFavorites(false);
           }}
         >
           <FiShoppingBag className="icon" />
           <span className="label">Товары</span>
         </button>
-        <button className="nav-item" disabled>
+        <button
+          className={`nav-item ${viewFavorites ? "active" : ""}`}
+          onClick={() => {
+            setViewFavorites(true);
+            setViewCart(false);
+            setViewNotifications(false);
+          }}
+        >
           <FiHeart className="icon" />
           <span className="label">Избранное</span>
         </button>
@@ -348,6 +360,7 @@ const App = () => {
           onClick={() => {
             setViewCart(true);
             setViewNotifications(false);
+            setViewFavorites(false);
           }}
         >
           <LuShoppingCart className="icon" />
@@ -358,6 +371,7 @@ const App = () => {
           onClick={() => {
             setViewCart(false);
             setViewNotifications(true);
+            setViewFavorites(false);
           }}
         >
           <FiBell className="icon" />
