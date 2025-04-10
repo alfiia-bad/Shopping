@@ -1,8 +1,8 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FiShoppingBag, FiHeart, FiBell } from 'react-icons/fi';
-import { FaShoppingCart } from 'react-icons/fa';
-import './BottomNavigation.css';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { FiShoppingBag, FiHeart, FiBell } from "react-icons/fi";
+import { LuShoppingCart } from "react-icons/lu";
+import "./BottomNavigation.css";
 
 const BottomNavigation = () => {
   return (
@@ -16,7 +16,7 @@ const BottomNavigation = () => {
         <span className="label">Избранное</span>
       </NavLink>
       <NavLink to="/cart" className="nav-item">
-        <FiShoppingCart className="icon" />
+        <LuShoppingCart className="icon" />
         <span className="label">Корзина</span>
       </NavLink>
       <NavLink to="/notifications" className="nav-item">
