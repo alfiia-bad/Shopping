@@ -344,3 +344,61 @@ body {
     height: 60px;
   }
 }
+
+/* Модальное окно */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-confirm,
+.modal-cancel {
+  background-color: #A56AB4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.modal-confirm:hover {
+  background-color: #934fb1;
+}
+
+.modal-cancel {
+  background-color: #ccc;
+}
+
+.modal-cancel:hover {
+  background-color: #bbb;
+}

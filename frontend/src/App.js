@@ -19,6 +19,7 @@ const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // Состояние для модального окна
 
   useEffect(() => {
     fetch(`${API_URL}/cart`)
@@ -64,8 +65,9 @@ const App = () => {
   };
 
   const clearCart = () => {
-    updateCart([]);
-    setViewCart(false);
+    updateCart([]); // Очищаем корзину
+    setIsModalOpen(false); // Закрываем модальное окно после очистки
+    setViewCart(false); // Закрываем корзину, если она открыта
   };
 
   const sendToTelegram = async () => {
@@ -122,7 +124,7 @@ const App = () => {
               <h2 className={`header-title ${viewCart ? 'cart-title' : 'products-title'}`}>Корзина</h2>
             </div>
             <div className="header-right">
-              <button className="icon-button" onClick={clearCart}>
+              <button className="icon-button" onClick={() => setIsModalOpen(true)}>
                 <MdOutlineDelete className="icon" />
               </button>
               {totalItems > 0 && (
@@ -233,6 +235,19 @@ const App = () => {
           </div>
         )}
       </main>
+
+      {/* Модальное окно подтверждения очистки корзины */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <p>Удаление безвозвратно. Вы уверены?</p>
+            <div className="modal-actions">
+              <button onClick={clearCart} className="modal-confirm">Удалить</button>
+              <button onClick={() => setIsModalOpen(false)} className="modal-cancel">Отмена</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Нижний футер */}
       <nav className="bottom-nav">
