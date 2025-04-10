@@ -115,7 +115,7 @@ const App = () => {
               <button className="back-button" onClick={() => setViewCart(false)}>
                 <img src="/images/back.svg" alt="Назад" />
               </button>
-              <h2 className="header-title">Корзина</h2>
+              <h2 className={`header-title ${viewCart ? 'cart-title' : 'products-title'}`}>Корзина</h2>
             </div>
             <div className="header-right">
               <button className="icon-button" onClick={clearCart}>
@@ -128,7 +128,7 @@ const App = () => {
           </>
         ) : (
           <>
-            <h2 className="header-title">Список товаров</h2>
+            <h2 className={`header-title ${viewCart ? 'cart-title' : 'products-title'}`}>Список товаров</h2>
             <div className="cart-with-badge">
               <button className="cart-button" onClick={() => setViewCart(true)}>
                 <img src="/images/cart.svg" alt="Корзина" />
