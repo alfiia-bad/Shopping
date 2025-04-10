@@ -101,12 +101,9 @@ const App = () => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredProducts =
-    searchTerm.length >= 3
-      ? products.filter((product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : products;
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleClearSearch = () => {
     setSearchTerm("");
@@ -146,6 +143,8 @@ const App = () => {
           </>
         )}
       </header>
+
+      <div className="header-backdrop" />
 
       <main className="main-content">
         {!viewCart ? (
