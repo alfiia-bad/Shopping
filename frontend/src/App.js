@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell } from "react-icons/fi";
 import { FaShoppingCart } from "react-icons/fa";
+import { MdArrowBackIos } from "react-icons/md";
+import { FaTelegram } from "react-icons/fa";
+import { LuShoppingCart } from "react-icons/lu";
+import { MdOutlineDelete } from "react-icons/md";
 
 const products = [
   { id: "1", name: "Бананы", image: "/images/banana.png" },
@@ -113,13 +117,13 @@ const App = () => {
           <>
             <div className="header-left">
               <button className="back-button" onClick={() => setViewCart(false)}>
-                <img src="/images/back.svg" alt="Назад" />
+                <MdArrowBackIos className="icon" />
               </button>
               <h2 className={`header-title ${viewCart ? 'cart-title' : 'products-title'}`}>Корзина</h2>
             </div>
             <div className="header-right">
               <button className="icon-button" onClick={clearCart}>
-                <img src="/images/delete.svg" alt="Очистить" />
+                <MdOutlineDelete className="icon" />
               </button>
               {totalItems > 0 && (
                 <div className="item-count-badge">{totalItems}</div>
@@ -131,7 +135,7 @@ const App = () => {
             <h2 className={`header-title ${viewCart ? 'cart-title' : 'products-title'}`}>Список товаров</h2>
             <div className="cart-with-badge">
               <button className="cart-button" onClick={() => setViewCart(true)}>
-                <img src="/images/cart.svg" alt="Корзина" />
+                <LuShoppingCart className="icon" />
               </button>
               {totalItems > 0 && (
                 <div className="item-count-badge">{totalItems}</div>
@@ -155,7 +159,7 @@ const App = () => {
                 />
                 {searchTerm && (
                   <button className="clear-button-icon" onClick={handleClearSearch}>
-                    <img src="/images/close.svg" alt="Очистить" />
+                    <MdOutlineDelete className="icon" />
                   </button>
                 )}
               </div>
@@ -173,9 +177,7 @@ const App = () => {
                         <button
                           onClick={() => removeFromCart(product.id)}
                           disabled={quantity === 0}
-                          className={`qty-button minus ${
-                            quantity === 0 ? "disabled" : ""
-                          }`}
+                          className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
                         >
                           -
                         </button>
@@ -208,9 +210,7 @@ const App = () => {
                       <button
                         onClick={() => removeFromCart(item.id)}
                         disabled={item.quantity === 0}
-                        className={`qty-button minus ${
-                          item.quantity === 0 ? "disabled" : ""
-                        }`}
+                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
                       >
                         -
                       </button>
@@ -225,11 +225,7 @@ const App = () => {
                   </div>
                 ))}
                 <button className="send-button" onClick={sendToTelegram}>
-                  <img
-                    src="/images/icons_tg.svg"
-                    alt="Telegram"
-                    className="telegram-icon"
-                  />
+                  <FaTelegram className="telegram-icon" />
                   Отправить в Telegram
                 </button>
               </>
@@ -249,7 +245,7 @@ const App = () => {
           <span className="label">Избранное</span>
         </button>
         <button className={`nav-item ${viewCart ? "active" : ""}`} onClick={() => setViewCart(true)}>
-          <FaShoppingCart className="icon" />
+          <LuShoppingCart className="icon" />
           <span className="label">Корзина</span>
         </button>
         <button className="nav-item" disabled>
