@@ -30,7 +30,7 @@ body {
   z-index: 100;
   background-color: #f8f8f8; /* Добавляем цвет подложки */
   backdrop-filter: blur(8px); /* (опционально) плавный эффект */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* (опционально) лёгкая тень */
+  box-shadow: none; 
 }
 
 .header-backdrop {
@@ -94,8 +94,8 @@ body {
 }
 
 .cart-with-badge .item-count-badge {
-  top: -2px;
-  right: -8px;
+  top: -8px;
+  right: -2px;
 }
 
 .header-right {
@@ -167,7 +167,7 @@ body {
   grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке по умолчанию */
   gap: 20px;
   justify-items: stretch;
-  padding: 0 12px;
+  padding: 0 0px;
   width: 100%;
 }
 
@@ -414,8 +414,8 @@ body {
 /* Мобильная адаптивность для кнопки Назад */
 @media (max-width: 600px) {
   .back-button {
-    width: 50px; /* Увеличиваем кнопку на мобильных устройствах */
-    height: 50px; /* Увеличиваем кнопку на мобильных устройствах */
+    width: 40px; /* Увеличиваем кнопку на мобильных устройствах */
+    height: 40px; /* Увеличиваем кнопку на мобильных устройствах */
   }
 
   .back-button svg {
@@ -527,3 +527,35 @@ body {
   cursor: not-allowed;
 }
 
+.telegram-notification {
+  position: fixed;
+  bottom: 90px;
+  left: 16px;
+  background-color: #A56AB4;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 200;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeInOut 5s ease-in-out;
+}
+
+.telegram-notification .close-notification {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
+}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch } from "react-icons/fi";
-import { FaShoppingCart } from "react-icons/fa";
 import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from 'react-icons/ri';
 import { LuShoppingCart } from "react-icons/lu";
@@ -19,7 +18,9 @@ const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // Состояние для модального окна
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationTimeout, setNotificationTimeout] = useState(null);
 
   useEffect(() => {
     fetch(`${API_URL}/cart`)
@@ -65,9 +66,16 @@ const App = () => {
   };
 
   const clearCart = () => {
-    updateCart([]); // Очищаем корзину
-    setIsModalOpen(false); // Закрываем модальное окно после очистки
-    setViewCart(false); // Закрываем корзину, если она открыта
+    updateCart([]);
+    setIsModalOpen(false);
+    setViewCart(false);
+  };
+
+  const handleCloseNotification = () => {
+    setShowNotification(false);
+    if (notificationTimeout) {
+      clearTimeout(notificationTimeout);
+    }
   };
 
   const sendToTelegram = async () => {
@@ -87,7 +95,9 @@ const App = () => {
       if (!response.ok || !data.success) {
         alert("❌ Не удалось отправить сообщение в Telegram");
       } else {
-        alert("✅ Отправлено в Telegram!");
+        setShowNotification(true);
+        const timeout = setTimeout(() => setShowNotification(false), 5000);
+        setNotificationTimeout(timeout);
       }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
@@ -237,7 +247,6 @@ const App = () => {
         )}
       </main>
 
-      {/* Модальное окно подтверждения очистки корзины */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
@@ -250,7 +259,16 @@ const App = () => {
         </div>
       )}
 
-      {/* Нижний футер */}
+      {/* Уведомление о Telegram */}
+      {showNotification && (
+        <div className="telegram-notification">
+          ✅ Отправлено в Telegram!
+          <button className="close-notification" onClick={handleCloseNotification}>
+            <MdClose className="icon" />
+          </button>
+        </div>
+      )}
+
       <nav className="bottom-nav">
         <button className={`nav-item ${!viewCart ? "active" : ""}`} onClick={() => setViewCart(false)}>
           <FiShoppingBag className="icon" />
