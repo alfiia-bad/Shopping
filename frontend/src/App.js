@@ -320,7 +320,11 @@ const App = () => {
                           : addToFavorites(product.id)
                       }
                     >
-                      <FiHeart className="icon" />
+                      {favorites.includes(product.id) ? (
+                        <FaHeart className="icon active" />
+                      ) : (
+                        <FiHeart className="icon" />
+                      )}
                     </button>
                     <div className="image-container">
                       <img src={product.image} alt={product.name} />

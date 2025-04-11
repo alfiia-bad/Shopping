@@ -182,10 +182,11 @@ body {
   /* Убедитесь, что здесь нет анимации увеличения */
   transition: none; /* Убираем плавные переходы */
   transform: none; /* Убираем масштабирование */
+  border: 1px solid #ddd;
 }
 
 .product-card:hover {
-  /* Убираем эффект увеличения при наведении */
+/* Убираем эффект увеличения при наведении */
   transform: none;
 }
 
@@ -658,4 +659,19 @@ body {
 
 .favorite-button .icon.active {
   color: #934fb1; /* Фиолетовый цвет для лайкнутого товара */
+}
+
+/* Сетка для карточек товаров */
+.favorites-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Адаптивные колонки */
+  gap: 16px; /* Расстояние между карточками */
+  padding: 16px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media screen and (max-width: 500px) {
+  .favorites-view {
+    grid-template-columns: repeat(2, 1fr); /* Две карточки в строке */
+  }
 }
