@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch } from "react-icons/fi";
+import { FaHeart, FaRegHeart } from "react-icons/fa"; 
 import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
@@ -263,14 +264,18 @@ const App = () => {
                   return (
                     <div className="product-card" key={product.id}>
                       <button
-                        className={`favorite-button ${favorites.includes(product.id) ? "active" : ""}`}
+                        className="favorite-button"
                         onClick={() =>
                           favorites.includes(product.id)
                             ? removeFromFavorites(product.id)
                             : addToFavorites(product.id)
                         }
                       >
-                        <FiHeart className="icon" />
+                        {favorites.includes(product.id) ? (
+                          <FaHeart className="icon active" /> // Фиолетовый лайк
+                        ) : (
+                          <FiHeart className="icon" /> // Серый лайк
+                        )}
                       </button>
                       <div className="image-container">
                         <img src={product.image} alt={product.name} />

@@ -644,13 +644,15 @@ body {
   z-index: 2;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  opacity: 1;
 }
 
 .favorite-button .icon {
-  color: #ccc;
+  color: #ccc; /* Серый цвет для нелайкнутого товара */
   font-size: 20px;
+  transition: color 0.2s ease;
 }
 
-.favorite-button.active .icon {
-  color: #934fb1; /* Фиолетовый */
+.favorite-button .icon.active {
+  color: #934fb1; /* Фиолетовый цвет для лайкнутого товара */
 }
