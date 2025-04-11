@@ -84,6 +84,9 @@ def send_to_telegram():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
+    # Исключение для API маршрутов
+    if path.startswith("api/") or path.startswith("favorites") or path.startswith("cart"):
+        return "Not Found", 404  # Убедитесь, что запросы к API не перенаправляются на React
     full_path = os.path.join(app.static_folder, path)
     if path != "" and os.path.exists(full_path):
         return send_from_directory(app.static_folder, path)
