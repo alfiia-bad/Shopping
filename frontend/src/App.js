@@ -301,9 +301,30 @@ const App = () => {
           </>
         ) : viewFavorites ? (
           <div className="favorites-view">
-            <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
-              Страница находит в разработке. Ждите обновление
-            </p>
+            {favorites.length > 0 ? (
+              products
+                .filter((product) => favorites.includes(product.id))
+                .map((product) => (
+                  <div className="product-card" key={product.id}>
+                    <button
+                      className={`favorite-button ${favorites.includes(product.id) ? "active" : ""}`}
+                      onClick={() =>
+                        favorites.includes(product.id)
+                          ? removeFromFavorites(product.id)
+                          : addToFavorites(product.id)
+                      }
+                    >
+                      <FiHeart className="icon" />
+                    </button>
+                    <div className="image-container">
+                      <img src={product.image} alt={product.name} />
+                    </div>
+                    <p className="product-name">{product.name}</p>
+                  </div>
+                ))
+            ) : (
+              <p className="no-results">Нет избранных товаров</p>
+            )}
           </div>
         ) : viewNotifications ? (
           <div className="notifications-view">
