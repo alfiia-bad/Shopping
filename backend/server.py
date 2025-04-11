@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(
     __name__,
-    static_folder="static",
+    static_folder="public",
     static_url_path=""
 )
 
