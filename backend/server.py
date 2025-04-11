@@ -30,6 +30,12 @@ def init_db():
                 quantity INTEGER NOT NULL
             )
         ''')
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS favorites (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                product_id TEXT NOT NULL UNIQUE
+            )
+        ''')        
 init_db()
 
 @app.route('/cart', methods=['GET'])
@@ -52,7 +58,7 @@ def update_cart():
                          (item["id"], item["name"], item["quantity"]))
     return jsonify({"success": True})
 
-@app.route('/send-to-telegram', methods=['POST'])
+@app.route('/send-to-telegram', methods=['POST'])    
 def send_to_telegram():
     data = request.json
     cart = data.get('cart', '')
@@ -84,23 +90,39 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host="0.0.0.0", port=port)
 
-@app.route('/backup', methods=['POST'])
-def send_backup_to_telegram():
-    file_path = DB_PATH
-    if not os.path.exists(file_path):
-        return jsonify({"success": False, "message": "Файл базы данных не найден"}), 404
+@app.route('/api/favorites', methods=['GET'])   # Получение списка избранных товаров
+def get_favorites():
+    conn = get_db_connection()
+    favorites = conn.execute('SELECT product_id FROM favorites').fetchall()
+    conn.close()
+    return jsonify([row['product_id'] for row in favorites])
 
-    url = f"https://api.telegram.org/bot{TOKEN}/sendDocument"
-    with open(file_path, 'rb') as file:
-        try:
-            response = requests.post(
-                url,
-                data={'chat_id': CHAT_ID},
-                files={'document': (os.path.basename(file_path), file)}
-            )
-            if response.status_code == 200:
-                return jsonify({"success": True, "message": "Бэкап отправлен в Telegram"})
-            else:
-                return jsonify({"success": False, "message": "Ошибка при отправке файла"}), 500
-        except requests.exceptions.RequestException as e:
-            return jsonify({"success": False, "message": str(e)}), 500
+@app.route('/api/favorites', methods=['POST'])   # Добавление товара в избранное
+def add_favorite():
+    data = request.json
+    product_id = data['product_id']
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            'INSERT INTO favorites (product_id) VALUES (?)',
+            (product_id,)
+        )
+        conn.commit()
+    except sqlite3.IntegrityError:
+        # уже есть в списке
+        pass
+    conn.close()
+    return jsonify({'status': 'added'})
+
+@app.route('/api/favorites', methods=['DELETE'])   # Удаление товара из избранного
+def delete_favorite():
+    data = request.json
+    product_id = data['product_id']
+    conn = get_db_connection()
+    conn.execute(
+        'DELETE FROM favorites WHERE product_id = ?',
+        (product_id,)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'deleted'})

@@ -23,6 +23,7 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationTimeout, setNotificationTimeout] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     fetch(`${API_URL}/cart`)
@@ -35,6 +36,13 @@ const App = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [viewCart, viewFavorites, viewNotifications]);
   
+  useEffect(() => {
+    fetch(`${API_URL}/favorites`)
+      .then(res => res.json())
+      .then(setFavorites)
+      .catch((err) => console.error("Ошибка загрузки избранного:", err));
+  }, []);
+
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
@@ -76,6 +84,32 @@ const App = () => {
     setIsModalOpen(false);
     setViewCart(false);
   };
+
+  const addToFavorites = async (productId) => {
+    try {
+      await fetch(`${API_URL}/favorites`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId }),
+      });
+      setFavorites(prev => [...prev, productId]);
+    } catch (err) {
+      console.error("Ошибка при добавлении в избранное:", err);
+    }
+  };
+
+  const removeFromFavorites = async (productId) => {
+    try {
+      await fetch(`${API_URL}/favorites`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId }),
+      });
+      setFavorites(prev => prev.filter(id => id !== productId));
+    } catch (err) {
+      console.error("Ошибка при удалении из избранного:", err);
+    }
+  };  
 
   const handleCloseNotification = () => {
     setShowNotification(false);
@@ -227,6 +261,16 @@ const App = () => {
                   const quantity = getQuantity(product.id);
                   return (
                     <div className="product-card" key={product.id}>
+                      <button
+                        className={`favorite-button ${isFavorite ? "active" : ""}`}
+                        onClick={() =>
+                          isFavorite
+                            ? removeFromFavorites(product.id)
+                            : addToFavorites(product.id)
+                        }
+                      >
+                        <FiHeart className="icon" />
+                      </button>
                       <div className="image-container">
                         <img src={product.image} alt={product.name} />
                       </div>
