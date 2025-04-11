@@ -148,9 +148,31 @@ const App = () => {
     setViewNotifications(tab === "notifications");
     window.scrollTo(0, 0);  // Прокрутка вверх при смене вкладки
   };
+  
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="app">
+            {/* Контент для разных вкладок */}
+            <div className="content">
+        {viewCart && <div>Корзина</div>}
+        {viewFavorites && <div>Избранное</div>}
+        {viewNotifications && <div>Уведомления</div>}
+        {!viewCart && !viewFavorites && !viewNotifications && (
+          <div>
+            {/* Отображение списка товаров */}
+            {filteredProducts.map((product) => (
+              <div key={product.id}>
+                <img src={product.image} alt={product.name} />
+                <span>{product.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <nav className="bottom-nav">
         <button
         className={`nav-item ${!viewCart && !viewNotifications && !viewFavorites ? "active" : ""}`}
