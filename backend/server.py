@@ -14,7 +14,7 @@ app = Flask(
     static_url_path=""
 )
 
-CORS(app, resources={r"/favorites/*": {"origins": "*"}})
+CORS(app)
 
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -135,3 +135,5 @@ def delete_favorite():
     conn.close()
 
     return jsonify({'status': 'deleted'}), 200
+
+

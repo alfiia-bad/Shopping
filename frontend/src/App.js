@@ -41,7 +41,7 @@ const App = () => {
     // Загружаем избранное с сервера при загрузке страницы
     fetch(`${API_URL}/favorites`)
       .then((res) => res.json())
-      .then((data) => setFavorites(data)) // Устанавливаем состояние избранного
+      .then((data) => setFavorites(data))
       .catch((err) => console.error("Ошибка загрузки избранного:", err));
   }, []);
 
@@ -320,11 +320,7 @@ const App = () => {
                           : addToFavorites(product.id)
                       }
                     >
-                      {favorites.includes(product.id) ? (
-                        <FaHeart className="icon active" />
-                      ) : (
-                        <FiHeart className="icon" />
-                      )}
+                      <FiHeart className="icon" />
                     </button>
                     <div className="image-container">
                       <img src={product.image} alt={product.name} />
