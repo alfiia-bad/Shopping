@@ -97,7 +97,7 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host="0.0.0.0", port=port)
 
-@app.route('/favorites', methods=['GET'])
+@app.route("/api/favorites", methods=["GET"])
 def get_favorites():
     conn = get_db_connection()
     favorites = conn.execute('SELECT product_id FROM favorites').fetchall()

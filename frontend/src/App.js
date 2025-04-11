@@ -39,7 +39,7 @@ const App = () => {
   
   useEffect(() => {
     // Загружаем избранное с сервера при загрузке страницы
-    fetch(`${API_URL}/favorites`)
+    fetch(`${API_URL}/api/favorites`)
       .then((res) => res.json())
       .then((data) => setFavorites(data))
       .catch((err) => console.error("Ошибка загрузки избранного:", err));
