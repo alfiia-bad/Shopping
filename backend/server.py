@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(
     __name__,
-    static_folder="../frontend/build",
+    static_folder="static",
     static_url_path=""
 )
 
@@ -129,15 +129,10 @@ def delete_favorite():
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve_react(path):
-    # Исключение для API маршрутов
-    if path in ["api", "favorites", "cart"]:
-        return "Not Found", 404
-    full_path = os.path.join(app.static_folder, path)
-    if path != "" and os.path.exists(full_path):
+def serve(path):
+    if path != "" and path.startswith("static"):
         return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route('/favicon.ico', methods=['HEAD'])
 def favicon():
