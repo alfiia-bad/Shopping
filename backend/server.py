@@ -81,17 +81,7 @@ def send_to_telegram():
     except requests.exceptions.RequestException:
         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve_react(path):
-    # Исключение для API маршрутов
-    if path.startswith("api/") or path.startswith("favorites") or path.startswith("cart"):
-        return "Not Found", 404  # Убедитесь, что запросы к API не перенаправляются на React
-    full_path = os.path.join(app.static_folder, path)
-    if path != "" and os.path.exists(full_path):
-        return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, 'index.html')
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
@@ -137,3 +127,14 @@ def delete_favorite():
     return jsonify({'status': 'deleted'}), 200
 
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    # Исключение для API маршрутов
+    if path.startswith("api/") or path.startswith("favorites") or path.startswith("cart"):
+        return "Not Found", 404  # Убедитесь, что запросы к API не перенаправляются на React
+    full_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(full_path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
