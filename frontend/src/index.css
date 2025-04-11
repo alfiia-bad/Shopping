@@ -636,9 +636,10 @@ body {
 
 .favorite-button {
   position: absolute;
+  background: none;
+  border: none;
   top: 8px;
   right: 8px;
-  border-radius: 50%;
   padding: 6px;
   z-index: 2;
   cursor: pointer;
@@ -648,7 +649,6 @@ body {
 .favorite-button .icon {
   color: #ccc;
   font-size: 20px;
-  transition: color 0.3s ease;
 }
 
 .favorite-button.active .icon {

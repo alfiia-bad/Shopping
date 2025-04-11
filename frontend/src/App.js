@@ -37,9 +37,10 @@ const App = () => {
   }, [viewCart, viewFavorites, viewNotifications]);
   
   useEffect(() => {
+    // Загружаем избранное с сервера при загрузке страницы
     fetch(`${API_URL}/favorites`)
-      .then(res => res.json())
-      .then(setFavorites)
+      .then((res) => res.json())
+      .then((data) => setFavorites(data))
       .catch((err) => console.error("Ошибка загрузки избранного:", err));
   }, []);
 
@@ -88,11 +89,11 @@ const App = () => {
   const addToFavorites = async (productId) => {
     try {
       await fetch(`${API_URL}/favorites`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ product_id: productId }),
       });
-      setFavorites(prev => [...prev, productId]);
+      setFavorites((prev) => [...prev, productId]); // Обновляем локальное состояние
     } catch (err) {
       console.error("Ошибка при добавлении в избранное:", err);
     }
@@ -101,11 +102,11 @@ const App = () => {
   const removeFromFavorites = async (productId) => {
     try {
       await fetch(`${API_URL}/favorites`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ product_id: productId }),
       });
-      setFavorites(prev => prev.filter(id => id !== productId));
+      setFavorites((prev) => prev.filter((id) => id !== productId)); // Обновляем локальное состояние
     } catch (err) {
       console.error("Ошибка при удалении из избранного:", err);
     }
