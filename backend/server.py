@@ -104,19 +104,31 @@ def get_favorites():
 @app.route('/favorites', methods=['POST'])
 def add_favorite():
     data = request.json
-    product_id = data['product_id']
+    product_id = data.get('product_id')
+    if not product_id:
+        return jsonify({'error': 'product_id is required'}), 400
+
     conn = get_db_connection()
-    conn.execute('INSERT INTO favorites (product_id) VALUES (?)', (product_id,))
-    conn.commit()
-    conn.close()
-    return jsonify({'status': 'added'})
+    try:
+        conn.execute('INSERT INTO favorites (product_id) VALUES (?)', (product_id,))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        return jsonify({'error': 'Product already in favorites'}), 409
+    finally:
+        conn.close()
+
+    return jsonify({'status': 'added'}), 201
 
 @app.route('/favorites', methods=['DELETE'])
 def delete_favorite():
     data = request.json
-    product_id = data['product_id']
+    product_id = data.get('product_id')
+    if not product_id:
+        return jsonify({'error': 'product_id is required'}), 400
+
     conn = get_db_connection()
     conn.execute('DELETE FROM favorites WHERE product_id = ?', (product_id,))
     conn.commit()
     conn.close()
-    return jsonify({'status': 'deleted'})
+
+    return jsonify({'status': 'deleted'}), 200

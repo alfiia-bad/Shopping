@@ -179,10 +179,14 @@ body {
   flex-shrink: 0;
   width: 100%; /* Растягиваем карточки по ширине */
   height: 100%;
+  /* Убедитесь, что здесь нет анимации увеличения */
+  transition: none; /* Убираем плавные переходы */
+  transform: none; /* Убираем масштабирование */
 }
 
 .product-card:hover {
-  transform: scale(1.02);
+  /* Убираем эффект увеличения при наведении */
+  transform: none;
 }
 
 .product-card img {
