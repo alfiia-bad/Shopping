@@ -5,7 +5,6 @@ import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete } from "react-icons/md";
-import { AiFillHeart } from "react-icons/ai";
 
 const products = [
   { id: "1", name: "Бананы", image: "/images/banana.png" },
@@ -24,10 +23,6 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationTimeout, setNotificationTimeout] = useState(null);
-    const [favorites, setFavorites] = useState(() => {
-      const stored = localStorage.getItem("favorites");
-      return stored ? JSON.parse(stored) : [];
-    });
 
   useEffect(() => {
     fetch(`${API_URL}/cart`)
@@ -40,10 +35,6 @@ const App = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [viewCart, viewFavorites, viewNotifications]);
   
-    useEffect(() => {
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-    }, [favorites]);
-
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
@@ -56,16 +47,6 @@ const App = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newCart),
     }).catch((err) => console.error("Ошибка сохранения:", err));
-  };
-
-  const updateFavorites = (newFavorites) => {
-    setFavorites(newFavorites);
-    const favoriteProducts = products.filter(p => newFavorites.includes(p.id));
-    fetch(`${API_URL}/favorites`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(favoriteProducts),
-    }).catch((err) => console.error("Ошибка сохранения избранного:", err));
   };
 
   const addToCart = (product) => {
@@ -151,13 +132,6 @@ const App = () => {
     }
   };
 
-  const toggleFavorite = (id) => {
-    const updated = favorites.includes(id)
-      ? favorites.filter(favId => favId !== id)
-      : [...favorites, id];
-    updateFavorites(updated);
-  };
-
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSearchChange = (e) => {
@@ -170,10 +144,6 @@ const App = () => {
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  const favoriteProducts = products.filter((product) =>
-    favorites.includes(product.id)
   );
 
   return (
@@ -255,20 +225,10 @@ const App = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => {
                   const quantity = getQuantity(product.id);
-                  const isFavorite = favorites.includes(product.id);
                   return (
                     <div className="product-card" key={product.id}>
                       <div className="image-container">
                         <img src={product.image} alt={product.name} />
-                        <button
-                          className="favorite-button"
-                          onClick={() => toggleFavorite(product.id)}
-                        >
-                          <FiHeart
-                            className="icon"
-                            style={{ color: isFavorite ? "#a56ab4" : "#ccc" }}
-                          />
-                        </button>
                       </div>
                       <p className="product-name">{product.name}</p>
                       <div className="quantity-controls">
@@ -296,47 +256,10 @@ const App = () => {
             </div>
           </>
         ) : viewFavorites ? (
-          <div className="product-list">
-            {favoriteProducts.length === 0 ? (
-              <p className="no-results">Нет избранных товаров</p>
-            ) : (
-              favoriteProducts.map((product) => {
-                const quantity = getQuantity(product.id);
-                return (
-                  <div className="product-card" key={product.id}>
-                    <div className="image-container">
-                      <img src={product.image} alt={product.name} />
-                      <button
-                        className="favorite-button"
-                        onClick={() => toggleFavorite(product.id)}
-                      >
-                        <FiHeart
-                          className="icon"
-                          style={{ color: "#a56ab4" }}
-                        />
-                      </button>
-                    </div>
-                    <p className="product-name">{product.name}</p>
-                    <div className="quantity-controls">
-                      <button
-                        onClick={() => removeFromCart(product.id)}
-                        disabled={quantity === 0}
-                        className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
-                      >
-                        -
-                      </button>
-                      <span className="quantity">{quantity}</span>
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="qty-button plus"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
+          <div className="favorites-view">
+            <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
+              Страница находит в разработке. Ждите обновление
+            </p>
           </div>
         ) : viewNotifications ? (
           <div className="notifications-view">

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask import Flask, request, jsonify, send_from_directory
 import requests
 import os
 import logging
@@ -28,12 +28,6 @@ def init_db():
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
                 quantity INTEGER NOT NULL
-            )
-        ''')
-        conn.execute('''
-            CREATE TABLE IF NOT EXISTS favorites (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL
             )
         ''')
 init_db()
@@ -77,25 +71,6 @@ def send_to_telegram():
     except requests.exceptions.RequestException:
         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
 
-@app.route('/favorites', methods=['GET'])
-def get_favorites():
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT id FROM favorites')
-        favorite_ids = [row[0] for row in cursor.fetchall()]
-    return jsonify(favorite_ids)
-
-@app.route('/favorites', methods=['POST'])
-def update_favorites():
-    data = request.json
-    if not isinstance(data, list):
-        return jsonify({"error": "Ожидался список избранного"}), 400
-
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM favorites')
-        for item in data:
-            conn.execute('INSERT INTO favorites (id, name) VALUES (?, ?)', (item["id"], item["name"]))
-    return jsonify({"success": True})
-
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
@@ -104,10 +79,6 @@ def serve_react(path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
-
-@app.route('/download-db', methods=['GET'])
-def download_db():
-    return send_file(DB_PATH, as_attachment=True)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
