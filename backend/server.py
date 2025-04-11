@@ -142,7 +142,3 @@ def serve_react(path):
 @app.route('/favicon.ico', methods=['HEAD'])
 def favicon():
     return '', 204
-
-@app.route('/')
-def index():
-    return send_from_directory(app.static_folder, 'index.html')
