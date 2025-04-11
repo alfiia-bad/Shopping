@@ -32,7 +32,7 @@ def init_db():
         ''')
         conn.execute('''
             CREATE TABLE IF NOT EXISTS favorites (
-                product_id TEXT PRIMARY KEY
+                                product_id TEXT PRIMARY KEY
             )
         ''')        
 init_db()
@@ -84,9 +84,6 @@ def send_to_telegram():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    # Исключение для API маршрутов
-    if path.startswith("favorites") or path.startswith("cart") or path.startswith("send-to-telegram"):
-        return "Not Found", 404
     full_path = os.path.join(app.static_folder, path)
     if path != "" and os.path.exists(full_path):
         return send_from_directory(app.static_folder, path)
