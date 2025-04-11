@@ -31,6 +31,13 @@ const App = () => {
       .catch((error) => console.error("Ошибка загрузки корзины:", error));
   }, []);
 
+  useEffect(() => {
+    const content = document.querySelector(".main-content");
+    if (content) {
+      content.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [viewCart, viewFavorites, viewNotifications]);
+
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
