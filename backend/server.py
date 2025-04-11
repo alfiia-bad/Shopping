@@ -14,7 +14,7 @@ app = Flask(
     static_url_path=""
 )
 
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/favorites/*": {"origins": "*"}})
 
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -84,7 +84,8 @@ def send_to_telegram():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    if path.startswith("favorites"):  # Исключение для API маршрутов
+    # Исключение для API маршрутов
+    if path.startswith("favorites") or path.startswith("cart") or path.startswith("send-to-telegram"):
         return "Not Found", 404
     full_path = os.path.join(app.static_folder, path)
     if path != "" and os.path.exists(full_path):
