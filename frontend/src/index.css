@@ -179,7 +179,8 @@ body {
   flex-shrink: 0;
   width: 100%; /* Растягиваем карточки по ширине */
   height: 100%;
-  /* Убедитесь, что здесь нет анимации увеличения */
+  position: relative; /* Для позиционирования кнопки "Избранное" */
+  overflow: visible; /* Убедитесь, что элементы внутри карточки не обрезаются */
   transition: none; /* Убираем плавные переходы */
   transform: none; /* Убираем масштабирование */
   border: 1px solid #ddd;
@@ -646,7 +647,7 @@ body {
   top: 8px;
   right: 8px;
   padding: 6px;
-  z-index: 2;
+  z-index: 10;
   cursor: pointer;
   opacity: 1; /* Убедимся, что кнопка всегда видима */
   transition: color 0.2s ease; /* Плавный переход цвета */
