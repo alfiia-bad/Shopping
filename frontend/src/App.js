@@ -142,57 +142,40 @@ const App = () => {
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleTabChange = (tab) => {
+    setViewCart(tab === "cart");
+    setViewFavorites(tab === "favorites");
+    setViewNotifications(tab === "notifications");
+    window.scrollTo(0, 0);  // Прокрутка вверх при смене вкладки
+  };
+
   return (
     <div className="app">
-      {/* Сюда потом можно вставить рендер товаров, корзины и прочее */}
-
       <nav className="bottom-nav">
         <button
-          className={`nav-item ${
-            !viewCart && !viewNotifications && !viewFavorites ? "active" : ""
-          }`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(false);
-            setViewFavorites(false);
-            window.scrollTo(0, 0);
-          }}
+        className={`nav-item ${!viewCart && !viewNotifications && !viewFavorites ? "active" : ""}`}
+          onClick={() => handleTabChange("products")}
         >
           <FiShoppingBag className="icon" />
           <span className="label">Товары</span>
         </button>
         <button
           className={`nav-item ${viewFavorites ? "active" : ""}`}
-          onClick={() => {
-            setViewFavorites(true);
-            setViewCart(false);
-            setViewNotifications(false);
-            window.scrollTo(0, 0);
-          }}
+          onClick={() => handleTabChange("favorites")}
         >
           <FiHeart className="icon" />
           <span className="label">Избранное</span>
         </button>
         <button
           className={`nav-item ${viewCart ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(true);
-            setViewNotifications(false);
-            setViewFavorites(false);
-            window.scrollTo(0, 0);
-          }}
+          onClick={() => handleTabChange("cart")}
         >
           <LuShoppingCart className="icon" />
           <span className="label">Корзина</span>
         </button>
         <button
           className={`nav-item ${viewNotifications ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(true);
-            setViewFavorites(false);
-            window.scrollTo(0, 0);
-          }}
+          onClick={() => handleTabChange("notifications")}
         >
           <FiBell className="icon" />
           <span className="label">Уведомления</span>
