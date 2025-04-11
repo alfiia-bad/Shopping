@@ -131,10 +131,18 @@ def delete_favorite():
 @app.route('/<path:path>')
 def serve_react(path):
     # Исключение для API маршрутов
-    if path.startswith("api/") or path.startswith("favorites") or path.startswith("cart"):
-        return "Not Found", 404  # Убедитесь, что запросы к API не перенаправляются на React
+    if path in ["api", "favorites", "cart"]:
+        return "Not Found", 404
     full_path = os.path.join(app.static_folder, path)
     if path != "" and os.path.exists(full_path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/favicon.ico', methods=['HEAD'])
+def favicon():
+    return '', 204
+
+@app.route('/')
+def index():
+    return send_from_directory(app.static_folder, 'index.html')
