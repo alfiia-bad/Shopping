@@ -262,9 +262,9 @@ const App = () => {
                   return (
                     <div className="product-card" key={product.id}>
                       <button
-                        className={`favorite-button ${isFavorite ? "active" : ""}`}
+                        className={`favorite-button ${favorites.includes(product.id) ? "active" : ""}`}
                         onClick={() =>
-                          isFavorite
+                          favorites.includes(product.id)
                             ? removeFromFavorites(product.id)
                             : addToFavorites(product.id)
                         }
