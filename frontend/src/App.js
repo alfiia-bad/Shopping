@@ -41,7 +41,7 @@ const App = () => {
     // Загружаем избранное с сервера при загрузке страницы
     fetch(`${API_URL}/favorites`)
       .then((res) => res.json())
-      .then((data) => setFavorites(data))
+      .then((data) => setFavorites(data)) // Устанавливаем состояние избранного
       .catch((err) => console.error("Ошибка загрузки избранного:", err));
   }, []);
 

@@ -32,11 +32,15 @@ def init_db():
         ''')
         conn.execute('''
             CREATE TABLE IF NOT EXISTS favorites (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                product_id TEXT NOT NULL UNIQUE
+                product_id TEXT PRIMARY KEY
             )
         ''')        
 init_db()
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route('/cart', methods=['GET'])
 def get_cart():
@@ -90,39 +94,29 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host="0.0.0.0", port=port)
 
-@app.route('/api/favorites', methods=['GET'])   # Получение списка избранных товаров
+@app.route('/favorites', methods=['GET'])
 def get_favorites():
     conn = get_db_connection()
     favorites = conn.execute('SELECT product_id FROM favorites').fetchall()
     conn.close()
     return jsonify([row['product_id'] for row in favorites])
 
-@app.route('/api/favorites', methods=['POST'])   # Добавление товара в избранное
+@app.route('/favorites', methods=['POST'])
 def add_favorite():
     data = request.json
     product_id = data['product_id']
     conn = get_db_connection()
-    try:
-        conn.execute(
-            'INSERT INTO favorites (product_id) VALUES (?)',
-            (product_id,)
-        )
-        conn.commit()
-    except sqlite3.IntegrityError:
-        # уже есть в списке
-        pass
+    conn.execute('INSERT INTO favorites (product_id) VALUES (?)', (product_id,))
+    conn.commit()
     conn.close()
     return jsonify({'status': 'added'})
 
-@app.route('/api/favorites', methods=['DELETE'])   # Удаление товара из избранного
+@app.route('/favorites', methods=['DELETE'])
 def delete_favorite():
     data = request.json
     product_id = data['product_id']
     conn = get_db_connection()
-    conn.execute(
-        'DELETE FROM favorites WHERE product_id = ?',
-        (product_id,)
-    )
+    conn.execute('DELETE FROM favorites WHERE product_id = ?', (product_id,))
     conn.commit()
     conn.close()
     return jsonify({'status': 'deleted'})

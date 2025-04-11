@@ -643,14 +643,13 @@ body {
   padding: 6px;
   z-index: 2;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  opacity: 1;
+  opacity: 1; /* Убедимся, что кнопка всегда видима */
+  transition: color 0.2s ease; /* Плавный переход цвета */
 }
 
 .favorite-button .icon {
   color: #ccc; /* Серый цвет для нелайкнутого товара */
   font-size: 20px;
-  transition: color 0.2s ease;
 }
 
 .favorite-button .icon.active {
