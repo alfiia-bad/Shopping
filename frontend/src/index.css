@@ -634,7 +634,7 @@ body {
   }
 }
 
-.favorite-icon {
+.favorite-button {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -646,16 +646,16 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.favorite-icon:hover {
+.favorite-button:hover {
   background-color: rgba(255, 255, 255, 1);
 }
 
-.favorite-icon .icon {
+.favorite-button .icon {
   color: #ccc;
   font-size: 20px;
   transition: color 0.3s ease;
 }
 
-.favorite-icon.active .icon {
+.favorite-button.active .icon {
   color: #934fb1; /* Фиолетовый */
 }
