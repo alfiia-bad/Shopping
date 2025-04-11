@@ -142,9 +142,12 @@ const App = () => {
     setViewCart(tab === "cart");
     setViewFavorites(tab === "favorites");
     setViewNotifications(tab === "notifications");
-    window.scrollTo(0, 0);  // Прокрутка вверх при смене вкладки
   };
-  
+
+  useEffect(() => {
+    window.scrollTo(0, 0);  // Прокрутка вверх при смене вкладки
+  }, [viewCart, viewFavorites, viewNotifications]);
+
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
