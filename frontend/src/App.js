@@ -5,6 +5,7 @@ import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete } from "react-icons/md";
+import { AiFillHeart } from "react-icons/ai";
 
 const products = [
   { id: "1", name: "Бананы", image: "/images/banana.png" },
@@ -55,6 +56,16 @@ const App = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newCart),
     }).catch((err) => console.error("Ошибка сохранения:", err));
+  };
+
+  const updateFavorites = (newFavorites) => {
+    setFavorites(newFavorites);
+    const favoriteProducts = products.filter(p => newFavorites.includes(p.id));
+    fetch(`${API_URL}/favorites`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(favoriteProducts),
+    }).catch((err) => console.error("Ошибка сохранения избранного:", err));
   };
 
   const addToCart = (product) => {
@@ -141,9 +152,10 @@ const App = () => {
   };
 
   const toggleFavorite = (id) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    );
+    const updated = favorites.includes(id)
+      ? favorites.filter(favId => favId !== id)
+      : [...favorites, id];
+    updateFavorites(updated);
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
