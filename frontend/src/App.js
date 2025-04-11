@@ -138,10 +138,6 @@ const App = () => {
     setSearchTerm("");
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleTabChange = (tab) => {
     setViewCart(tab === "cart");
     setViewFavorites(tab === "favorites");
