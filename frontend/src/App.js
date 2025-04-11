@@ -142,58 +142,64 @@ const App = () => {
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  <nav className="bottom-nav">
-    <button
-      className={`nav-item ${
-    !viewCart && !viewNotifications && !viewFavorites ? "active" : ""
-      }`}
-      onClick={() => {
-    setViewCart(false);
-    setViewNotifications(false);
-    setViewFavorites(false);
-    window.scrollTo(0, 0); // Скролл вверх
-      }}
-    >
-      <FiShoppingBag className="icon" />
-      <span className="label">Товары</span>
-    </button>
-    <button
-      className={`nav-item ${viewFavorites ? "active" : ""}`}
-      onClick={() => {
-    setViewFavorites(true);
-    setViewCart(false);
-    setViewNotifications(false);
-    window.scrollTo(0, 0); // Скролл вверх
-      }}
-    >
-      <FiHeart className="icon" />
-      <span className="label">Избранное</span>
-    </button>
-    <button
-      className={`nav-item ${viewCart ? "active" : ""}`}
-      onClick={() => {
-    setViewCart(true);
-    setViewNotifications(false);
-    setViewFavorites(false);
-    window.scrollTo(0, 0); // Скролл вверх
-      }}
-    >
-      <LuShoppingCart className="icon" />
-      <span className="label">Корзина</span>
-    </button>
-    <button
-      className={`nav-item ${viewNotifications ? "active" : ""}`}
-      onClick={() => {
-    setViewCart(false);
-    setViewNotifications(true);
-    setViewFavorites(false);
-    window.scrollTo(0, 0); // Скролл вверх
-      }}
-    >
-      <FiBell className="icon" />
-      <span className="label">Уведомления</span>
-    </button>
-  </nav>
+  return (
+    <div className="app">
+      {/* Сюда потом можно вставить рендер товаров, корзины и прочее */}
+
+      <nav className="bottom-nav">
+        <button
+          className={`nav-item ${
+            !viewCart && !viewNotifications && !viewFavorites ? "active" : ""
+          }`}
+          onClick={() => {
+            setViewCart(false);
+            setViewNotifications(false);
+            setViewFavorites(false);
+            window.scrollTo(0, 0);
+          }}
+        >
+          <FiShoppingBag className="icon" />
+          <span className="label">Товары</span>
+        </button>
+        <button
+          className={`nav-item ${viewFavorites ? "active" : ""}`}
+          onClick={() => {
+            setViewFavorites(true);
+            setViewCart(false);
+            setViewNotifications(false);
+            window.scrollTo(0, 0);
+          }}
+        >
+          <FiHeart className="icon" />
+          <span className="label">Избранное</span>
+        </button>
+        <button
+          className={`nav-item ${viewCart ? "active" : ""}`}
+          onClick={() => {
+            setViewCart(true);
+            setViewNotifications(false);
+            setViewFavorites(false);
+            window.scrollTo(0, 0);
+          }}
+        >
+          <LuShoppingCart className="icon" />
+          <span className="label">Корзина</span>
+        </button>
+        <button
+          className={`nav-item ${viewNotifications ? "active" : ""}`}
+          onClick={() => {
+            setViewCart(false);
+            setViewNotifications(true);
+            setViewFavorites(false);
+            window.scrollTo(0, 0);
+          }}
+        >
+          <FiBell className="icon" />
+          <span className="label">Уведомления</span>
+        </button>
+      </nav>
+    </div>
+  );
 };
 
 export default App;
