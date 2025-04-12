@@ -64,6 +64,9 @@ const App = () => {
       const favoritesArray = favoritesParam.split(",");
       setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
       setIsFavoritesModalOpen(true); // Открываем модалку
+      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+      setViewCart(false);
+      setViewNotifications(false);
     }
   }, []);
 
@@ -138,7 +141,7 @@ const App = () => {
   const updateFavorites = async () => {
     const lines = favoritesInput.split("\n").map((line) => line.trim());
     const validFavorites = lines.filter((line) =>
-      products.some((product) => product.name === line)
+      products.some((product) => product.id === line) // Проверяем по идентификаторам
     );
 
     if (validFavorites.length === 0) {
@@ -150,7 +153,7 @@ const App = () => {
       const response = await fetch(`${API_URL}/favorites`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorites: validFavorites }),
+        body: JSON.stringify({ favorites: validFavorites }), // Отправляем идентификаторы
       });
 
       if (response.ok) {
