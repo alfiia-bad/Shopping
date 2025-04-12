@@ -205,7 +205,7 @@ const App = () => {
       const response = await fetch(`${API_URL}/favorites`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorites: newFavorites }),
+        body: JSON.stringify({ favorites: newFavorites }), // Отправляем идентификаторы
       });
 
       if (response.ok) {
@@ -360,41 +360,23 @@ const App = () => {
         ) : viewFavorites ? (
           <div className="favorites-view">
             {favorites.length > 0 ? (
-              products
-                .filter((product) => favorites.includes(product.id))
-                .map((product) => {
-                  const quantity = getQuantity(product.id); // Получаем текущее количество товара
-                  return (
-                    <div className="product-card" key={product.id}>
-                      <button
-                        className="favorite-button"
-                        onClick={() => removeFromFavorites(product.id)}
-                      >
-                        <FaHeart className="icon active" />
-                      </button>
-                      <div className="image-container">
-                        <img src={product.image} alt={product.name} />
-                      </div>
-                      <p className="product-name">{product.name}</p>
-                      <div className="quantity-controls">
-                        <button
-                          onClick={() => removeFromCart(product.id)}
-                          disabled={quantity === 0}
-                          className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
-                        >
-                          -
-                        </button>
-                        <span className="quantity">{quantity}</span>
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="qty-button plus"
-                        >
-                          +
-                        </button>
-                      </div>
+              favorites.map((productId) => {
+                const product = products.find((p) => p.id === productId);
+                return (
+                  <div className="product-card" key={productId}>
+                    <button
+                      className="favorite-button"
+                      onClick={() => removeFromFavorites(productId)}
+                    >
+                      <FaHeart className="icon active" />
+                    </button>
+                    <div className="image-container">
+                      <img src={product.image} alt={product.name} />
                     </div>
-                  );
-                })
+                    <p className="product-name">{product.name}</p>
+                  </div>
+                );
+              })
             ) : (
               <p className="no-results formatted-text">Нет избранных товаров</p>
             )}

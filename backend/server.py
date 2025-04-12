@@ -134,8 +134,8 @@ def update_favorites():
     conn = get_db_connection()
     try:
         conn.execute('DELETE FROM favorites')  # Удаляем старые записи
-        for product_name in favorites:
-            conn.execute('INSERT INTO favorites (product_id) VALUES (?)', (product_name,))
+        for product_id in favorites:
+            conn.execute('INSERT INTO favorites (product_id) VALUES (?)', (product_id,))
         conn.commit()
     finally:
         conn.close()
