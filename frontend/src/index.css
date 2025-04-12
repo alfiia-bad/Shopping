@@ -710,3 +710,34 @@ body {
   margin-top: 8px;
   margin-bottom: 16px;
 }
+
+.update-favorites {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.favorites-input {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.update-button {
+  background-color: #a56ab4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.update-button:hover {
+  background-color: #934fb1;
+}

@@ -25,6 +25,7 @@ const App = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationTimeout, setNotificationTimeout] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [favoritesInput, setFavoritesInput] = useState("");
 
   useEffect(() => {
     fetch(`${API_URL}/cart`)
@@ -192,6 +193,30 @@ const App = () => {
       }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
+    }
+  };
+
+  const updateFavorites = async () => {
+    const lines = favoritesInput.split("\n").map((line) => line.trim());
+    const header = "Список избранных товаров:";
+    const newFavorites = lines.filter((line) => line && line !== header);
+
+    try {
+      const response = await fetch(`${API_URL}/favorites`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorites: newFavorites }),
+      });
+
+      if (response.ok) {
+        const updatedFavorites = await response.json();
+        setFavorites(updatedFavorites); // Обновляем локальное состояние
+        setFavoritesInput(""); // Очищаем инпут
+      } else {
+        console.error("Ошибка обновления избранного");
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении избранного:", error);
     }
   };
 
@@ -373,6 +398,17 @@ const App = () => {
             ) : (
               <p className="no-results formatted-text">Нет избранных товаров</p>
             )}
+            <div className="update-favorites">
+              <textarea
+                className="favorites-input"
+                placeholder="Вставьте сообщение со списком избранных товаров..."
+                value={favoritesInput}
+                onChange={(e) => setFavoritesInput(e.target.value)}
+              />
+              <button className="update-button" onClick={updateFavorites}>
+                Обновить избранное
+              </button>
+            </div>
           </div>
         ) : viewNotifications ? (
           <div className="notifications-view">
