@@ -180,7 +180,7 @@ const App = () => {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message }), // Используем поле "cart" для передачи сообщения
+        body: JSON.stringify({ cart: message, include_header: false }), // Передаем include_header: false
       });
       const data = await response.json();
       if (!response.ok || !data.success) {

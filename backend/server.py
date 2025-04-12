@@ -66,10 +66,13 @@ def update_cart():
 def send_to_telegram():
     data = request.json
     cart = data.get('cart', '')
+    include_header = data.get('include_header', True)  # Новый параметр для управления заголовком
+
     if not cart:
         return jsonify({"success": False, "message": "Корзина пуста"}), 400
 
-    message = f"Список покупок:\n{cart}"
+    # Формируем сообщение с учетом параметра include_header
+    message = f"Список покупок:\n{cart}" if include_header else cart
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
     try:
