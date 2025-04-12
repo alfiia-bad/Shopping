@@ -27,6 +27,15 @@ const App = () => {
   const [notificationTimeout, setNotificationTimeout] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [favoritesInput, setFavoritesInput] = useState("");
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  const handleOpenExportModal = () => {
+    setIsExportModalOpen(true);
+  };
+
+  const handleCloseExportModal = () => {
+    setIsExportModalOpen(false);
+  };
 
   useEffect(() => {
     fetch(`${API_URL}/cart`)
@@ -280,13 +289,13 @@ const App = () => {
                 <>
                   <button
                     className="icon-button gray"
-                    onClick={sendFavoritesToTelegram} // Выгружаем избранное в Telegram
+                    onClick={handleOpenExportModal} // Открываем модалку
                   >
                     <RiTelegram2Fill className="icon" />
                   </button>
                   <button
                     className="icon-button purple"
-                    onClick={handleOpenFavoritesModal} // Открываем модалку
+                    onClick={handleOpenFavoritesModal} // Открываем модалку для обновления избранного
                     style={{ marginLeft: "12px" }} // Отступ между кнопками
                   >
                     <FiPlus className="icon" />
@@ -514,6 +523,31 @@ const App = () => {
               <button
                 className="modal-cancel"
                 onClick={handleCloseFavoritesModal} // Закрываем модалку
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isExportModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <p>Выгрузить текущие избранные товары в Telegram?</p>
+            <div className="modal-actions">
+              <button
+                className="modal-confirm"
+                onClick={() => {
+                  sendFavoritesToTelegram(); // Выгружаем избранное
+                  handleCloseExportModal(); // Закрываем модалку
+                }}
+              >
+                Выгрузить
+              </button>
+              <button
+                className="modal-cancel"
+                onClick={handleCloseExportModal} // Закрываем модалку
               >
                 Отмена
               </button>
