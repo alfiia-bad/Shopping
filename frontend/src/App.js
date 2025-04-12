@@ -268,6 +268,9 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     setViewFavorites(true); // Переключаемся на вкладку "Избранное"
     setViewCart(false);
     setViewNotifications(false);
+
+    // Убираем параметры из URL
+    window.history.replaceState(null, "", window.location.origin);
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -308,7 +311,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
               {viewFavorites && (
                 <>
                   <button
-                    className="icon-button gray"
+                    className="icon-button purple" // Заменяем gray на purple
                     onClick={handleOpenExportModal} // Открываем модалку
                   >
                     <RiTelegram2Fill className="icon" />
@@ -527,7 +530,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       {isFavoritesModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
-            {/* Заголовок с обновлённым стилем */}
+{/* Заголовок с обновлённым стилем */}
             <h3 className="modal-title">
               Загрузка идентификаторов товара. Избранное будет безвозвратно обновлено. Уверены?
             </h3>
@@ -546,7 +549,8 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   setViewFavorites(true); // Переключаемся на вкладку "Избранное"
                   setViewCart(false);
                   setViewNotifications(false);
-                }}
+                  handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
+}}
               >
                 Обновить
               </button>
