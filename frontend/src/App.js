@@ -64,7 +64,7 @@ const App = () => {
       const favoritesArray = favoritesParam.split(",");
       setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
       setIsFavoritesModalOpen(true); // Открываем модалку
-      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+setViewFavorites(true); // Переключаемся на вкладку "Избранное"
       setViewCart(false);
       setViewNotifications(false);
     }
@@ -233,17 +233,17 @@ const App = () => {
         return product ? `${index + 1}. ${product.name}` : null;
       })
       .filter(Boolean) // Убираем null, если товар не найден
-      .join("\n");
+      .join("<br>"); // Используем HTML-тег <br> для переноса строк
 
     // Формируем ссылку на сайт с модальным окном
     const siteUrl = `${window.location.origin}?favorites=${favorites.join(",")}`;
-    const message = `Список избранных товаров:\n${messageBody}\n\n[Загрузить избранное на сайт (действие безвозвратно)](${siteUrl})`;
+    const message = `Список избранных товаров:<br>${messageBody}<br><br><a href="${siteUrl}">Загрузить избранное на сайт</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message, parse_mode: "Markdown" }), // Используем Markdown для скрытой ссылки
+        body: JSON.stringify({ cart: message, parse_mode: "HTML" }), // Используем HTML для форматирования
       });
 
       if (!response.ok) {
