@@ -233,11 +233,11 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
         return product ? `${index + 1}. ${product.name}` : null;
       })
       .filter(Boolean) // Убираем null, если товар не найден
-      .join("<br>"); // Используем HTML-тег <br> для переноса строк
+      .join("\n"); // Используем \n для переноса строк
 
     // Формируем ссылку на сайт с модальным окном
     const siteUrl = `${window.location.origin}?favorites=${favorites.join(",")}`;
-    const message = `Список избранных товаров:<br>${messageBody}<br><br><a href="${siteUrl}">Загрузить избранное на сайт</a>`;
+    const message = `Список избранных товаров:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить избранное на сайт</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
