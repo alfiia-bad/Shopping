@@ -56,6 +56,17 @@ const App = () => {
       .catch((err) => console.error("Ошибка загрузки избранного:", err));
   }, []);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const favoritesParam = urlParams.get("favorites");
+
+    if (favoritesParam) {
+      const favoritesArray = favoritesParam.split(",");
+      setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
+      setIsFavoritesModalOpen(true); // Открываем модалку
+    }
+  }, []);
+
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
@@ -124,6 +135,36 @@ const App = () => {
     }
   };  
 
+  const updateFavorites = async () => {
+    const lines = favoritesInput.split("\n").map((line) => line.trim());
+    const validFavorites = lines.filter((line) =>
+      products.some((product) => product.name === line)
+    );
+
+    if (validFavorites.length === 0) {
+      console.error("Некорректные данные: ни один из товаров не найден.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/favorites`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorites: validFavorites }),
+      });
+
+      if (response.ok) {
+        const updatedFavorites = await response.json();
+        setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
+        setFavoritesInput(""); // Очищаем инпут
+      } else {
+        console.error("Ошибка обновления избранного");
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении избранного:", error);
+    }
+  };
+
   const handleCloseNotification = () => {
     setShowNotification(false);
     if (notificationTimeout) {
@@ -182,63 +223,36 @@ const App = () => {
   const sendFavoritesToTelegram = async () => {
     if (favorites.length === 0) return;
 
-    const message = `Список избранных товаров:\n${favorites.join("\n")}`;
+    // Формируем список товаров с названиями
+    const messageBody = favorites
+      .map((productId, index) => {
+        const product = products.find((p) => p.id === productId);
+        return product ? `${index + 1}. ${product.name}` : null;
+      })
+      .filter(Boolean) // Убираем null, если товар не найден
+      .join("\n");
+
+    // Формируем ссылку на сайт с модальным окном
+    const siteUrl = `${window.location.origin}?favorites=${favorites.join(",")}`;
+    const message = `Список избранных товаров:\n${messageBody}\n\n[Загрузить избранное на сайт (действие безвозвратно)](${siteUrl})`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message, include_header: false }), // Передаем сообщение с идентификаторами
+        body: JSON.stringify({ cart: message, parse_mode: "Markdown" }), // Используем Markdown для ссылки
       });
-      const data = await response.json();
-      if (!response.ok || !data.success) {
+
+      if (!response.ok) {
         console.error("Ошибка отправки в Telegram");
       } else {
+        console.log("Избранное успешно отправлено в Telegram");
         setShowNotification(true);
         const timeout = setTimeout(() => setShowNotification(false), 5000);
         setNotificationTimeout(timeout);
       }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
-    }
-  };
-
-  const updateFavorites = async () => {
-    const lines = favoritesInput.split("\n").map((line) => line.trim());
-    const header = "Список избранных товаров:";
-    const newFavorites = lines.filter((line) => line && line !== header);
-
-    // Фильтруем только существующие идентификаторы
-    const validFavorites = newFavorites.filter((id) =>
-      products.some((product) => product.id === id)
-    );
-
-    if (validFavorites.length === 0) {
-      console.error("Некорректные данные: ни один из идентификаторов не найден.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/favorites`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorites: validFavorites }), // Отправляем только валидные идентификаторы
-      });
-
-      if (response.ok) {
-        const updatedFavorites = await response.json();
-        setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
-        setFavoritesInput(""); // Очищаем инпут
-
-        // Принудительное обновление состояния для Safari
-        setTimeout(() => {
-          setFavorites([...updatedFavorites.favorites]);
-        }, 0);
-      } else {
-        console.error("Ошибка обновления избранного");
-      }
-    } catch (error) {
-      console.error("Ошибка при обновлении избранного:", error);
     }
   };
 
