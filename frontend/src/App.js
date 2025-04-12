@@ -274,7 +274,7 @@ const App = () => {
               {viewFavorites && (
                 <button
                   className="icon-button purple"
-                  onClick={handleOpenFavoritesModal}
+                  onClick={handleOpenFavoritesModal} // Открываем модалку
                 >
                   <FiPlus className="icon" />
                 </button>
@@ -506,15 +506,15 @@ const App = () => {
               <button
                 className="modal-confirm"
                 onClick={() => {
-                  updateFavorites();
-                  handleCloseFavoritesModal();
+                  updateFavorites(); // Обновляем избранное
+                  handleCloseFavoritesModal(); // Закрываем модалку
                 }}
               >
                 Обновить
               </button>
               <button
                 className="modal-cancel"
-                onClick={handleCloseFavoritesModal}
+                onClick={handleCloseFavoritesModal} // Закрываем модалку
               >
                 Отмена
               </button>
