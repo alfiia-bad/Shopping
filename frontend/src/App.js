@@ -28,6 +28,7 @@ const App = () => {
   const [favorites, setFavorites] = useState([]);
   const [favoritesInput, setFavoritesInput] = useState("");
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [showBadge, setShowBadge] = useState(false); // Состояние для бейджа
 
   const handleOpenExportModal = () => {
     setIsExportModalOpen(true);
@@ -143,6 +144,15 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     const validFavorites = lines.filter((line) =>
       products.some((product) => product.id === line) // Проверяем по идентификаторам
     );
+
+    const invalidFavorites = lines.filter(
+      (line) => !products.some((product) => product.id === line)
+    );
+
+    if (invalidFavorites.length > 0) {
+      setShowBadge(true); // Показываем бейдж
+      setTimeout(() => setShowBadge(false), 5000); // Скрываем бейдж через 5 секунд
+    }
 
     if (validFavorites.length === 0) {
       console.error("Некорректные данные: ни один из товаров не найден.");
@@ -458,7 +468,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                 );
               })
             ) : (
-              <p className="no-results formatted-text">Нет избранных товаров</p>
+              <p className="cart-empty">Нет избранных товаров</p>
             )}
           </div>
         ) : viewNotifications ? (
@@ -540,6 +550,11 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
               value={favoritesInput}
               onChange={(e) => setFavoritesInput(e.target.value)}
             />
+            {showBadge && (
+              <div className="badge">
+                Некоторые товары не найдены
+              </div>
+            )}
             <div className="modal-actions">
               <button
                 className="modal-confirm"
