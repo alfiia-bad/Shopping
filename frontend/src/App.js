@@ -189,9 +189,10 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   const sendToTelegram = async () => {
     if (cart.length === 0) return;
 
-    const message = cart
-      .map((item) => `- ${item.name} x${item.quantity}`)
-      .join("\n");
+    const message = `Список покупок:\n` + // Добавляем первую строку
+      cart
+        .map((item) => `- ${item.name} x${item.quantity}`)
+        .join("\n");
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
