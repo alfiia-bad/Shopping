@@ -243,7 +243,7 @@ const App = () => {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message, parse_mode: "Markdown" }), // Используем Markdown для ссылки
+        body: JSON.stringify({ cart: message, parse_mode: "Markdown" }), // Используем Markdown для скрытой ссылки
       });
 
       if (!response.ok) {
