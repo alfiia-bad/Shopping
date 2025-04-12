@@ -265,9 +265,9 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
 
   const handleCloseFavoritesModal = () => {
     setIsFavoritesModalOpen(false); // Закрываем модальное окно
-    setTimeout(() => {
-      window.location.href = `${window.location.origin}/`; // Перенаправляем на основной сайт
-    }, 0);
+    setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+    setViewCart(false);
+    setViewNotifications(false);
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -542,7 +542,10 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                 className="modal-confirm"
                 onClick={() => {
                   updateFavorites(); // Обновляем избранное
-                  handleCloseFavoritesModal(); // Закрываем модалку и перенаправляем
+                  setIsFavoritesModalOpen(false); // Закрываем модальное окно
+                  setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+                  setViewCart(false);
+                  setViewNotifications(false);
                 }}
               >
                 Обновить

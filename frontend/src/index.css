@@ -777,4 +777,14 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   font-weight: normal;
   margin-top: 8px;
   margin-bottom: 16px;
-  }
+}
+
+.no-results {
+  white-space: nowrap; /* Запрещаем перенос текста */
+  overflow: hidden; /* Обрезаем текст, если он выходит за пределы контейнера */
+  text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезан */
+  width: 100%; /* Устанавливаем ширину контейнера */
+  text-align: center; /* Выравниваем текст по центру */
+  font-size: 16px; /* Размер шрифта */
+  color: #333; /* Цвет текста */
+}
