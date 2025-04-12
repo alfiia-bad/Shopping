@@ -279,16 +279,17 @@ const App = () => {
               {viewFavorites && (
                 <>
                   <button
-                    className="icon-button purple"
-                    onClick={handleOpenFavoritesModal} // Открываем модалку
-                  >
-                    <FiPlus className="icon" />
-                  </button>
-                  <button
                     className="icon-button gray"
                     onClick={sendFavoritesToTelegram} // Выгружаем избранное в Telegram
                   >
                     <RiTelegram2Fill className="icon" />
+                  </button>
+                  <button
+                    className="icon-button purple"
+                    onClick={handleOpenFavoritesModal} // Открываем модалку
+                    style={{ marginLeft: "12px" }} // Отступ между кнопками
+                  >
+                    <FiPlus className="icon" />
                   </button>
                 </>
               )}
@@ -433,10 +434,6 @@ const App = () => {
             <button className="send-button" onClick={sendUpdateRequest}>
               <RiTelegram2Fill className="telegram-icon" />
               Запросить обновление
-            </button>
-            <button className="send-button" onClick={sendFavoritesToTelegram}>
-              <RiTelegram2Fill className="telegram-icon" />
-              Выгрузить избранное
             </button>
           </div>
         ) : (
