@@ -220,6 +220,11 @@ const App = () => {
         const updatedFavorites = await response.json();
         setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
         setFavoritesInput(""); // Очищаем инпут
+
+        // Принудительное обновление состояния для Safari
+        setTimeout(() => {
+          setFavorites([...updatedFavorites.favorites]);
+        }, 0);
       } else {
         console.error("Ошибка обновления избранного");
       }
@@ -411,17 +416,6 @@ const App = () => {
             ) : (
               <p className="no-results formatted-text">Нет избранных товаров</p>
             )}
-            <div className="update-favorites">
-              <textarea
-                className="favorites-input"
-                placeholder="Вставьте сообщение со списком избранных товаров..."
-                value={favoritesInput}
-                onChange={(e) => setFavoritesInput(e.target.value)}
-              />
-              <button className="update-button" onClick={updateFavorites}>
-                Обновить избранное
-              </button>
-            </div>
           </div>
         ) : viewNotifications ? (
           <div className="notifications-view">
