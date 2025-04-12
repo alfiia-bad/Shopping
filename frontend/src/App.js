@@ -252,7 +252,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
         console.log("Избранное успешно отправлено в Telegram");
         setShowNotification(true);
         const timeout = setTimeout(() => setShowNotification(false), 5000);
-        setNotificationTimeout(timeout);
+    setNotificationTimeout(timeout);
       }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
@@ -264,7 +264,10 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   };
 
   const handleCloseFavoritesModal = () => {
-    setIsFavoritesModalOpen(false);
+    setIsFavoritesModalOpen(false); // Закрываем модальное окно
+    setTimeout(() => {
+      window.location.href = `${window.location.origin}/`; // Перенаправляем на основной сайт
+    }, 0);
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -310,16 +313,16 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   >
                     <RiTelegram2Fill className="icon" />
                   </button>
-                  {/* Условие для скрытия кнопки */}
+{/* Условие для скрытия кнопки */}
                   {false && (
-                    <button
-                      className="icon-button purple"
-                      onClick={handleOpenFavoritesModal} // Открываем модалку для обновления избранного
-                      style={{ marginLeft: "12px" }} // Отступ между кнопками
-                    >
-                      <FiPlus className="icon" />
-                    </button>
-                  )}
+                  <button
+                    className="icon-button purple"
+                    onClick={handleOpenFavoritesModal} // Открываем модалку для обновления избранного
+                    style={{ marginLeft: "12px" }} // Отступ между кнопками
+                  >
+                    <FiPlus className="icon" />
+                  </button>
+)}
                 </>
               )}
               {viewCart && (
@@ -524,13 +527,13 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       {isFavoritesModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
-            {/* Добавляем заголовок */}
+            {/* Заголовок с обновлённым стилем */}
             <h3 className="modal-title">
               Загрузка идентификаторов товара. Избранное будет безвозвратно обновлено. Уверены?
             </h3>
             <textarea
               className="favorites-input"
-              placeholder="Вставьте идентификаторы избранных товаров..." // Обновляем текст плейсхолдера
+              placeholder="Вставьте идентификаторы избранных товаров..."
               value={favoritesInput}
               onChange={(e) => setFavoritesInput(e.target.value)}
             />
@@ -539,7 +542,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                 className="modal-confirm"
                 onClick={() => {
                   updateFavorites(); // Обновляем избранное
-                  handleCloseFavoritesModal(); // Закрываем модалку
+                  handleCloseFavoritesModal(); // Закрываем модалку и перенаправляем
                 }}
               >
                 Обновить
