@@ -29,6 +29,7 @@ const App = () => {
   const [favoritesInput, setFavoritesInput] = useState("");
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [showBadge, setShowBadge] = useState(false); // Состояние для бейджа
+const [showInvalidFavoritesBadge, setShowInvalidFavoritesBadge] = useState(false);
 
   const handleOpenExportModal = () => {
     setIsExportModalOpen(true);
@@ -142,7 +143,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   const updateFavorites = async () => {
     const lines = favoritesInput.split("\n").map((line) => line.trim());
     const validFavorites = lines.filter((line) =>
-      products.some((product) => product.id === line) // Проверяем по идентификаторам
+      products.some((product) => product.id === line)
     );
 
     const invalidFavorites = lines.filter(
@@ -150,8 +151,8 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     );
 
     if (invalidFavorites.length > 0) {
-      setShowBadge(true); // Показываем бейдж
-      setTimeout(() => setShowBadge(false), 5000); // Скрываем бейдж через 5 секунд
+      setShowInvalidFavoritesBadge(true); // Показываем бейдж
+      setTimeout(() => setShowInvalidFavoritesBadge(false), 5000); // Скрываем бейдж через 5 секунд
     }
 
     if (validFavorites.length === 0) {
@@ -163,7 +164,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       const response = await fetch(`${API_URL}/favorites`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorites: validFavorites }), // Отправляем идентификаторы
+        body: JSON.stringify({ favorites: validFavorites }),
       });
 
       if (response.ok) {
@@ -609,6 +610,18 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
         <div className="telegram-notification">
           Отправлено в Telegram!
           <button className="close-notification" onClick={handleCloseNotification}>
+            <MdClose className="icon" />
+          </button>
+        </div>
+      )}
+
+      {showInvalidFavoritesBadge && (
+        <div className="telegram-notification">
+          Некоторые товары не найдены!
+          <button
+            className="close-notification"
+            onClick={() => setShowInvalidFavoritesBadge(false)}
+          >
             <MdClose className="icon" />
           </button>
         </div>
