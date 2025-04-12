@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
-import { FiShoppingBag, FiHeart, FiBell, FiSearch } from "react-icons/fi";
-import { FaHeart, FaRegHeart } from "react-icons/fa"; 
+import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa"; 
 import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
@@ -22,6 +22,7 @@ const App = () => {
   const [viewFavorites, setViewFavorites] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationTimeout, setNotificationTimeout] = useState(null);
   const [favorites, setFavorites] = useState([]);
@@ -227,6 +228,14 @@ const App = () => {
     }
   };
 
+  const handleOpenFavoritesModal = () => {
+    setIsFavoritesModalOpen(true);
+  };
+
+  const handleCloseFavoritesModal = () => {
+    setIsFavoritesModalOpen(false);
+  };
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSearchChange = (e) => {
@@ -262,6 +271,14 @@ const App = () => {
               </h2>
             </div>
             <div className="header-right">
+              {viewFavorites && (
+                <button
+                  className="icon-button purple"
+                  onClick={handleOpenFavoritesModal}
+                >
+                  <FiPlus className="icon" />
+                </button>
+              )}
               {viewCart && (
                 <button
                   className="icon-button"
@@ -468,6 +485,36 @@ const App = () => {
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="modal-cancel"
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isFavoritesModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <textarea
+              className="favorites-input"
+              placeholder="Вставьте сообщение со списком избранных товаров..."
+              value={favoritesInput}
+              onChange={(e) => setFavoritesInput(e.target.value)}
+            />
+            <div className="modal-actions">
+              <button
+                className="modal-confirm"
+                onClick={() => {
+                  updateFavorites();
+                  handleCloseFavoritesModal();
+                }}
+              >
+                Обновить
+              </button>
+              <button
+                className="modal-cancel"
+                onClick={handleCloseFavoritesModal}
               >
                 Отмена
               </button>
