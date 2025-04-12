@@ -665,29 +665,43 @@ body {
 /* Сетка для карточек товаров */
 .favorites-view {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Адаптивные колонки */
-  gap: 16px; /* Расстояние между карточками */
-  padding: 16px;
-  justify-items: stretch; /* Растягиваем карточки */
+  grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке по умолчанию */
+  gap: 20px; /* Расстояние между карточками */
+  justify-items: stretch;
+  padding: 0 0px;
+  width: 100%;
 }
 
 /* Адаптивность для мобильных устройств */
-@media screen and (max-width: 500px) {
+@media (max-width: 600px) {
   .favorites-view {
-    grid-template-columns: repeat(2, 1fr); /* Две карточки в строке */
+    grid-template-columns: 1fr; /* 1 карточка в строке на маленьких экранах */
+    gap: 16px;
+  }
+
+  .favorites-view > .product-card {
+    width: auto; /* Автоматическая ширина для мобильных устройств */
+    padding: 16px; /* Уменьшаем отступы */
+  }
+}
+
+/* Средний экран (например, для iPhone 13 mini) */
+@media (max-width: 768px) {
+  .favorites-view {
+    grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке на средних экранах */
+  }
+}
+
+/* Для больших экранов (десктоп) - количество карточек в строке увеличится */
+@media (min-width: 768px) {
+  .favorites-view {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 }
 
 /* Если осталась одна карточка, растягиваем её на всю ширину */
 .favorites-view > .product-card:only-child {
   grid-column: span 2; /* Растягиваем карточку на всю ширину */
-}
-
-/* Адаптивность для мобильных устройств */
-@media screen and (max-width: 500px) {
-  .favorites-view {
-    grid-template-columns: repeat(2, 1fr); /* Две карточки в строке */
-  }
 }
 
 .formatted-text {
