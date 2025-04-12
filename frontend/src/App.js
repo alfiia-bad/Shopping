@@ -453,6 +453,8 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   return null;
                 }
 
+                const quantity = getQuantity(product.id); // Получаем текущее количество товара
+
                 return (
                   <div className="product-card" key={productId}>
                     <button
@@ -465,6 +467,22 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                       <img src={product.image} alt={product.name} />
                     </div>
                     <p className="product-name">{product.name}</p>
+                    <div className="quantity-controls">
+                      <button
+                        onClick={() => removeFromCart(product.id)}
+                        disabled={quantity === 0}
+                        className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
+                      >
+                        -
+                      </button>
+                      <span className="quantity">{quantity}</span>
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="qty-button plus"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 );
               })
@@ -561,11 +579,6 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   setViewCart(false);
                   setViewNotifications(false);
                   handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
-            {showBadge && (
-              <div className="badge">
-                Некоторые товары не найдены
-              </div>
-            )}
 }}
               >
                 Обновить
@@ -617,7 +630,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
 
       {showInvalidFavoritesBadge && (
         <div className="telegram-notification">
-          Некоторые товары не найдены!
+          Некоторые товары не найдены и не загружены!
           <button
             className="close-notification"
             onClick={() => setShowInvalidFavoritesBadge(false)}
