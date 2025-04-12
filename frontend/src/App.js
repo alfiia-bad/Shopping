@@ -232,18 +232,18 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
         const product = products.find((p) => p.id === productId);
         return product ? `${index + 1}. ${product.name}` : null;
       })
-      .filter(Boolean) // Убираем null, если товар не найден
+      .filter(Boolean)
       .join("\n"); // Используем \n для переноса строк
 
     // Формируем ссылку на сайт с модальным окном
     const siteUrl = `${window.location.origin}?favorites=${favorites.join(",")}`;
-    const message = `Список избранных товаров:\n${messageBody}\n\nЗагрузить избранное на сайт: <a href="${siteUrl}">нажмите здесь</a>`;
+    const message = `Список избранных товаров:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить избранное на сайт</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message, parse_mode: "HTML" }), // Используем HTML для форматирования
+        body: JSON.stringify({ cart: message, parse_mode: "HTML" }), // Передаём HTML-разметку
       });
 
       if (!response.ok) {
@@ -310,13 +310,16 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   >
                     <RiTelegram2Fill className="icon" />
                   </button>
-                  <button
-                    className="icon-button purple"
-                    onClick={handleOpenFavoritesModal} // Открываем модалку для обновления избранного
-                    style={{ marginLeft: "12px" }} // Отступ между кнопками
-                  >
-                    <FiPlus className="icon" />
-                  </button>
+                  {/* Условие для скрытия кнопки */}
+                  {false && (
+                    <button
+                      className="icon-button purple"
+                      onClick={handleOpenFavoritesModal} // Открываем модалку для обновления избранного
+                      style={{ marginLeft: "12px" }} // Отступ между кнопками
+                    >
+                      <FiPlus className="icon" />
+                    </button>
+                  )}
                 </>
               )}
               {viewCart && (
@@ -521,9 +524,13 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       {isFavoritesModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
+            {/* Добавляем заголовок */}
+            <h3 className="modal-title">
+              Загрузка идентификаторов товара. Избранное будет безвозвратно обновлено. Уверены?
+            </h3>
             <textarea
               className="favorites-input"
-              placeholder="Вставьте сообщение со списком избранных товаров..."
+              placeholder="Вставьте идентификаторы избранных товаров..." // Обновляем текст плейсхолдера
               value={favoritesInput}
               onChange={(e) => setFavoritesInput(e.target.value)}
             />
