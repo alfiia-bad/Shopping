@@ -142,17 +142,13 @@ def update_favorites():
 
     return jsonify({"success": True, "favorites": favorites}), 200
 
-@app.after_request
-def set_response_headers(response):
-    response.headers["Content-Type"] = "application/json; charset=utf-8"
-    return response
-
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve_react(path):
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+def serve(path):
+    full_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(full_path):
         return send_from_directory(app.static_folder, path)
-    return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route('/favicon.ico', methods=['HEAD'])
 def favicon():

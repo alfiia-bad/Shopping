@@ -25,7 +25,7 @@ const App = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationTimeout, setNotificationTimeout] = useState(null);
   const [favorites, setFavorites] = useState([]);
-const [favoritesInput, setFavoritesInput] = useState("");
+  const [favoritesInput, setFavoritesInput] = useState("");
 
   useEffect(() => {
     fetch(`${API_URL}/cart`)
@@ -210,8 +210,8 @@ const [favoritesInput, setFavoritesInput] = useState("");
 
       if (response.ok) {
         const updatedFavorites = await response.json();
-        setFavorites(updatedFavorites.favorites.map((item) => decodeURIComponent(escape(item)))); // Декодируем Unicode
-    setFavoritesInput(""); // Очищаем инпут
+        setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
+        setFavoritesInput(""); // Очищаем инпут
       } else {
         console.error("Ошибка обновления избранного");
       }
@@ -365,18 +365,18 @@ const [favoritesInput, setFavoritesInput] = useState("");
                 .map((product) => {
                   const quantity = getQuantity(product.id); // Получаем текущее количество товара
                   return (
-                  <div className="product-card" key={product.id}>
-                    <button
-                      className="favorite-button"
-                      onClick={() => removeFromFavorites(product.id)}
-                    >
-                      <FaHeart className="icon active" />
-                    </button>
-                    <div className="image-container">
-                      <img src={product.image} alt={product.name} />
-                    </div>
-                    <p className="product-name">{product.name}</p>
-<div className="quantity-controls">
+                    <div className="product-card" key={product.id}>
+                      <button
+                        className="favorite-button"
+                        onClick={() => removeFromFavorites(product.id)}
+                      >
+                        <FaHeart className="icon active" />
+                      </button>
+                      <div className="image-container">
+                        <img src={product.image} alt={product.name} />
+                      </div>
+                      <p className="product-name">{product.name}</p>
+                      <div className="quantity-controls">
                         <button
                           onClick={() => removeFromCart(product.id)}
                           disabled={quantity === 0}
@@ -392,13 +392,13 @@ const [favoritesInput, setFavoritesInput] = useState("");
                           +
                         </button>
                       </div>
-                  </div>
-                );
+                    </div>
+                  );
                 })
             ) : (
               <p className="no-results formatted-text">Нет избранных товаров</p>
             )}
-<div className="update-favorites">
+            <div className="update-favorites">
               <textarea
                 className="favorites-input"
                 placeholder="Вставьте сообщение со списком избранных товаров..."
@@ -419,7 +419,7 @@ const [favoritesInput, setFavoritesInput] = useState("");
               <RiTelegram2Fill className="telegram-icon" />
               Запросить обновление
             </button>
-<button className="send-button" onClick={sendFavoritesToTelegram}>
+            <button className="send-button" onClick={sendFavoritesToTelegram}>
               <RiTelegram2Fill className="telegram-icon" />
               Выгрузить избранное
             </button>
