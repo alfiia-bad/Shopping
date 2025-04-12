@@ -237,7 +237,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
 
     // Формируем ссылку на сайт с модальным окном
     const siteUrl = `${window.location.origin}?favorites=${favorites.join(",")}`;
-    const message = `Список избранных товаров:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить избранное на сайт</a>`;
+    const message = `Список избранных товаров:\n${messageBody}\n\nЗагрузить избранное на сайт: <a href="${siteUrl}">нажмите здесь</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {

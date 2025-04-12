@@ -66,17 +66,21 @@ def update_cart():
 def send_to_telegram():
     data = request.json
     cart = data.get('cart', '')
-    include_header = data.get('include_header', True)  # Новый параметр для управления заголовком
 
     if not cart:
         return jsonify({"success": False, "message": "Корзина пуста"}), 400
 
-    # Формируем сообщение с учетом параметра include_header
-    message = f"Список покупок:\n{cart}" if include_header else cart
+    # Формируем сообщение
+    message = cart
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
     try:
-        response = requests.post(url, data={'chat_id': CHAT_ID, 'text': message})
+        # Отправляем сообщение в Telegram с parse_mode: "HTML"
+        response = requests.post(url, data={
+            'chat_id': CHAT_ID,
+            'text': message,
+            'parse_mode': 'HTML'  # Указываем HTML для форматирования
+        })
         if response.status_code == 200:
             return jsonify({"success": True, "message": "Сообщение отправлено"})
         else:
