@@ -142,6 +142,11 @@ def update_favorites():
 
     return jsonify({"success": True, "favorites": favorites}), 200
 
+@app.after_request
+def set_response_headers(response):
+    response.headers["Content-Type"] = "application/json; charset=utf-8"
+    return response
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
