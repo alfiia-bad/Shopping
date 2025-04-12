@@ -168,6 +168,33 @@ const App = () => {
     }
   };
 
+  const sendFavoritesToTelegram = async () => {
+    if (favorites.length === 0) return;
+
+    const message = `Список избранных товаров:\n${products
+      .filter((product) => favorites.includes(product.id))
+      .map((product) => product.name)
+      .join("\n")}`;
+
+    try {
+      const response = await fetch(`${API_URL}/send-to-telegram`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart: message }), // Используем поле "cart" для передачи сообщения
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        console.error("Ошибка отправки в Telegram");
+      } else {
+        setShowNotification(true);
+        const timeout = setTimeout(() => setShowNotification(false), 5000);
+        setNotificationTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Ошибка при отправке запроса:", error);
+    }
+  };
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSearchChange = (e) => {
@@ -355,6 +382,10 @@ const App = () => {
             <button className="send-button" onClick={sendUpdateRequest}>
               <RiTelegram2Fill className="telegram-icon" />
               Запросить обновление
+            </button>
+            <button className="send-button" onClick={sendFavoritesToTelegram}>
+              <RiTelegram2Fill className="telegram-icon" />
+              Выгрузить избранное
             </button>
           </div>
         ) : (
