@@ -32,7 +32,7 @@ def init_db():
         ''')
         conn.execute('''
             CREATE TABLE IF NOT EXISTS favorites (
-                                product_id TEXT PRIMARY KEY
+                product_id TEXT PRIMARY KEY
             )
         ''')        
 init_db()
@@ -140,7 +140,7 @@ def update_favorites():
     finally:
         conn.close()
 
-    return jsonify(favorites), 200
+    return jsonify({"success": True, "favorites": favorites}), 200
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

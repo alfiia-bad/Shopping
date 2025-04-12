@@ -203,14 +203,14 @@ const App = () => {
 
     try {
       const response = await fetch(`${API_URL}/favorites`, {
-        method: "POST",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ favorites: newFavorites }),
       });
 
       if (response.ok) {
         const updatedFavorites = await response.json();
-        setFavorites(updatedFavorites); // Обновляем локальное состояние
+        setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
         setFavoritesInput(""); // Очищаем инпут
       } else {
         console.error("Ошибка обновления избранного");
