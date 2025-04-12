@@ -277,12 +277,20 @@ const App = () => {
             </div>
             <div className="header-right">
               {viewFavorites && (
-                <button
-                  className="icon-button purple"
-                  onClick={handleOpenFavoritesModal} // Открываем модалку
-                >
-                  <FiPlus className="icon" />
-                </button>
+                <>
+                  <button
+                    className="icon-button purple"
+                    onClick={handleOpenFavoritesModal} // Открываем модалку
+                  >
+                    <FiPlus className="icon" />
+                  </button>
+                  <button
+                    className="icon-button gray"
+                    onClick={sendFavoritesToTelegram} // Выгружаем избранное в Telegram
+                  >
+                    <RiTelegram2Fill className="icon" />
+                  </button>
+                </>
               )}
               {viewCart && (
                 <button

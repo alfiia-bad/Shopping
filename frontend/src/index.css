@@ -169,6 +169,26 @@ body {
   background-color: #934fb1; /* Более темный фиолетовый при наведении */
 }
 
+/* Кнопка с иконкой Telegram */
+.icon-button.gray {
+  background-color: #ccc; /* Серый фон */
+  color: white; /* Белая иконка */
+  border: none;
+  padding: 6px;
+  border-radius: 8px; /* Квадратная обертка с закругленными углами */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; /* Размер кнопки */
+  height: 32px; /* Размер кнопки */
+  transition: background-color 0.2s ease;
+}
+
+.icon-button.gray:hover {
+  background-color: #bbb; /* Более тёмный серый при наведении */
+}
+
 /* Main content */
 .main-content {
   flex: 1;
@@ -698,7 +718,7 @@ opacity: 1; /* Убедимся, что кнопка всегда видима *
 }
 
 .favorite-button .icon.active {
-  color: #934fb1; /* Фиолетовый цвет для лайкнутого товара */
+  color: #A56AB4; /* Фиолетовый цвет для лайкнутого товара */
 }
 
 /* Сетка для карточек товаров */
