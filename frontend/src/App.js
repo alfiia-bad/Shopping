@@ -198,11 +198,21 @@ const App = () => {
     const header = "Список избранных товаров:";
     const newFavorites = lines.filter((line) => line && line !== header);
 
+    // Фильтруем только существующие идентификаторы
+    const validFavorites = newFavorites.filter((id) =>
+      products.some((product) => product.id === id)
+    );
+
+    if (validFavorites.length === 0) {
+      console.error("Некорректные данные: ни один из идентификаторов не найден.");
+      return;
+    }
+
     try {
       const response = await fetch(`${API_URL}/favorites`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorites: newFavorites }), // Отправляем идентификаторы
+        body: JSON.stringify({ favorites: validFavorites }), // Отправляем только валидные идентификаторы
       });
 
       if (response.ok) {
@@ -359,6 +369,13 @@ const App = () => {
             {favorites.length > 0 ? (
               favorites.map((productId) => {
                 const product = products.find((p) => p.id === productId);
+
+                // Если товар не найден, пропускаем его
+                if (!product) {
+                  console.warn(`Товар с идентификатором ${productId} не найден.`);
+                  return null;
+                }
+
                 return (
                   <div className="product-card" key={productId}>
                     <button
