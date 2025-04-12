@@ -172,16 +172,13 @@ const App = () => {
   const sendFavoritesToTelegram = async () => {
     if (favorites.length === 0) return;
 
-    const message = `Список избранных товаров:\n${products
-      .filter((product) => favorites.includes(product.id))
-      .map((product) => product.name)
-      .join("\n")}`;
+    const message = `Список избранных товаров:\n${favorites.join("\n")}`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message, include_header: false }), // Передаем include_header: false
+        body: JSON.stringify({ cart: message, include_header: false }), // Передаем сообщение с идентификаторами
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
