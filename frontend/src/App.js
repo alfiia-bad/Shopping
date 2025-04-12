@@ -550,11 +550,6 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
               value={favoritesInput}
               onChange={(e) => setFavoritesInput(e.target.value)}
             />
-            {showBadge && (
-              <div className="badge">
-                Некоторые товары не найдены
-              </div>
-            )}
             <div className="modal-actions">
               <button
                 className="modal-confirm"
@@ -565,6 +560,11 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   setViewCart(false);
                   setViewNotifications(false);
                   handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
+            {showBadge && (
+              <div className="badge">
+                Некоторые товары не найдены
+              </div>
+            )}
 }}
               >
                 Обновить
