@@ -313,14 +313,10 @@ const App = () => {
                 .map((product) => (
                   <div className="product-card" key={product.id}>
                     <button
-                      className={`favorite-button ${favorites.includes(product.id) ? "active" : ""}`}
-                      onClick={() =>
-                        favorites.includes(product.id)
-                          ? removeFromFavorites(product.id)
-                          : addToFavorites(product.id)
-                      }
+                      className="favorite-button"
+                      onClick={() => removeFromFavorites(product.id)}
                     >
-                      <FiHeart className="icon" />
+                      <FaHeart className="icon active" /> {/* Заполненный фиолетовый лайк */}
                     </button>
                     <div className="image-container">
                       <img src={product.image} alt={product.name} />
@@ -329,7 +325,7 @@ const App = () => {
                   </div>
                 ))
             ) : (
-              <p className="no-results">Нет избранных товаров</p>
+              <p className="no-results formatted-text">Нет избранных товаров</p>
             )}
           </div>
         ) : viewNotifications ? (

@@ -668,6 +668,7 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Адаптивные колонки */
   gap: 16px; /* Расстояние между карточками */
   padding: 16px;
+  justify-items: stretch; /* Растягиваем карточки */
 }
 
 /* Адаптивность для мобильных устройств */
@@ -675,4 +676,23 @@ body {
   .favorites-view {
     grid-template-columns: repeat(2, 1fr); /* Две карточки в строке */
   }
+}
+
+/* Если осталась одна карточка, растягиваем её на всю ширину */
+.favorites-view > .product-card:only-child {
+  grid-column: span 2; /* Растягиваем карточку на всю ширину */
+}
+
+/* Адаптивность для мобильных устройств */
+@media screen and (max-width: 500px) {
+  .favorites-view {
+    grid-template-columns: repeat(2, 1fr); /* Две карточки в строке */
+  }
+}
+
+.formatted-text {
+  font-size: 16px;
+  font-weight: normal;
+  margin-top: 8px;
+  margin-bottom: 16px;
 }
