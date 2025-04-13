@@ -37,6 +37,17 @@ def init_db():
         ''')        
 init_db()
 
+def update_database_schema():
+    with sqlite3.connect(DB_PATH) as conn:
+        # Проверяем, есть ли колонка 'comment' в таблице 'cart'
+        cursor = conn.execute("PRAGMA table_info(cart);")
+        columns = [row[1] for row in cursor.fetchall()]
+        if "comment" not in columns:
+            conn.execute("ALTER TABLE cart ADD COLUMN comment TEXT;")
+            print("Колонка 'comment' успешно добавлена в таблицу 'cart'.")
+
+update_database_schema()
+
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -178,5 +189,11 @@ def favicon():
     return '', 204
 
 if __name__ == '__main__':
+    # Обновляем схему базы данных перед запуском приложения
+    update_database_schema()
+
+    # Получаем порт из переменных окружения или используем 5000 по умолчанию
     port = int(os.environ.get("PORT", 5000))
+
+    # Запускаем приложение
     app.run(debug=True, host="0.0.0.0", port=port)
