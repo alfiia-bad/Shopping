@@ -28,7 +28,6 @@ const App = () => {
   const [favorites, setFavorites] = useState([]);
   const [favoritesInput, setFavoritesInput] = useState("");
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [showBadge, setShowBadge] = useState(false); // Состояние для бейджа
 const [showInvalidFavoritesBadge, setShowInvalidFavoritesBadge] = useState(false);
 
   const handleOpenExportModal = () => {
