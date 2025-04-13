@@ -274,6 +274,13 @@ border: 1px solid #ddd;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
+.cart-item-header {
+  display: flex;
+  align-items: center; /* Выравнивание по вертикали */
+  justify-content: space-between; /* Распределение элементов по горизонтали */
+  gap: 10px; /* Расстояние между элементами */
+}
+
 /* Пустая корзина */
 .cart-empty {
   text-align: center;
@@ -815,9 +822,9 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 .edit-icon {
-  color: #f0f0f0;
   cursor: pointer;
-  margin-right: 8px;
+  color: #f0f0f0; /* Цвет иконки */
+  margin-right: 8px; /* Отступ справа */
 }
 
 .comment-input {
