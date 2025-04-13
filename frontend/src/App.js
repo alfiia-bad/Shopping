@@ -302,7 +302,9 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   );
 
   const handleOpenCommentModal = (id) => {
+    const product = cart.find((item) => item.id === id); // Находим товар в корзине
     setCurrentProductId(id); // Устанавливаем текущий ID товара
+    setCurrentComment(product?.comment || ""); // Устанавливаем текущий комментарий (если есть)
     setIsCommentModalOpen(true); // Открываем модальное окно
   };
 
