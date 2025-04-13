@@ -308,21 +308,30 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
 
   const saveComment = async () => {
     try {
+      // Обновляем локальное состояние корзины
       const updatedCart = cart.map((item) =>
         item.id === currentProductId ? { ...item, comment: currentComment } : item
       );
-      setCart(updatedCart); // Обновляем локальное состояние
+      setCart(updatedCart);
 
+      // Отправляем запрос на сервер для сохранения комментария
       await fetch(`${API_URL}/cart/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: currentProductId, comment: currentComment }),
       });
 
-      setIsCommentModalOpen(false); // Закрываем модальное окно
+      // Закрываем модальное окно после успешного сохранения
+      setIsCommentModalOpen(false);
     } catch (error) {
       console.error("Ошибка при сохранении комментария:", error);
     }
+  };
+
+  const handleCancelComment = () => {
+    // Сбрасываем текущий комментарий и закрываем модальное окно
+    setCurrentComment("");
+    setIsCommentModalOpen(false);
   };
 
   return (
@@ -667,10 +676,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
               <button className="modal-confirm" onClick={saveComment}>
                 Сохранить
               </button>
-              <button
-                className="modal-cancel"
-                onClick={() => setIsCommentModalOpen(false)}
-              >
+              <button className="modal-cancel" onClick={handleCancelComment}>
                 Отмена
               </button>
             </div>

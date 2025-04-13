@@ -56,8 +56,8 @@ def get_db_connection():
 @app.route('/cart', methods=['GET'])
 def get_cart():
     with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT id, name, quantity FROM cart')
-        items = [{"id": row[0], "name": row[1], "quantity": row[2]} for row in cursor.fetchall()]
+        cursor = conn.execute('SELECT id, name, quantity, comment FROM cart')
+        items = [{"id": row[0], "name": row[1], "quantity": row[2], "comment": row[3]} for row in cursor.fetchall()]
     return jsonify(items)
 
 @app.route('/cart', methods=['POST'])
