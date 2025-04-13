@@ -14,7 +14,7 @@ app = Flask(
     static_url_path=""
 )
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
