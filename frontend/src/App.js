@@ -302,7 +302,8 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   );
 
   const handleOpenCommentModal = (id) => {
-    console.log(`Open comment modal for item with id: ${id}`);
+    setCurrentProductId(id); // Устанавливаем текущий ID товара
+    setIsCommentModalOpen(true); // Открываем модальное окно
   };
 
   const saveComment = async () => {
