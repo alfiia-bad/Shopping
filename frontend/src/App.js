@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
-import { FaHeart, FaPencil } from "react-icons/fa"; 
+import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
 import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
@@ -535,7 +535,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                 {cart.map((item) => (
                   <div className="cart-item" key={item.id}>
                     <div className="cart-item-header">
-                      <FaPencil
+                      <FaPencilAlt
                         className="edit-icon"
                         onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
                       />
