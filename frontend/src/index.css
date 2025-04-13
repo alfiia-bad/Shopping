@@ -497,9 +497,10 @@ align-items: center;
 
 /* Стили для заголовка модального окна */
 .modal-title {
-  font-weight: normal; /* Убираем жирность */
-  font-size: 16px; /* Устанавливаем размер шрифта */
-  margin-bottom: 12px; /* Добавляем отступ снизу */
+font-weight: normal; /* Убираем жирность */
+font-weight: normal; /* Убираем жирность */
+  font-size:616p /* Устанавливаем размер шрифта */x; /* Устанавливаем размер шрифта */
+  margin-bottom:212p /* Добавляем отступ снизу */x; /* Добавляем отступ снизу */
   color: #333; /* Цвет текста */
 }
 
@@ -514,9 +515,22 @@ align-items: center;
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 8px;
+  border-radius:  8px;
   cursor: pointer;
   font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.modal-confirm:hover {
+  background-color: #934fb1;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.modal-confirm:hover {
+  background-color: #934fb1;
+
+font-size: 16px;
   transition: background-color 0.2s ease;
 }
 
@@ -526,12 +540,23 @@ align-items: center;
 
 .modal-cancel {
   background-color: #ccc;
-color: black;
+  color: black;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+}
+
+.modal-cancel:hover {
+  background-color: #bbb;
+  transition: background-color 0.2s ease;
+}
+
+.modal-cancel:hover {
+  background-color: #bbb;
+
+transition: background-color 0.2s ease;
 }
 
 .modal-cancel:hover {
@@ -787,4 +812,20 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   text-align: center; /* Выравниваем текст по центру */
   font-size: 16px; /* Размер шрифта */
   color: #333; /* Цвет текста */
+}
+
+.edit-icon {
+  color: #f0f0f0;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.comment-input {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: none;
 }

@@ -62,6 +62,25 @@ def update_cart():
                          (item["id"], item["name"], item["quantity"]))
     return jsonify({"success": True})
 
+@app.route('/cart/comment', methods=['POST'])
+def add_comment_to_cart():
+    data = request.json
+    product_id = data.get('productId')
+    comment = data.get('comment')
+
+    if not product_id or not comment:
+        return jsonify({"success": False, "message": "productId и comment обязательны"}), 400
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute('SELECT id FROM cart WHERE id = ?', (product_id,))
+        product = cursor.fetchone()
+        if product:
+            conn.execute('UPDATE cart SET comment = ? WHERE id = ?', (comment, product_id))
+            conn.commit()
+            return jsonify({"success": True}), 200
+        else:
+            return jsonify({"success": False, "message": "Товар не найден"}), 404
+
 @app.route('/send-to-telegram', methods=['POST'])    
 def send_to_telegram():
     data = request.json

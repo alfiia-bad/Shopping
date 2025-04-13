@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
-import { FaHeart } from "react-icons/fa"; 
+import { FaHeart, FaPencil } from "react-icons/fa"; 
 import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
@@ -28,7 +28,10 @@ const App = () => {
   const [favorites, setFavorites] = useState([]);
   const [favoritesInput, setFavoritesInput] = useState("");
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-const [showInvalidFavoritesBadge, setShowInvalidFavoritesBadge] = useState(false);
+  const [showInvalidFavoritesBadge, setShowInvalidFavoritesBadge] = useState(false);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [currentComment, setCurrentComment] = useState("");
+  const [currentProductId, setCurrentProductId] = useState(null);
 
   const handleOpenExportModal = () => {
     setIsExportModalOpen(true);
@@ -298,6 +301,29 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleOpenCommentModal = (id) => {
+    console.log(`Open comment modal for item with id: ${id}`);
+  };
+
+  const saveComment = async () => {
+    try {
+      const updatedCart = cart.map((item) =>
+        item.id === currentProductId ? { ...item, comment: currentComment } : item
+      );
+      setCart(updatedCart); // Обновляем локальное состояние
+
+      await fetch(`${API_URL}/cart/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: currentProductId, comment: currentComment }),
+      });
+
+      setIsCommentModalOpen(false); // Закрываем модальное окно
+    } catch (error) {
+      console.error("Ошибка при сохранении комментария:", error);
+    }
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -508,7 +534,13 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
               <>
                 {cart.map((item) => (
                   <div className="cart-item" key={item.id}>
-                    <p className="product-name">{item.name}</p>
+                    <div className="cart-item-header">
+                      <FaPencil
+                        className="edit-icon"
+                        onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
+                      />
+                      <p className="product-name">{item.name}</p>
+                    </div>
                     <div className="quantity-controls">
                       <button
                         onClick={() => removeFromCart(item.id)}
@@ -611,6 +643,32 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
               <button
                 className="modal-cancel"
                 onClick={handleCloseExportModal} // Закрываем модалку
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isCommentModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3 className="modal-title">Комментарий для товара:</h3>
+            <textarea
+              className="comment-input"
+              value={currentComment}
+              maxLength={50} // Ограничение на 50 символов
+              onChange={(e) => setCurrentComment(e.target.value)}
+              placeholder="Введите комментарий..."
+            />
+            <div className="modal-actions">
+              <button className="modal-confirm" onClick={saveComment}>
+                Сохранить
+              </button>
+              <button
+                className="modal-cancel"
+                onClick={() => setIsCommentModalOpen(false)}
               >
                 Отмена
               </button>
