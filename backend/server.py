@@ -27,8 +27,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS cart (
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
-                quantity INTEGER NOT NULL,
-                comment TEXT
+                quantity INTEGER NOT NULL
             )
         ''')
         conn.execute('''
@@ -40,6 +39,7 @@ init_db()
 
 def update_database_schema():
     with sqlite3.connect(DB_PATH) as conn:
+        # Проверяем, есть ли колонка 'comment' в таблице 'cart'
         cursor = conn.execute("PRAGMA table_info(cart);")
         columns = [row[1] for row in cursor.fetchall()]
         if "comment" not in columns:
@@ -56,12 +56,13 @@ def get_db_connection():
 @app.route('/cart', methods=['GET'])
 def get_cart():
     with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT id, quantity, comment FROM cart')  # Убрали name
+        cursor = conn.execute('SELECT id, name, quantity, comment FROM cart')
         items = [
             {
                 "id": row[0],
-                "quantity": row[1],
-                "comment": row[2]  # Поле comment остаётся
+                "name": row[1],
+                "quantity": row[2],
+                "comment": row[3]
             }
             for row in cursor.fetchall()
         ]
@@ -69,22 +70,16 @@ def get_cart():
 
 @app.route('/cart', methods=['POST'])
 def update_cart():
-    data = request.json
-    if not isinstance(data, list):
-        return jsonify({"success": False, "message": "Неверный формат данных"}), 400
+    items = request.json
+    if not isinstance(items, list):
+        return jsonify({"error": "Неверный формат данных"}), 400
 
     with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM cart')  # Удаляем старые записи
-        for item in data:
-            if 'id' not in item or 'quantity' not in item:
-                return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
-            conn.execute(
-                'INSERT INTO cart (id, quantity, comment) VALUES (?, ?, ?)',
-                (item['id'], item['quantity'], item.get('comment', None))
-            )
-        conn.commit()
-
-    return jsonify({"success": True}), 200
+        conn.execute('DELETE FROM cart')  # удалим старые записи
+        for item in items:
+            conn.execute('INSERT INTO cart (id, name, quantity) VALUES (?, ?, ?)',
+                         (item["id"], item["name"], item["quantity"]))
+    return jsonify({"success": True})
 
 @app.route('/cart/comment', methods=['POST'])
 def add_comment_to_cart():

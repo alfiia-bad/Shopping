@@ -74,38 +74,6 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     }
   }, []);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const cartParam = urlParams.get("cart");
-
-    if (cartParam) {
-      const newCart = cartParam.split(",").map((item) => {
-        const [id, quantity] = item.split(":");
-        return { id, quantity: parseInt(quantity, 10) };
-      });
-
-      setCart(newCart); // Устанавливаем новую корзину
-      setViewCart(true); // Переключаемся на вкладку "Корзина"
-
-      // Отправляем корзину на сервер
-      fetch(`${API_URL}/cart`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCart),
-      })
-        .then(() => {
-          console.log("Корзина успешно обновлена на сервере");
-        })
-        .catch((err) => console.error("Ошибка обновления корзины:", err));
-
-      // Сбрасываем текущую корзину
-      setCart([]);
-
-      // Убираем параметры из URL
-      window.history.replaceState(null, "", window.location.origin);
-    }
-  }, []);
-
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
@@ -118,8 +86,6 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newCart),
     }).catch((err) => console.error("Ошибка сохранения:", err));
-
-    sendCartToServer(); // Вызов функции после обновления корзины
   };
 
   const addToCart = (product) => {
@@ -225,29 +191,21 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   const sendToTelegram = async () => {
     if (cart.length === 0) return;
 
-    const messageBody = cart
+    const message = `Список покупок:\n` + // Добавляем первую строку
+      cart
         .map((item) => `- ${item.name} x${item.quantity}`)
         .join("\n");
-
-// Формируем ссылку на сайт с параметрами корзины
-    const cartParams = cart
-      .map((item) => `${item.id}:${item.quantity}`)
-      .join(",");
-    const siteUrl = `${window.location.origin}?cart=${cartParams}`;
-
-    const message = `Список покупок:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить список покупок на сайт</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message, parse_mode: "HTML" }), // Передаём HTML-разметку
+        body: JSON.stringify({ cart: message }),
       });
-      
-      if (!response.ok) {
+      const data = await response.json();
+      if (!response.ok || !data.success) {
         console.error("Ошибка отправки в Telegram");
       } else {
-console.log("Список покупок успешно отправлен в Telegram");
         setShowNotification(true);
         const timeout = setTimeout(() => setShowNotification(false), 5000);
         setNotificationTimeout(timeout);
@@ -313,20 +271,6 @@ console.log("Список покупок успешно отправлен в Te
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
     }
-  };
-
-  const sendCartToServer = async () => {
-    const cartData = cart.map((item) => ({
-      id: item.id,
-      quantity: item.quantity,
-      comment: item.comment || null, // Если есть комментарий
-    }));
-
-    await fetch(`${API_URL}/cart`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cartData),
-    });
   };
 
   const handleOpenFavoritesModal = () => {
@@ -665,7 +609,7 @@ console.log("Список покупок успешно отправлен в Te
               placeholder="Вставьте идентификаторы избранных товаров..."
               value={favoritesInput}
               onChange={(e) => setFavoritesInput(e.target.value)}
-style={{ display: "none" }} // Скрываем инпут
+              style={{ display: "none" }} // Скрываем инпут
             />
             <div className="modal-actions">
               <button
@@ -677,7 +621,7 @@ style={{ display: "none" }} // Скрываем инпут
                   setViewCart(false);
                   setViewNotifications(false);
                   handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
-}}
+                }}
               >
                 Обновить
               </button>
@@ -812,4 +756,3 @@ style={{ display: "none" }} // Скрываем инпут
 };
 
 export default App;
-
