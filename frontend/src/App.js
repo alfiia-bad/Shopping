@@ -313,6 +313,20 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     }
   };
 
+  const sendCartToServer = async () => {
+    const cartData = cart.map((item) => ({
+      id: item.id,
+      name: item.name, // Добавляем имя товара
+      quantity: item.quantity,
+    }));
+
+    await fetch(`${API_URL}/cart`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cartData),
+    });
+  };
+
   const handleOpenFavoritesModal = () => {
     setIsFavoritesModalOpen(true);
   };

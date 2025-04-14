@@ -45,6 +45,9 @@ def update_database_schema():
         if "comment" not in columns:
             conn.execute("ALTER TABLE cart ADD COLUMN comment TEXT;")
             print("Колонка 'comment' успешно добавлена в таблицу 'cart'.")
+        if "name" not in columns:
+            conn.execute("ALTER TABLE cart ADD COLUMN name TEXT NOT NULL;")
+            print("Колонка 'name' успешно добавлена в таблицу 'cart'.")
 
 update_database_schema()
 
@@ -77,9 +80,11 @@ def update_cart():
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute('DELETE FROM cart')  # Удаляем старые записи
         for item in data:
+            if 'id' not in item or 'name' not in item or 'quantity' not in item:
+                return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
             conn.execute(
-                'INSERT INTO cart (id, quantity) VALUES (?, ?)',
-                (item['id'], item['quantity'])
+                'INSERT INTO cart (id, name, quantity) VALUES (?, ?, ?)',
+                (item['id'], item['name'], item['quantity'])
             )
         conn.commit()
 
