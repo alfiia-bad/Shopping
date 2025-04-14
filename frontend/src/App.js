@@ -16,11 +16,9 @@ const products = [
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
 const App = () => {
-  const activeTab = localStorage.getItem("activeTab");
-
-  const [viewCart, setViewCart] = useState(activeTab === "cart");
-  const [viewFavorites, setViewFavorites] = useState(activeTab === "favorites");
-  const [viewNotifications, setViewNotifications] = useState(activeTab === "notifications");
+  const [viewCart, setViewCart] = useState(false);
+  const [viewFavorites, setViewFavorites] = useState(false);
+  const [viewNotifications, setViewNotifications] = useState(false);
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,33 +35,6 @@ const App = () => {
   const [pendingCart, setPendingCart] = useState([]);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
-  const handleOpenExportModal = () => {
-    setIsExportModalOpen(true);
-  };
-
-  const handleCloseExportModal = () => {
-    setIsExportModalOpen(false);
-  };
-
-  useEffect(() => {
-    fetch(`${API_URL}/cart`)
-      .then((res) => res.json())
-      .then((data) => setCart(data))
-      .catch((error) => console.error("Ошибка загрузки корзины:", error));
-  }, []);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [viewCart, viewFavorites, viewNotifications]);
-  
-  useEffect(() => {
-    // Загружаем избранное с сервера при загрузке страницы
-    fetch(`${API_URL}/favorites`)
-      .then((res) => res.json())
-      .then((data) => setFavorites(data))
-      .catch((err) => console.error("Ошибка загрузки избранного:", err));
-  }, []);
-
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const favoritesParam = urlParams.get("favorites");
@@ -75,7 +46,7 @@ const App = () => {
       setViewCart(false);
       setViewNotifications(false);
 
-      // Даем времени отрендериться вкладке, затем открываем модалку
+      // Открываем модальное окно
       setTimeout(() => {
         const favoritesArray = favoritesParam.split(",");
         setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
@@ -83,7 +54,7 @@ const App = () => {
 
         // Убираем параметры из URL
         window.history.replaceState(null, "", window.location.origin);
-      }, 100); // Увеличиваем задержку до 100ms
+      }, 100); // Даем время для рендера вкладки
       return; // Прерываем выполнение, чтобы не использовать localStorage
     }
 
@@ -93,14 +64,13 @@ const App = () => {
       setViewFavorites(false);
       setViewNotifications(false);
 
-      // Даем времени отрендериться вкладке, затем открываем модалку
+      // Открываем модальное окно
       setTimeout(() => {
         const newCart = cartParam.split(",").map((item) => {
           const [id, quantity] = item.split(":");
-          const product = products.find((p) => p.id === id);
           return {
             id,
-            name: product ? product.name : "Неизвестный товар",
+            name: `Товар ${id}`, // Пример названия товара
             quantity: parseInt(quantity, 10),
             comment: "",
           };
@@ -111,7 +81,7 @@ const App = () => {
 
         // Убираем параметры из URL
         window.history.replaceState(null, "", window.location.origin);
-      }, 100); // Увеличиваем задержку до 100ms
+      }, 100); // Даем время для рендера вкладки
       return; // Прерываем выполнение, чтобы не использовать localStorage
     }
 
@@ -137,6 +107,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    // Сохраняем активную вкладку в localStorage
     if (viewCart) {
       localStorage.setItem("activeTab", "cart");
     } else if (viewFavorites) {
@@ -149,25 +120,22 @@ const App = () => {
   }, [viewCart, viewFavorites, viewNotifications]);
 
   useEffect(() => {
-    const activeTab = localStorage.getItem("activeTab");
+    fetch(`${API_URL}/cart`)
+      .then((res) => res.json())
+      .then((data) => setCart(data))
+      .catch((error) => console.error("Ошибка загрузки корзины:", error));
+  }, []);
 
-    if (activeTab === "cart") {
-      setViewCart(true);
-      setViewFavorites(false);
-      setViewNotifications(false);
-    } else if (activeTab === "favorites") {
-      setViewFavorites(true);
-      setViewCart(false);
-      setViewNotifications(false);
-    } else if (activeTab === "notifications") {
-      setViewNotifications(true);
-      setViewCart(false);
-      setViewFavorites(false);
-    } else {
-      setViewCart(false);
-      setViewFavorites(false);
-      setViewNotifications(false);
-    }
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [viewCart, viewFavorites, viewNotifications]);
+  
+  useEffect(() => {
+    // Загружаем избранное с сервера при загрузке страницы
+    fetch(`${API_URL}/favorites`)
+      .then((res) => res.json())
+      .then((data) => setFavorites(data))
+      .catch((err) => console.error("Ошибка загрузки избранного:", err));
   }, []);
 
   const getQuantity = (id) => {

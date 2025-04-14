@@ -379,8 +379,8 @@ border: 1px solid #ddd;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 18px; /* Размер обёртки */
-  height: 18px; /* Размер обёртки */
+  width: 20px; /* Размер обёртки */
+  height: 20px; /* Размер обёртки */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -404,15 +404,15 @@ border: 1px solid #ddd;
   position: absolute; 
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Увеличиваем иконку */
+  transform: translate(-50%, -45%); /* Увеличиваем иконку */
   pointer-events: none; /* чтобы клик шел по кнопке, а не по svg */
 }
 
 /* Адаптация для iPhone и мобильных устройств */
 @media screen and (max-width: 500px) {
   .clear-search-button {
-    width: 18px; /* Размер обёртки остаётся 18px */
-    height: 18px;
+    width: 20px; /* Размер обёртки остаётся 18px */
+    height: 20px;
   }
 
   .clear-search-button .icon {
