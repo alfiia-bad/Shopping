@@ -388,6 +388,10 @@ border: 1px solid #ddd;
   transition: background-color 0.2s ease;
   position: absolute;
   right: 8px; /* Позиция внутри строки поиска */
+  padding: 0;
+  line-height: 0;
+  font-size: 0;
+  overflow: hidden;
 }
 
 .clear-search-button:hover {
@@ -395,10 +399,13 @@ border: 1px solid #ddd;
 }
 
 .clear-search-button .icon {
-  width: 22px; /* Размер иконки больше обёртки */
-  height: 22px; /* Размер иконки больше обёртки */
-  position: relative; /* Для центрирования */
-  transform: scale(1.2); /* Увеличиваем иконку */
+  width: 26px; /* Размер иконки больше обёртки */
+  height: 26px; /* Размер иконки больше обёртки */
+  position: absolute; 
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Увеличиваем иконку */
+  pointer-events: none; /* чтобы клик шел по кнопке, а не по svg */
 }
 
 /* Адаптация для iPhone и мобильных устройств */
@@ -409,9 +416,8 @@ border: 1px solid #ddd;
   }
 
   .clear-search-button .icon {
-    width: 22px; /* Размер иконки остаётся больше обёртки */
-    height: 22px;
-    transform: scale(1.2); /* Увеличиваем иконку */
+    width: 26px; /* Размер иконки остаётся больше обёртки */
+    height: 26px;
   }
 }
 
