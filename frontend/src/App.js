@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
@@ -16,6 +17,7 @@ const products = [
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
 const App = () => {
+  const location = useLocation();
   const activeTab = localStorage.getItem("activeTab");
 
   const [viewCart, setViewCart] = useState(activeTab === "cart");
@@ -65,7 +67,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
 
     // Обработка параметра favorites
     const favoritesParam = urlParams.get("favorites");
@@ -116,7 +118,7 @@ const App = () => {
 
       return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
     }
-  }, []);
+  }, [location.search]); // Добавляем location.search как зависимость
 
   useEffect(() => {
     if (viewCart) {

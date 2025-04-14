@@ -715,7 +715,7 @@ transition: background-color 0.2s ease;
   align-items: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  position: relative;
+  position: absolute;
   right: 8px; /* Позиция внутри поля поиска */
 }
 
@@ -726,7 +726,6 @@ transition: background-color 0.2s ease;
 .clear-search-button .icon {
   width: 18px;
   height: 18px;
-  color: white;
 }
 
 @media screen and (max-width: 500px) {
