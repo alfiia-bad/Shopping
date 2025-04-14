@@ -811,7 +811,5 @@ style={{ display: "none" }} // Скрываем инпут
   );
 };
 
-console.log("Отправляемые данные:", JSON.stringify(cartData));
-
 export default App;
 
