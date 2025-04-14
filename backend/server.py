@@ -49,6 +49,21 @@ def update_database_schema():
             conn.execute("ALTER TABLE cart ADD COLUMN name TEXT NOT NULL;")
             print("Колонка 'name' успешно добавлена в таблицу 'cart'.")
 
+        # Выполняем миграцию таблицы cart
+        conn.execute("ALTER TABLE cart RENAME TO cart_old;")
+        conn.execute('''
+            CREATE TABLE cart (
+                id TEXT PRIMARY KEY,
+                name TEXT,
+                quantity INTEGER NOT NULL
+            )
+        ''')
+        conn.execute('''
+            INSERT INTO cart (id, name, quantity)
+            SELECT id, name, quantity FROM cart_old;
+        ''')
+        conn.execute("DROP TABLE cart_old;")
+
 update_database_schema()
 
 def get_db_connection():
@@ -214,3 +229,5 @@ if __name__ == '__main__':
 
     # Запускаем приложение
     app.run(debug=True, host="0.0.0.0", port=port)
+
+console.log("Отправляемые данные:", JSON.stringify(cartData));
