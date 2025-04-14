@@ -70,42 +70,51 @@ const App = () => {
     // Обработка параметра favorites
     const favoritesParam = urlParams.get("favorites");
     if (favoritesParam) {
-      const favoritesArray = favoritesParam.split(",");
-      setViewFavorites(true); // Переключаемся на вкладку "Избранное"     
-      setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
-      setIsFavoritesModalOpen(true); // Открываем модалку
-      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+      setViewFavorites(true); // Сначала переключаемся на вкладку "Избранное"
       setViewCart(false);
       setViewNotifications(false);
 
-      // Убираем параметры из URL
-      window.history.replaceState(null, "", window.location.origin);
+      // Асинхронно выполняем логику с инпутом и модальным окном
+      setTimeout(() => {
+        const favoritesArray = favoritesParam.split(",");
+        setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
+        setIsFavoritesModalOpen(true); // Открываем модалку
+
+        // Убираем параметры из URL
+        window.history.replaceState(null, "", window.location.origin);
+      }, 0); // Выполняем после переключения вкладки
+
       return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
     }
 
     // Обработка параметра cart
     const cartParam = urlParams.get("cart");
     if (cartParam) {
-      const newCart = cartParam.split(",").map((item) => {
-        const [id, quantity] = item.split(":");
-        const product = products.find((p) => p.id === id);
-        return {
-          id,
-          name: product ? product.name : "Неизвестный товар", // Добавляем название товара
-          quantity: parseInt(quantity, 10),
-          comment: "", // Пустой комментарий
-        };
-      });
-
-      setPendingCart(newCart); // Сохраняем данные для модалки
-      setIsCartModalOpen(true); // Открываем модалку
-      setViewCart(true); // Переключаемся на вкладку "Корзина"
+      setViewCart(true); // Сначала переключаемся на вкладку "Корзина"
       setViewFavorites(false);
       setViewNotifications(false);
 
-      // Убираем параметры из URL
-      window.history.replaceState(null, "", window.location.origin);
-      return; // Прерываем выполнение
+      // Асинхронно выполняем логику с модальным окном
+      setTimeout(() => {
+        const newCart = cartParam.split(",").map((item) => {
+          const [id, quantity] = item.split(":");
+          const product = products.find((p) => p.id === id);
+          return {
+            id,
+            name: product ? product.name : "Неизвестный товар", // Добавляем название товара
+            quantity: parseInt(quantity, 10),
+            comment: "", // Пустой комментарий
+          };
+        });
+
+        setPendingCart(newCart); // Сохраняем данные для модалки
+        setIsCartModalOpen(true); // Открываем модалку
+
+        // Убираем параметры из URL
+        window.history.replaceState(null, "", window.location.origin);
+      }, 0); // Выполняем после переключения вкладки
+
+      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
     }
   }, []);
 
