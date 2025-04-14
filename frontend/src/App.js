@@ -318,8 +318,8 @@ console.log("Список покупок успешно отправлен в Te
   const sendCartToServer = async () => {
     const cartData = cart.map((item) => ({
       id: item.id,
-      name: products.find((p) => p.id === item.id)?.name || "Неизвестный товар",
       quantity: item.quantity,
+      comment: item.comment || null, // Если есть комментарий
     }));
 
     await fetch(`${API_URL}/cart`, {

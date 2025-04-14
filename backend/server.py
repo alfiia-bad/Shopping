@@ -56,13 +56,12 @@ def get_db_connection():
 @app.route('/cart', methods=['GET'])
 def get_cart():
     with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT id, name, quantity, comment FROM cart')
+        cursor = conn.execute('SELECT id, quantity, comment FROM cart')  # Убрали name
         items = [
             {
                 "id": row[0],
-                "name": row[1],
-                "quantity": row[2],
-                "comment": row[3]
+                "quantity": row[1],
+                "comment": row[2]  # Поле comment остаётся
             }
             for row in cursor.fetchall()
         ]
@@ -80,8 +79,8 @@ def update_cart():
             if 'id' not in item or 'quantity' not in item:
                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
             conn.execute(
-                'INSERT INTO cart (id, name, quantity) VALUES (?, ?, ?)',
-                (item['id'], item.get('name', None), item['quantity'])
+                'INSERT INTO cart (id, quantity, comment) VALUES (?, ?, ?)',
+                (item['id'], item['quantity'], item.get('comment', None))
             )
         conn.commit()
 
