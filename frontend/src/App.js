@@ -68,31 +68,35 @@ const App = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    const favoritesParam = urlParams.get("favorites");
-    const cartParam = urlParams.get("cart");
 
+    // Обработка параметра favorites
+    const favoritesParam = urlParams.get("favorites");
     if (favoritesParam) {
-      // Переключаемся на вкладку "Избранное"
-      setViewFavorites(true);
+      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
       setViewCart(false);
       setViewNotifications(false);
 
-      // Открываем модальное окно с задержкой
+      // Асинхронно выполняем логику с модальным окном
       setTimeout(() => {
         const favoritesArray = favoritesParam.split(",");
         setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
         setIsFavoritesModalOpen(true); // Открываем модалку
 
         // Убираем параметры из URL
-        window.history.replaceState(null, "", window.location.pathname);
-      }, 0);
-    } else if (cartParam) {
-      // Переключаемся на вкладку "Корзина"
-      setViewCart(true);
+        window.history.replaceState(null, "", window.location.origin);
+      }, 0); // Выполняем после переключения вкладки
+
+      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
+    }
+
+    // Обработка параметра cart
+    const cartParam = urlParams.get("cart");
+    if (cartParam) {
+      setViewCart(true); // Переключаемся на вкладку "Корзина"
       setViewFavorites(false);
       setViewNotifications(false);
 
-      // Открываем модальное окно с задержкой
+      // Асинхронно выполняем логику с модальным окном
       setTimeout(() => {
         const newCart = cartParam.split(",").map((item) => {
           const [id, quantity] = item.split(":");
@@ -109,10 +113,12 @@ const App = () => {
         setIsCartModalOpen(true); // Открываем модалку
 
         // Убираем параметры из URL
-        window.history.replaceState(null, "", window.location.pathname);
-      }, 0);
+        window.history.replaceState(null, "", window.location.origin);
+      }, 0); // Выполняем после переключения вкладки
+
+      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
     }
-  }, [location.search, products]); // Добавляем location.search и products в зависимости
+  }, [location.search]); // Добавляем location.search как зависимость
 
   useEffect(() => {
     if (viewCart) {
