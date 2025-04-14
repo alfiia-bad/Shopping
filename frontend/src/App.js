@@ -32,6 +32,8 @@ const App = () => {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState("");
   const [currentProductId, setCurrentProductId] = useState(null);
+  const [pendingCart, setPendingCart] = useState([]);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
   const handleOpenExportModal = () => {
     setIsExportModalOpen(true);
@@ -68,9 +70,27 @@ const App = () => {
       const favoritesArray = favoritesParam.split(",");
       setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
       setIsFavoritesModalOpen(true); // Открываем модалку
-setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
       setViewCart(false);
       setViewNotifications(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const cartParam = urlParams.get("cart");
+
+    if (cartParam) {
+      const newCart = cartParam.split(",").map((item) => {
+        const [id, quantity] = item.split(":");
+        return { id, quantity: parseInt(quantity, 10), comment: "" }; // Пустой комментарий
+      });
+
+      setPendingCart(newCart); // Сохраняем данные для модалки
+      setIsCartModalOpen(true); // Открываем модалку
+
+      // Убираем параметры из URL
+      window.history.replaceState(null, "", window.location.origin);
     }
   }, []);
 
@@ -79,13 +99,19 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     return item ? item.quantity : 0;
   };
 
-  const updateCart = (newCart) => {
+  const updateCart = async (newCart) => {
     setCart(newCart);
-    fetch(`${API_URL}/cart`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newCart),
-    }).catch((err) => console.error("Ошибка сохранения:", err));
+
+    try {
+      await fetch(`${API_URL}/cart`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCart),
+      });
+      console.log("Корзина успешно обновлена на сервере");
+    } catch (error) {
+      console.error("Ошибка обновления корзины на сервере:", error);
+    }
   };
 
   const addToCart = (product) => {
@@ -191,21 +217,31 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   const sendToTelegram = async () => {
     if (cart.length === 0) return;
 
-    const message = `Список покупок:\n` + // Добавляем первую строку
-      cart
-        .map((item) => `- ${item.name} x${item.quantity}`)
-        .join("\n");
+    const messageBody = cart
+      .map((item) => {
+        const product = products.find((p) => p.id === item.id);
+        return product ? `- ${product.name} x${item.quantity}` : `- Неизвестный товар x${item.quantity}`;
+      })
+      .join("\n");
+
+    const cartParams = cart
+      .map((item) => `${item.id}:${item.quantity}`)
+      .join(",");
+    const siteUrl = `${window.location.origin}?cart=${cartParams}`;
+
+    const message = `Список покупок:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить этот список покупок на сайт</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: message }),
+        body: JSON.stringify({ cart: message, parse_mode: "HTML" }),
       });
-      const data = await response.json();
-      if (!response.ok || !data.success) {
+
+      if (!response.ok) {
         console.error("Ошибка отправки в Telegram");
       } else {
+        console.log("Список покупок успешно отправлен в Telegram");
         setShowNotification(true);
         const timeout = setTimeout(() => setShowNotification(false), 5000);
         setNotificationTimeout(timeout);
@@ -677,6 +713,31 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                 Сохранить
               </button>
               <button className="modal-cancel" onClick={handleCancelComment}>
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isCartModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3 className="modal-title">Вы собираетесь обновить корзину. Действие безвозвратно. Уверены?</h3>
+            <div className="modal-actions">
+              <button
+                className="modal-confirm"
+                onClick={() => {
+                  setCart(pendingCart); // Обновляем корзину
+                  setIsCartModalOpen(false); // Закрываем модалку
+                }}
+              >
+                Обновить
+              </button>
+              <button
+                className="modal-cancel"
+                onClick={() => setIsCartModalOpen(false)} // Закрываем модалку
+              >
                 Отмена
               </button>
             </div>
