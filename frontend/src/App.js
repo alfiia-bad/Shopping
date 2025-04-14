@@ -380,6 +380,14 @@ const App = () => {
     window.history.replaceState(null, "", window.location.origin);
   };
 
+  const handleOpenExportModal = () => {
+    setIsExportModalOpen(true); // Открываем модальное окно экспорта
+  };
+
+  const handleCloseExportModal = () => {
+    setIsExportModalOpen(false); // Закрываем модальное окно экспорта
+  };
+
   const handleUpdateCart = () => {
     setCart(pendingCart); // Обновляем локальное состояние корзины
     updateCartOnServer(pendingCart); // Отправляем данные на сервер
