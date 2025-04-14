@@ -83,7 +83,13 @@ const App = () => {
     if (cartParam) {
       const newCart = cartParam.split(",").map((item) => {
         const [id, quantity] = item.split(":");
-        return { id, quantity: parseInt(quantity, 10), comment: "" }; // Пустой комментарий
+        const product = products.find((p) => p.id === id);
+        return {
+          id,
+          name: product ? product.name : "Неизвестный товар", // Добавляем название товара
+          quantity: parseInt(quantity, 10),
+          comment: "", // Пустой комментарий
+        };
       });
 
       setPendingCart(newCart); // Сохраняем данные для модалки
@@ -102,6 +108,19 @@ const App = () => {
   const updateCart = async (newCart) => {
     setCart(newCart);
 
+    try {
+      await fetch(`${API_URL}/cart`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCart),
+      });
+      console.log("Корзина успешно обновлена на сервере");
+    } catch (error) {
+      console.error("Ошибка обновления корзины на сервере:", error);
+    }
+  };
+
+  const updateCartOnServer = async (newCart) => {
     try {
       await fetch(`${API_URL}/cart`, {
         method: "POST",
@@ -321,6 +340,12 @@ const App = () => {
 
     // Убираем параметры из URL
     window.history.replaceState(null, "", window.location.origin);
+  };
+
+  const handleUpdateCart = () => {
+    setCart(pendingCart); // Обновляем локальное состояние корзины
+    updateCartOnServer(pendingCart); // Отправляем данные на сервер
+    setIsCartModalOpen(false); // Закрываем модалку
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -727,10 +752,7 @@ const App = () => {
             <div className="modal-actions">
               <button
                 className="modal-confirm"
-                onClick={() => {
-                  setCart(pendingCart); // Обновляем корзину
-                  setIsCartModalOpen(false); // Закрываем модалку
-                }}
+                onClick={handleUpdateCart} // Вызываем обновление корзины
               >
                 Обновить
               </button>
