@@ -15,6 +15,11 @@ const products = [
 
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
+const getProductName = (id) => {
+  const product = products.find((p) => p.id === id);
+  return product ? product.name : "Неизвестный товар";
+};
+
 const App = () => {
   const [cart, setCart] = useState([]);
   const [viewCart, setViewCart] = useState(false);
@@ -313,9 +318,18 @@ console.log("Список покупок успешно отправлен в Te
     }
   };
 
-  // const sendCartToServer = async () => {
-  //   // ...код функции...
-  // };
+const sendCartToServer = async () => {
+    const cartData = cart.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+    }));
+
+    await fetch(`${API_URL}/cart`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cartData),
+    });
+  };
 
   const handleOpenFavoritesModal = () => {
     setIsFavoritesModalOpen(true);

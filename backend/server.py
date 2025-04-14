@@ -80,11 +80,11 @@ def update_cart():
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute('DELETE FROM cart')  # Удаляем старые записи
         for item in data:
-            if 'id' not in item or 'name' not in item or 'quantity' not in item:
+            if 'id' not in item or 'quantity' not in item:
                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
             conn.execute(
-                'INSERT INTO cart (id, name, quantity) VALUES (?, ?, ?)',
-                (item['id'], item['name'], item['quantity'])
+                'INSERT INTO cart (id, quantity) VALUES (?, ?)',
+                (item['id'], item['quantity'])
             )
         conn.commit()
 
