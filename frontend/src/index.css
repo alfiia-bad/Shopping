@@ -373,6 +373,33 @@ border: 1px solid #ddd;
   font-size: 18px;
 }
 
+/* Крестик для поиска */
+.clear-search-button {
+  background-color: #A56AB4;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px; /* Размер обёртки */
+  height: 18px; /* Размер обёртки */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: absolute;
+  right: 8px; /* Позиция внутри поля поиска */
+}
+
+.clear-search-button:hover {
+  background-color: #934fb1;
+}
+
+.clear-search-button .icon {
+  width: 22px; /* Размер иконки больше обёртки */
+  height: 22px; /* Размер иконки больше обёртки */
+  position: relative; /* Позиционирование для центрирования */
+}
+
 /* Навигация */
 .bottom-nav {
   position: fixed;
@@ -716,7 +743,7 @@ transition: background-color 0.2s ease;
   cursor: pointer;
   transition: background-color 0.2s ease;
   position: absolute;
-  right: 8px; /* Позиция внутри поля поиска */
+  right: 8px;
 }
 
 .clear-search-button:hover {
@@ -724,14 +751,15 @@ transition: background-color 0.2s ease;
 }
 
 .clear-search-button .icon {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
+  position: relative;
 }
 
 @media screen and (max-width: 500px) {
   .clear-search-button {
-    width: 36px;
-    height: 36px;
+    width: 18px;
+    height: 18px;
   }
 
   .clear-search-button .icon {

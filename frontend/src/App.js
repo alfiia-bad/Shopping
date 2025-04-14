@@ -68,35 +68,31 @@ const App = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-
-    // Обработка параметра favorites
     const favoritesParam = urlParams.get("favorites");
+    const cartParam = urlParams.get("cart");
+
     if (favoritesParam) {
-      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+      // Переключаемся на вкладку "Избранное"
+      setViewFavorites(true);
       setViewCart(false);
       setViewNotifications(false);
 
-      // Асинхронно выполняем логику с модальным окном
+      // Открываем модальное окно с задержкой
       setTimeout(() => {
         const favoritesArray = favoritesParam.split(",");
         setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
         setIsFavoritesModalOpen(true); // Открываем модалку
 
         // Убираем параметры из URL
-        window.history.replaceState(null, "", window.location.origin);
-      }, 0); // Выполняем после переключения вкладки
-
-      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
-    }
-
-    // Обработка параметра cart
-    const cartParam = urlParams.get("cart");
-    if (cartParam) {
-      setViewCart(true); // Переключаемся на вкладку "Корзина"
+        window.history.replaceState(null, "", window.location.pathname);
+      }, 0);
+    } else if (cartParam) {
+      // Переключаемся на вкладку "Корзина"
+      setViewCart(true);
       setViewFavorites(false);
       setViewNotifications(false);
 
-      // Асинхронно выполняем логику с модальным окном
+      // Открываем модальное окно с задержкой
       setTimeout(() => {
         const newCart = cartParam.split(",").map((item) => {
           const [id, quantity] = item.split(":");
@@ -113,12 +109,10 @@ const App = () => {
         setIsCartModalOpen(true); // Открываем модалку
 
         // Убираем параметры из URL
-        window.history.replaceState(null, "", window.location.origin);
-      }, 0); // Выполняем после переключения вкладки
-
-      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
+        window.history.replaceState(null, "", window.location.pathname);
+      }, 0);
     }
-  }, [location.search]); // Добавляем location.search как зависимость
+  }, [location.search, products]); // Добавляем location.search и products в зависимости
 
   useEffect(() => {
     if (viewCart) {
