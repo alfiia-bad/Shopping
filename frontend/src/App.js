@@ -181,6 +181,32 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     }
   };
 
+  const handleUpdateFavorites = async () => {
+    try {
+      const validFavorites = favoritesInput
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item); // Убираем пустые значения
+
+      const response = await fetch(`${API_URL}/favorites`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorites: validFavorites }),
+      });
+
+      if (response.ok) {
+        const updatedFavorites = await response.json();
+        setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
+        setFavoritesInput(""); // Очищаем список
+        setIsFavoritesModalOpen(false); // Закрываем модальное окно
+      } else {
+        console.error("Ошибка обновления избранного");
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении избранного:", error);
+    }
+  };
+
   const handleCloseNotification = () => {
     setShowNotification(false);
     if (notificationTimeout) {
@@ -273,8 +299,9 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     }
   };
 
-  const handleOpenFavoritesModal = () => {
-    setIsFavoritesModalOpen(true);
+  const handleOpenFavoritesModal = (input) => {
+    setFavoritesInput(input); // Устанавливаем список товаров
+    setIsFavoritesModalOpen(true); // Открываем модальное окно
   };
 
   const handleCloseFavoritesModal = () => {
@@ -603,33 +630,25 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       {isFavoritesModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
-{/* Заголовок с обновлённым стилем */}
-            <h3 className="modal-title">
-              Загрузка идентификаторов товара. Избранное будет безвозвратно обновлено. Уверены?
-            </h3>
-            <textarea
-              className="favorites-input"
-              placeholder="Вставьте идентификаторы избранных товаров..."
-              value={favoritesInput}
-              onChange={(e) => setFavoritesInput(e.target.value)}
-            />
+            <h3 className="modal-title">Загрузка избранных товаров</h3>
+            <p className="modal-description">
+              Действие безвозвратно. Уверены?
+            </p>
+            <ul className="favorites-list">
+              {favoritesInput.split(",").map((item, index) => (
+                <li key={index}>{`${index + 1}. ${item.trim()}`}</li>
+              ))}
+            </ul>
             <div className="modal-actions">
               <button
                 className="modal-confirm"
-                onClick={() => {
-                  updateFavorites(); // Обновляем избранное
-                  setIsFavoritesModalOpen(false); // Закрываем модальное окно
-                  setViewFavorites(true); // Переключаемся на вкладку "Избранное"
-                  setViewCart(false);
-                  setViewNotifications(false);
-                  handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
-}}
+                onClick={handleUpdateFavorites}
               >
                 Обновить
               </button>
               <button
                 className="modal-cancel"
-                onClick={handleCloseFavoritesModal} // Закрываем модалку
+                onClick={handleCloseFavoritesModal}
               >
                 Отмена
               </button>
