@@ -224,10 +224,10 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     if (cart.length === 0) return;
 
     const messageBody = cart
-      .map((item) => `- ${item.name} x${item.quantity}`)
-      .join("\n");
+        .map((item) => `- ${item.name} x${item.quantity}`)
+        .join("\n");
 
-    // Формируем ссылку на сайт с параметрами корзины
+// Формируем ссылку на сайт с параметрами корзины
     const cartParams = cart
       .map((item) => `${item.id}:${item.quantity}`)
       .join(",");
@@ -241,11 +241,11 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: message, parse_mode: "HTML" }), // Передаём HTML-разметку
       });
-
+      
       if (!response.ok) {
         console.error("Ошибка отправки в Telegram");
       } else {
-        console.log("Список покупок успешно отправлен в Telegram");
+console.log("Список покупок успешно отправлен в Telegram");
         setShowNotification(true);
         const timeout = setTimeout(() => setShowNotification(false), 5000);
         setNotificationTimeout(timeout);
@@ -313,19 +313,9 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     }
   };
 
-  const sendCartToServer = async () => {
-    const cartData = cart.map((item) => ({
-      id: item.id,
-      name: item.name, // Добавляем имя товара
-      quantity: item.quantity,
-    }));
-
-    await fetch(`${API_URL}/cart`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cartData),
-    });
-  };
+  // const sendCartToServer = async () => {
+  //   // ...код функции...
+  // };
 
   const handleOpenFavoritesModal = () => {
     setIsFavoritesModalOpen(true);
@@ -663,7 +653,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
               placeholder="Вставьте идентификаторы избранных товаров..."
               value={favoritesInput}
               onChange={(e) => setFavoritesInput(e.target.value)}
-              style={{ display: "none" }} // Скрываем инпут
+style={{ display: "none" }} // Скрываем инпут
             />
             <div className="modal-actions">
               <button
@@ -675,7 +665,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   setViewCart(false);
                   setViewNotifications(false);
                   handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
-                }}
+}}
               >
                 Обновить
               </button>
