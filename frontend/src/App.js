@@ -137,31 +137,6 @@ const App = () => {
     }
   };  
 
-  const updateFavorites = async () => {
-    const validFavorites = favoritesInput
-      .split(",")
-      .map((item) => item.trim())
-      .filter((item) => item); // Убираем пустые значения
-
-    try {
-      const response = await fetch(`${API_URL}/favorites`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorites: validFavorites }),
-      });
-
-      if (response.ok) {
-        const updatedFavorites = await response.json();
-        setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
-        setFavoritesInput(""); // Очищаем список
-      } else {
-        console.error("Ошибка обновления избранного");
-      }
-    } catch (error) {
-      console.error("Ошибка при обновлении избранного:", error);
-    }
-  };
-
   const handleUpdateFavorites = async () => {
     try {
       const validFavorites = favoritesInput
