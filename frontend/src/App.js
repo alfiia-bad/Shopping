@@ -71,6 +71,7 @@ const App = () => {
     const favoritesParam = urlParams.get("favorites");
     if (favoritesParam) {
       const favoritesArray = favoritesParam.split(",");
+      setViewFavorites(true); // Переключаемся на вкладку "Избранное"     
       setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
       setIsFavoritesModalOpen(true); // Открываем модалку
       setViewFavorites(true); // Переключаемся на вкладку "Избранное"
