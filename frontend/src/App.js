@@ -118,10 +118,16 @@ const App = () => {
 
     if (activeTab === "cart") {
       setViewCart(true);
+      setViewFavorites(false);
+      setViewNotifications(false);
     } else if (activeTab === "favorites") {
       setViewFavorites(true);
+      setViewCart(false);
+      setViewNotifications(false);
     } else if (activeTab === "notifications") {
       setViewNotifications(true);
+      setViewCart(false);
+      setViewFavorites(false);
     } else {
       setViewCart(false);
       setViewFavorites(false);
