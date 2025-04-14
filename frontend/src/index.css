@@ -511,13 +511,6 @@ font-weight: normal; /* Убираем жирность */
   color: #333; /* Цвет текста */
 }
 
-.modal-description {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 12px;
-  text-align: left;
-}
-
 .modal-actions {
   display: flex;
   justify-content: space-around;
@@ -588,19 +581,6 @@ transition: background-color 0.2s ease;
   resize: none; /* Отключаем возможность изменения размера вручную */
   outline: none;
   margin-bottom: 12px; /* Отступ снизу */
-}
-
-.favorites-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0 0 12px 0;
-  text-align: left;
-}
-
-.favorites-list li {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 4px;
 }
 
 /* Общие стили для кнопок */
