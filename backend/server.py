@@ -168,19 +168,16 @@ def delete_favorite():
 @app.route('/favorites', methods=['PUT'])
 def update_favorites():
     data = request.json
-    favorites = data.get('favorites', [])
+    favorites = data.get('favorites')
 
     if not isinstance(favorites, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
 
-    conn = get_db_connection()
-    try:
+    with sqlite3.connect(DB_PATH) as conn:
         conn.execute('DELETE FROM favorites')  # Удаляем старые записи
         for product_id in favorites:
             conn.execute('INSERT INTO favorites (product_id) VALUES (?)', (product_id,))
         conn.commit()
-    finally:
-        conn.close()
 
     return jsonify({"success": True, "favorites": favorites}), 200
 
