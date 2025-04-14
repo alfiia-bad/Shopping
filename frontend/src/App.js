@@ -16,10 +16,12 @@ const products = [
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
 const App = () => {
+  const activeTab = localStorage.getItem("activeTab");
+
+  const [viewCart, setViewCart] = useState(activeTab === "cart");
+  const [viewFavorites, setViewFavorites] = useState(activeTab === "favorites");
+  const [viewNotifications, setViewNotifications] = useState(activeTab === "notifications");
   const [cart, setCart] = useState([]);
-  const [viewCart, setViewCart] = useState(false);
-  const [viewNotifications, setViewNotifications] = useState(false);
-  const [viewFavorites, setViewFavorites] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
@@ -118,15 +120,15 @@ const App = () => {
 
     if (activeTab === "cart") {
       setViewCart(true);
-      setViewFavorites(false);
+setViewFavorites(false);
       setViewNotifications(false);
     } else if (activeTab === "favorites") {
       setViewFavorites(true);
-      setViewCart(false);
+setViewCart(false);
       setViewNotifications(false);
     } else if (activeTab === "notifications") {
       setViewNotifications(true);
-      setViewCart(false);
+setViewCart(false);
       setViewFavorites(false);
     } else {
       setViewCart(false);
