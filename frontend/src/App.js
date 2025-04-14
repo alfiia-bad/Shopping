@@ -17,7 +17,7 @@ const products = [
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
 const App = () => {
-  const location = useLocation();
+  const location = useLocation(); // Используем useLocation для отслеживания URL
   const activeTab = localStorage.getItem("activeTab");
 
   const [viewCart, setViewCart] = useState(activeTab === "cart");
@@ -67,7 +67,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
+    const queryParams = new URLSearchParams(location.search); // Используем location.search
     const cartParam = queryParams.get("cart");
     const favoritesParam = queryParams.get("favorites");
 
@@ -132,7 +132,7 @@ const App = () => {
         setViewNotifications(false);
       }
     }
-  }, []);
+  }, [location.search]); // Добавляем location.search в зависимости
 
   useEffect(() => {
     if (viewCart) {
