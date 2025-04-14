@@ -70,11 +70,11 @@ const App = () => {
     // Обработка параметра favorites
     const favoritesParam = urlParams.get("favorites");
     if (favoritesParam) {
-      setViewFavorites(true); // Сначала переключаемся на вкладку "Избранное"
+      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
       setViewCart(false);
       setViewNotifications(false);
 
-      // Асинхронно выполняем логику с инпутом и модальным окном
+      // Асинхронно выполняем логику с модальным окном
       setTimeout(() => {
         const favoritesArray = favoritesParam.split(",");
         setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
@@ -90,7 +90,7 @@ const App = () => {
     // Обработка параметра cart
     const cartParam = urlParams.get("cart");
     if (cartParam) {
-      setViewCart(true); // Сначала переключаемся на вкладку "Корзина"
+      setViewCart(true); // Переключаемся на вкладку "Корзина"
       setViewFavorites(false);
       setViewNotifications(false);
 

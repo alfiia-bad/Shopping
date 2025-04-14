@@ -708,14 +708,14 @@ transition: background-color 0.2s ease;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 18px;
+  height: 18px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  position: absolute;
+  position: relative;
   right: 8px; /* Позиция внутри поля поиска */
 }
 
@@ -726,6 +726,7 @@ transition: background-color 0.2s ease;
 .clear-search-button .icon {
   width: 18px;
   height: 18px;
+  color: white;
 }
 
 @media screen and (max-width: 500px) {
