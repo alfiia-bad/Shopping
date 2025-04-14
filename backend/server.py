@@ -27,7 +27,8 @@ def init_db():
             CREATE TABLE IF NOT EXISTS cart (
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
-                quantity INTEGER NOT NULL
+                quantity INTEGER NOT NULL,
+                comment TEXT
             )
         ''')
         conn.execute('''
@@ -210,5 +211,3 @@ if __name__ == '__main__':
 
     # Запускаем приложение
     app.run(debug=True, host="0.0.0.0", port=port)
-
-console.log("Отправляемые данные:", JSON.stringify(cartData));
