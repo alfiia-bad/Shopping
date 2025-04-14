@@ -375,7 +375,7 @@ border: 1px solid #ddd;
 
 /* Крестик для поиска */
 .clear-search-button {
-  background-color: #A56AB4;
+  background-color: #A56AB4; /* Фиолетовая обёртка */
   color: white;
   border: none;
   border-radius: 50%;
@@ -387,17 +387,32 @@ border: 1px solid #ddd;
   cursor: pointer;
   transition: background-color 0.2s ease;
   position: absolute;
-  right: 8px; /* Позиция внутри поля поиска */
+  right: 8px; /* Позиция внутри строки поиска */
 }
 
 .clear-search-button:hover {
-  background-color: #934fb1;
+  background-color: #934fb1; /* Более тёмный фиолетовый при наведении */
 }
 
 .clear-search-button .icon {
   width: 22px; /* Размер иконки больше обёртки */
   height: 22px; /* Размер иконки больше обёртки */
-  position: relative; /* Позиционирование для центрирования */
+  position: relative; /* Для центрирования */
+  transform: scale(1.2); /* Увеличиваем иконку */
+}
+
+/* Адаптация для iPhone и мобильных устройств */
+@media screen and (max-width: 500px) {
+  .clear-search-button {
+    width: 18px; /* Размер обёртки остаётся 18px */
+    height: 18px;
+  }
+
+  .clear-search-button .icon {
+    width: 22px; /* Размер иконки остаётся больше обёртки */
+    height: 22px;
+    transform: scale(1.2); /* Увеличиваем иконку */
+  }
 }
 
 /* Навигация */

@@ -67,58 +67,72 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
+    const queryParams = new URLSearchParams(window.location.search);
+    const cartParam = queryParams.get("cart");
+    const favoritesParam = queryParams.get("favorites");
 
-    // Обработка параметра favorites
-    const favoritesParam = urlParams.get("favorites");
-    if (favoritesParam) {
-      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
-      setViewCart(false);
-      setViewNotifications(false);
-
-      // Асинхронно выполняем логику с модальным окном
-      setTimeout(() => {
-        const favoritesArray = favoritesParam.split(",");
-        setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
-        setIsFavoritesModalOpen(true); // Открываем модалку
-
-        // Убираем параметры из URL
-        window.history.replaceState(null, "", window.location.origin);
-      }, 0); // Выполняем после переключения вкладки
-
-      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
-    }
-
-    // Обработка параметра cart
-    const cartParam = urlParams.get("cart");
     if (cartParam) {
-      setViewCart(true); // Переключаемся на вкладку "Корзина"
+      // Переключаемся на вкладку "Корзина"
+      setViewCart(true);
       setViewFavorites(false);
       setViewNotifications(false);
 
-      // Асинхронно выполняем логику с модальным окном
+      // Даем времени отрендериться вкладке, затем вызываем модалку
       setTimeout(() => {
         const newCart = cartParam.split(",").map((item) => {
           const [id, quantity] = item.split(":");
           const product = products.find((p) => p.id === id);
           return {
             id,
-            name: product ? product.name : "Неизвестный товар", // Добавляем название товара
+            name: product ? product.name : "Неизвестный товар",
             quantity: parseInt(quantity, 10),
-            comment: "", // Пустой комментарий
+            comment: "",
           };
         });
 
         setPendingCart(newCart); // Сохраняем данные для модалки
         setIsCartModalOpen(true); // Открываем модалку
+      }, 0);
 
-        // Убираем параметры из URL
-        window.history.replaceState(null, "", window.location.origin);
-      }, 0); // Выполняем после переключения вкладки
+      // Убираем параметры из URL
+      window.history.replaceState(null, "", window.location.pathname);
+    } else if (favoritesParam) {
+      // Переключаемся на вкладку "Избранное"
+      setViewFavorites(true);
+      setViewCart(false);
+      setViewNotifications(false);
 
-      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
+      // Даем времени отрендериться вкладке, затем вызываем модалку
+      setTimeout(() => {
+        const favoritesArray = favoritesParam.split(",");
+        setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
+        setIsFavoritesModalOpen(true); // Открываем модалку
+      }, 0);
+
+      // Убираем параметры из URL
+      window.history.replaceState(null, "", window.location.pathname);
+    } else {
+      // Поддержка localStorage, если нет параметров в URL
+      const activeTab = localStorage.getItem("activeTab");
+      if (activeTab === "cart") {
+        setViewCart(true);
+        setViewFavorites(false);
+        setViewNotifications(false);
+      } else if (activeTab === "favorites") {
+        setViewFavorites(true);
+        setViewCart(false);
+        setViewNotifications(false);
+      } else if (activeTab === "notifications") {
+        setViewNotifications(true);
+        setViewCart(false);
+        setViewFavorites(false);
+      } else {
+        setViewCart(false);
+        setViewFavorites(false);
+        setViewNotifications(false);
+      }
     }
-  }, [location.search]); // Добавляем location.search как зависимость
+  }, []);
 
   useEffect(() => {
     if (viewCart) {
