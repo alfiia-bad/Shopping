@@ -32,7 +32,7 @@ const App = () => {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState("");
   const [currentProductId, setCurrentProductId] = useState(null);
-const [pendingCart, setPendingCart] = useState([]);
+  const [pendingCart, setPendingCart] = useState([]);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
   const handleOpenExportModal = () => {
@@ -70,7 +70,7 @@ const [pendingCart, setPendingCart] = useState([]);
       const favoritesArray = favoritesParam.split(",");
       setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
       setIsFavoritesModalOpen(true); // Открываем модалку
-setViewFavorites(true); // Переключаемся на вкладку "Избранное"
+      setViewFavorites(true); // Переключаемся на вкладку "Избранное"
       setViewCart(false);
       setViewNotifications(false);
     }
@@ -83,51 +83,23 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
     if (cartParam) {
       const newCart = cartParam.split(",").map((item) => {
         const [id, quantity] = item.split(":");
-const product = products.find((p) => p.id === id);
+        const product = products.find((p) => p.id === id);
         return {
-id,
+          id,
           name: product ? product.name : "Неизвестный товар", // Добавляем название товара
-quantity: parseInt(quantity, 10),
-comment: "", // Пустой комментарий
-};
+          quantity: parseInt(quantity, 10),
+          comment: "", // Пустой комментарий
+        };
       });
 
       setPendingCart(newCart); // Сохраняем данные для модалки
       setIsCartModalOpen(true); // Открываем модалку
-setViewCart(true); // Переключаемся на вкладку "Корзина"
+      setViewCart(true); // Переключаемся на вкладку "Корзина"
 
       // Убираем параметры из URL
       window.history.replaceState(null, "", window.location.origin);
     }
   }, []);
-
-  useEffect(() => {
-  if (viewCart) {
-    localStorage.setItem("activeTab", "cart");
-  } else if (viewFavorites) {
-    localStorage.setItem("activeTab", "favorites");
-  } else if (viewNotifications) {
-    localStorage.setItem("activeTab", "notifications");
-  } else {
-    localStorage.setItem("activeTab", "products");
-  }
-}, [viewCart, viewFavorites, viewNotifications]);
-
-useEffect(() => {
-  const activeTab = localStorage.getItem("activeTab");
-
-  if (activeTab === "cart") {
-    setViewCart(true);
-  } else if (activeTab === "favorites") {
-    setViewFavorites(true);
-  } else if (activeTab === "notifications") {
-    setViewNotifications(true);
-  } else {
-    setViewCart(false);
-    setViewFavorites(false);
-    setViewNotifications(false);
-  }
-}, []);
 
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
@@ -191,7 +163,7 @@ useEffect(() => {
   };
 
   const addToFavorites = async (productId) => {
-try {
+    try {
       await fetch(`${API_URL}/favorites`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -266,13 +238,13 @@ try {
     if (cart.length === 0) return;
 
     const messageBody = cart
-        .map((item) => {
+      .map((item) => {
         const product = products.find((p) => p.id === item.id);
         return product ? `- ${product.name} x${item.quantity}` : `- Неизвестный товар x${item.quantity}`;
       })
-        .join("\n");
+      .join("\n");
 
-const cartParams = cart
+    const cartParams = cart
       .map((item) => `${item.id}:${item.quantity}`)
       .join(",");
     const siteUrl = `${window.location.origin}?cart=${cartParams}`;
@@ -285,11 +257,11 @@ const cartParams = cart
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: message, parse_mode: "HTML" }),
       });
-      
+
       if (!response.ok) {
         console.error("Ошибка отправки в Telegram");
       } else {
-console.log("Список покупок успешно отправлен в Telegram");
+        console.log("Список покупок успешно отправлен в Telegram");
         setShowNotification(true);
         const timeout = setTimeout(() => setShowNotification(false), 5000);
         setNotificationTimeout(timeout);
@@ -841,19 +813,6 @@ console.log("Список покупок успешно отправлен в Te
           <span className="label">Избранное</span>
         </button>
         <button
-          className={`nav-item ${viewCart ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(true);
-            setViewNotifications(false);
-            setViewFavorites(false);
-          }}
-        >
-          <FiBell className="icon" />
-          <span className="label">Уведомления</span>          
-          <LuShoppingCart className="icon" />
-          <span className="label">Корзина</span>
-        </button>
-        <button
           className={`nav-item ${viewNotifications ? "active" : ""}`}
           onClick={() => {
             setViewCart(false);
@@ -863,6 +822,17 @@ console.log("Список покупок успешно отправлен в Te
         >
           <FiBell className="icon" />
           <span className="label">Уведомления</span>
+        </button>
+        <button
+          className={`nav-item ${viewCart ? "active" : ""}`}
+          onClick={() => {
+            setViewCart(true);
+            setViewNotifications(false);
+            setViewFavorites(false);
+          }}
+        >
+          <LuShoppingCart className="icon" />
+          <span className="label">Корзина</span>
         </button>
       </nav>
     </div>
