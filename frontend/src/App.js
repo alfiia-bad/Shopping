@@ -101,6 +101,34 @@ const App = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (viewCart) {
+      localStorage.setItem("activeTab", "cart");
+    } else if (viewFavorites) {
+      localStorage.setItem("activeTab", "favorites");
+    } else if (viewNotifications) {
+      localStorage.setItem("activeTab", "notifications");
+    } else {
+      localStorage.setItem("activeTab", "products");
+    }
+  }, [viewCart, viewFavorites, viewNotifications]);
+
+  useEffect(() => {
+    const activeTab = localStorage.getItem("activeTab");
+
+    if (activeTab === "cart") {
+      setViewCart(true);
+    } else if (activeTab === "favorites") {
+      setViewFavorites(true);
+    } else if (activeTab === "notifications") {
+      setViewNotifications(true);
+    } else {
+      setViewCart(false);
+      setViewFavorites(false);
+      setViewNotifications(false);
+    }
+  }, []);
+
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
