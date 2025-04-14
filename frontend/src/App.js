@@ -94,6 +94,7 @@ const App = () => {
 
       setPendingCart(newCart); // Сохраняем данные для модалки
       setIsCartModalOpen(true); // Открываем модалку
+      setViewCart(true); // Переключаемся на вкладку "Корзина"
 
       // Убираем параметры из URL
       window.history.replaceState(null, "", window.location.origin);
@@ -156,9 +157,9 @@ const App = () => {
   };
 
   const clearCart = () => {
-    updateCart([]);
-    setIsModalOpen(false);
-    setViewCart(false);
+    updateCart([]); // Очищаем корзину
+    setIsModalOpen(false); // Закрываем модалку
+    // Убираем переключение на вкладку "Товары"
   };
 
   const addToFavorites = async (productId) => {
@@ -306,7 +307,7 @@ const App = () => {
 
     // Формируем ссылку на сайт с модальным окном
     const siteUrl = `${window.location.origin}?favorites=${favorites.join(",")}`;
-    const message = `Список избранных товаров:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить избранное на сайт</a>`;
+    const message = `Список избранных товаров:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить это избранное на сайт</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
