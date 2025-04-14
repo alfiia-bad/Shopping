@@ -104,6 +104,7 @@ const App = () => {
 
       // Убираем параметры из URL
       window.history.replaceState(null, "", window.location.origin);
+      return; // Прерываем выполнение
     }
   }, []);
 
@@ -124,15 +125,15 @@ const App = () => {
 
     if (activeTab === "cart") {
       setViewCart(true);
-setViewFavorites(false);
+      setViewFavorites(false);
       setViewNotifications(false);
     } else if (activeTab === "favorites") {
       setViewFavorites(true);
-setViewCart(false);
+      setViewCart(false);
       setViewNotifications(false);
     } else if (activeTab === "notifications") {
       setViewNotifications(true);
-setViewCart(false);
+      setViewCart(false);
       setViewFavorites(false);
     } else {
       setViewCart(false);
