@@ -66,8 +66,9 @@ const App = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const favoritesParam = urlParams.get("favorites");
 
+    // Обработка параметра favorites
+    const favoritesParam = urlParams.get("favorites");
     if (favoritesParam) {
       const favoritesArray = favoritesParam.split(",");
       setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
@@ -75,13 +76,14 @@ const App = () => {
       setViewFavorites(true); // Переключаемся на вкладку "Избранное"
       setViewCart(false);
       setViewNotifications(false);
+
+      // Убираем параметры из URL
+      window.history.replaceState(null, "", window.location.origin);
+      return; // Прерываем выполнение, чтобы не обрабатывать другие параметры
     }
-  }, []);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    // Обработка параметра cart
     const cartParam = urlParams.get("cart");
-
     if (cartParam) {
       const newCart = cartParam.split(",").map((item) => {
         const [id, quantity] = item.split(":");
@@ -97,6 +99,8 @@ const App = () => {
       setPendingCart(newCart); // Сохраняем данные для модалки
       setIsCartModalOpen(true); // Открываем модалку
       setViewCart(true); // Переключаемся на вкладку "Корзина"
+      setViewFavorites(false);
+      setViewNotifications(false);
 
       // Убираем параметры из URL
       window.history.replaceState(null, "", window.location.origin);
