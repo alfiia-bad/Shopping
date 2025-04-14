@@ -603,15 +603,13 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       {isFavoritesModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
-{/* Заголовок с обновлённым стилем */}
-            <h3 className="modal-title">
-              Загрузка идентификаторов товара. Избранное будет безвозвратно обновлено. Уверены?
-            </h3>
+            <h3 className="modal-title">Избранное обновится безвозвратно. Вы уверены?</h3>
             <textarea
               className="favorites-input"
               placeholder="Вставьте идентификаторы избранных товаров..."
               value={favoritesInput}
               onChange={(e) => setFavoritesInput(e.target.value)}
+              style={{ display: "none" }} // Скрываем инпут
             />
             <div className="modal-actions">
               <button
@@ -623,13 +621,13 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
                   setViewCart(false);
                   setViewNotifications(false);
                   handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
-}}
+                }}
               >
                 Обновить
               </button>
               <button
                 className="modal-cancel"
-                onClick={handleCloseFavoritesModal} // Закрываем модалку
+                onClick={handleCloseFavoritesModal} // Закрываем модальное окно
               >
                 Отмена
               </button>
