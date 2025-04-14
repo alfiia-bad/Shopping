@@ -83,8 +83,8 @@ def update_cart():
             if 'id' not in item or 'quantity' not in item:
                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
             conn.execute(
-                'INSERT INTO cart (id, quantity) VALUES (?, ?)',
-                (item['id'], item['quantity'])
+                'INSERT INTO cart (id, name, quantity) VALUES (?, ?, ?)',
+                (item['id'], item.get('name', None), item['quantity'])
             )
         conn.commit()
 

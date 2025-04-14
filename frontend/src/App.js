@@ -118,6 +118,8 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newCart),
     }).catch((err) => console.error("Ошибка сохранения:", err));
+
+    sendCartToServer(); // Вызов функции после обновления корзины
   };
 
   const addToCart = (product) => {
@@ -311,6 +313,20 @@ console.log("Список покупок успешно отправлен в Te
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
     }
+  };
+
+  const sendCartToServer = async () => {
+    const cartData = cart.map((item) => ({
+      id: item.id,
+      name: products.find((p) => p.id === item.id)?.name || "Неизвестный товар",
+      quantity: item.quantity,
+    }));
+
+    await fetch(`${API_URL}/cart`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cartData),
+    });
   };
 
   const handleOpenFavoritesModal = () => {
