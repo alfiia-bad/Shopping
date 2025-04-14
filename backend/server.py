@@ -70,16 +70,20 @@ def get_cart():
 
 @app.route('/cart', methods=['POST'])
 def update_cart():
-    items = request.json
-    if not isinstance(items, list):
-        return jsonify({"error": "Неверный формат данных"}), 400
+    data = request.json
+    if not isinstance(data, list):
+        return jsonify({"success": False, "message": "Неверный формат данных"}), 400
 
     with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM cart')  # удалим старые записи
-        for item in items:
-            conn.execute('INSERT INTO cart (id, name, quantity) VALUES (?, ?, ?)',
-                         (item["id"], item["name"], item["quantity"]))
-    return jsonify({"success": True})
+        conn.execute('DELETE FROM cart')  # Удаляем старые записи
+        for item in data:
+            conn.execute(
+                'INSERT INTO cart (id, quantity) VALUES (?, ?)',
+                (item['id'], item['quantity'])
+            )
+        conn.commit()
+
+    return jsonify({"success": True}), 200
 
 @app.route('/cart/comment', methods=['POST'])
 def add_comment_to_cart():
