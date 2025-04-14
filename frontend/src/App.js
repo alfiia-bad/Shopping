@@ -65,12 +65,7 @@ const App = () => {
     const favoritesParam = urlParams.get("favorites");
 
     if (favoritesParam) {
-      const favoritesArray = favoritesParam.split(",");
-      setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
-      setIsFavoritesModalOpen(true); // Открываем модалку
-setViewFavorites(true); // Переключаемся на вкладку "Избранное"
-      setViewCart(false);
-      setViewNotifications(false);
+      handleOpenFavoritesModal(favoritesParam); // Открываем модальное окно с импортированным списком
     }
   }, []);
 
@@ -143,24 +138,10 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   };  
 
   const updateFavorites = async () => {
-    const lines = favoritesInput.split("\n").map((line) => line.trim());
-    const validFavorites = lines.filter((line) =>
-      products.some((product) => product.id === line)
-    );
-
-    const invalidFavorites = lines.filter(
-      (line) => !products.some((product) => product.id === line)
-    );
-
-    if (invalidFavorites.length > 0) {
-      setShowInvalidFavoritesBadge(true); // Показываем бейдж
-      setTimeout(() => setShowInvalidFavoritesBadge(false), 5000); // Скрываем бейдж через 5 секунд
-    }
-
-    if (validFavorites.length === 0) {
-      console.error("Некорректные данные: ни один из товаров не найден.");
-      return;
-    }
+    const validFavorites = favoritesInput
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item); // Убираем пустые значения
 
     try {
       const response = await fetch(`${API_URL}/favorites`, {
@@ -172,7 +153,7 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
       if (response.ok) {
         const updatedFavorites = await response.json();
         setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
-        setFavoritesInput(""); // Очищаем инпут
+        setFavoritesInput(""); // Очищаем список
       } else {
         console.error("Ошибка обновления избранного");
       }
@@ -329,9 +310,9 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
   );
 
   const handleOpenCommentModal = (id) => {
-    const product = cart.find((item) => item.id === id); // Находим товар в корзине
+const product = cart.find((item) => item.id === id); // Находим товар в корзине
     setCurrentProductId(id); // Устанавливаем текущий ID товара
-    setCurrentComment(product?.comment || ""); // Устанавливаем текущий комментарий (если есть)
+setCurrentComment(product?.comment || ""); // Устанавливаем текущий комментарий (если есть)
     setIsCommentModalOpen(true); // Открываем модальное окно
   };
 
@@ -642,13 +623,16 @@ setViewFavorites(true); // Переключаемся на вкладку "Из�
             <div className="modal-actions">
               <button
                 className="modal-confirm"
-                onClick={handleUpdateFavorites}
+                onClick={() => {
+                  updateFavorites(); // Сохраняем список на сервер
+                  setIsFavoritesModalOpen(false); // Закрываем модальное окно
+                }}
               >
                 Обновить
               </button>
               <button
                 className="modal-cancel"
-                onClick={handleCloseFavoritesModal}
+                onClick={handleCloseFavoritesModal} // Закрываем модальное окно
               >
                 Отмена
               </button>
