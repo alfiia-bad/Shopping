@@ -39,30 +39,11 @@ init_db()
 
 def update_database_schema():
     with sqlite3.connect(DB_PATH) as conn:
-        # Проверяем, есть ли колонка 'comment' в таблице 'cart'
         cursor = conn.execute("PRAGMA table_info(cart);")
         columns = [row[1] for row in cursor.fetchall()]
         if "comment" not in columns:
             conn.execute("ALTER TABLE cart ADD COLUMN comment TEXT;")
             print("Колонка 'comment' успешно добавлена в таблицу 'cart'.")
-        if "name" not in columns:
-            conn.execute("ALTER TABLE cart ADD COLUMN name TEXT NOT NULL;")
-            print("Колонка 'name' успешно добавлена в таблицу 'cart'.")
-
-        # Выполняем миграцию таблицы cart
-        conn.execute("ALTER TABLE cart RENAME TO cart_old;")
-        conn.execute('''
-            CREATE TABLE cart (
-                id TEXT PRIMARY KEY,
-                name TEXT,
-                quantity INTEGER NOT NULL
-            )
-        ''')
-        conn.execute('''
-            INSERT INTO cart (id, name, quantity)
-            SELECT id, name, quantity FROM cart_old;
-        ''')
-        conn.execute("DROP TABLE cart_old;")
 
 update_database_schema()
 
