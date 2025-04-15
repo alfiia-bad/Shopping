@@ -543,10 +543,13 @@ align-items: center;
 .modal {
   background-color: white;
   border-radius: 8px;
-  padding: 24px;
+  padding: 16px;
   width: 300px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 80vh; /* Ограничиваем высоту модального окна */
+  overflow-y: auto; /* Добавляем прокрутку, если содержимое превышает высоту */
+  box-sizing: border-box;
 }
 
 .modal p {
@@ -888,7 +891,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
-  resize: none;
+  resize: none; /* Запрещаем изменение размера текстового поля */
 }
 
 .info-icon-wrapper {

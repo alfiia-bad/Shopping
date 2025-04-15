@@ -274,7 +274,7 @@ const App = () => {
 
   const sendToTelegram = async () => {
     if (cart.length === 0) return;
-
+  
     const messageBody = cart
       .map((item) => {
         const product = products.find((p) => p.id === item.id);
@@ -285,19 +285,24 @@ const App = () => {
           : `- ${product.name} x${item.quantity}`;
       })
       .join("\n");
-
-    const cartParams = cart.map((item) => `${item.id}:${item.quantity}`).join(",");
+  
+    const cartParams = cart
+      .map(
+        (item) =>
+          `${item.id}:${item.quantity}:${item.comment ? encodeURIComponent(item.comment) : ""}`
+      )
+      .join(",");
     const siteUrl = `${window.location.origin}?cart=${cartParams}`;
-
+  
     const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>`;
-
+  
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: message, parse_mode: "HTML" }),
       });
-
+  
       if (!response.ok) {
         console.error("Ошибка отправки в Telegram");
       } else {
