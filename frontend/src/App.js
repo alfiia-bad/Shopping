@@ -831,6 +831,7 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
         <div className="modal-overlay">
           <div className="modal">
             <h3 className="modal-title">Комментарий для товара:</h3>
+            <p className="modal-product-name">{products.find((p) => p.id === currentProductId)?.name || "Неизвестный товар"}</p>
             <textarea
               className="comment-input"
               value={currentComment}

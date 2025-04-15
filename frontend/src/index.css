@@ -590,11 +590,12 @@ align-items: center;
 .modal {
   background-color: white;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   width: 300px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   max-height: 90vh; /* Ограничиваем высоту модального окна ВЕРНУТЬ 80*/
+  max-width: 400px;
   overflow-y: auto; /* Добавляем прокрутку, если содержимое превышает высоту */
   box-sizing: border-box;
   position: fixed; /* ✅ фиксируем чтобы не прыгала */
@@ -611,16 +612,28 @@ align-items: center;
 
 /* Стили для заголовка модального окна */
 .modal-title {
-font-weight: normal; /* Убираем жирность */
-font-weight: normal; /* Убираем жирность */
-  font-size:616p /* Устанавливаем размер шрифта */x; /* Устанавливаем размер шрифта */
-  margin-bottom:212p /* Добавляем отступ снизу */x; /* Добавляем отступ снизу */
+  font-weight: normal; /* Убираем жирность */
+  font-weight: normal; /* Убираем жирность */
+  font-size: 18px;
+  margin-bottom: 8px;
   color: #333; /* Цвет текста */
+}
+
+.modal-product-name {
+  font-size: 16px;
+  font-weight: normal;
+  margin: 0 auto 12px; /* Отступ снизу */
+  max-width: 100%;
+  text-align: left; /* Выравнивание по левому краю */
+  white-space: nowrap; /* Запрещаем перенос текста */
+  overflow: hidden; /* Обрезаем текст, если он выходит за пределы */
+  text-overflow: ellipsis; /* Добавляем троеточие */
 }
 
 .modal-actions {
   display: flex;
   justify-content: space-around;
+  gap: 10px; /* Расстояние между кнопками */
 }
 
 .modal-confirm,
@@ -628,11 +641,16 @@ font-weight: normal; /* Убираем жирность */
   background-color: #A56AB4;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 16px;
   border-radius:  8px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.2s ease;
+}
+
+.modal-confirm {
+  background-color: #A56AB4;
+  color: #fff;
 }
 
 .modal-confirm:hover {
@@ -945,6 +963,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   border-radius: 4px;
   font-size: 16px;
   resize: none; /* Запрещаем изменение размера текстового поля */
+  margin-bottom: 10px; /* Отступ между инпутом и кнопками */
 }
 
 .info-icon-wrapper {
