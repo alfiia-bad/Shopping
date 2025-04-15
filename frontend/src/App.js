@@ -427,7 +427,10 @@ const App = () => {
       await fetch(`${API_URL}/cart/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: currentProductId, comment: currentComment }),
+        body: JSON.stringify({
+productId: currentProductId,
+comment: currentComment || "", // Отправляем пустую строку, если комментарий пустой
+}),
       });
 
       // Закрываем модальное окно после успешного сохранения
@@ -656,70 +659,73 @@ const App = () => {
                     <div className="cart-item-header">
                       <FaPencilAlt
                         className="edit-icon"
-                        onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
-                      />
-                      <p className="product-name" style={{ margin: 0 }}>{item.name}</p>
-                      {item.comment?.trim() && (
-                        <MdInfo size={16} color="rgb(165, 106, 180)" />
-                      )}
-                    </div>
-                    <div className="quantity-controls">
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        disabled={item.quantity === 0}
-                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
-                      >
-                        -
-                      </button>
-                      <span className="quantity">{item.quantity}</span>
-                      <button
-                        onClick={() => addToCart(item)}
-                        className="qty-button plus"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                <button className="send-button" onClick={sendToTelegram}>
-                  <RiTelegram2Fill className="telegram-icon" />
-                  Отправить в Telegram
-                </button>
-              </>
-            )}
-          </div>
-        )}
-      </main>
+                        // Открываем модальное окно
+                                    />
+                                    <p className="product-name" style={{ margin: 0 }}>{item.name}</p>
+                                    {item.comment?.trim() && (
+                                    <div>
+                                      <MdInfo size={16} color="rgb(165, 106, 180)" />
+                                      <span className="info-hint">Есть комментарий</span>
+                                    </div>
+                                    )}
+                                  </div>
+                                  <div className="quantity-controls">
+                                    <button
+                                    onClick={() => removeFromCart(item.id)}
+                                    disabled={item.quantity === 0}
+                                    className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
+                                    >
+                                    -
+                                    </button>
+                                    <span className="quantity">{item.quantity}</span>
+                                    <button
+                                    onClick={() => addToCart(item)}
+                                    className="qty-button plus"
+                                    >
+                                    +
+                                    </button>
+                                  </div>
+                                  </div>
+                                ))}
+                                <button className="send-button" onClick={sendToTelegram}>
+                                  <RiTelegram2Fill className="telegram-icon" />
+                                  Отправить в Telegram
+                                </button>
+                                </>
+                              )}
+                              </div>
+                            )}
+                            </main>
 
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <p>Удаление безвозвратно. Вы уверены?</p>
-            <div className="modal-actions">
-              <button onClick={clearCart} className="modal-confirm">
-                Удалить
-              </button>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="modal-cancel"
-              >
-                Отмена
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                            {isModalOpen && (
+                            <div className="modal-overlay">
+                              <div className="modal">
+                              <p>Удаление безвозвратно. Вы уверены?</p>
+                              <div className="modal-actions">
+                                <button onClick={clearCart} className="modal-confirm">
+                                Удалить
+                                </button>
+                                <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="modal-cancel"
+                                >
+                                Отмена
+                                </button>
+                              </div>
+                              </div>
+                            </div>
+                            )}
 
-      {isFavoritesModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3 className="modal-title">Избранное обновится безвозвратно. Вы уверены?</h3>
-            <textarea
-              className="favorites-input"
-              placeholder="Вставьте идентификаторы избранных товаров..."
-              value={favoritesInput}
-              onChange={(e) => setFavoritesInput(e.target.value)}
-              style={{ display: "none" }} // Скрываем инпут
+                            {isFavoritesModalOpen && (
+                            <div className="modal-overlay">
+                              <div className="modal">
+                              <h3 className="modal-title">Избранное обновится безвозвратно. Вы уверены?</h3>
+                              <textarea
+                                className="favorites-input"
+                                placeholder="Вставьте идентификаторы избранных товаров..."
+                                value={favoritesInput}
+                                onChange={(e) => setFavoritesInput(e.target.value)}
+                                style={{ display: "none" }} // Скрываем инпут
             />
             <div className="modal-actions">
               <button
