@@ -81,6 +81,10 @@ def update_cart():
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute('DELETE FROM cart')  # Удаляем старые записи
         for item in data:
+            # Пропускаем пустой "общий" объект, не являющийся товаром
+            if item.get("id") == "general":
+                continue
+
             if 'id' not in item or 'name' not in item or 'quantity' not in item:
                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
             conn.execute(
