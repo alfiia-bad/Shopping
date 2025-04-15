@@ -905,7 +905,8 @@ const App = () => {
               className="comment-input"
               value={currentComment}
               maxLength={50} // Ограничение на 50 символов
-              onChange={(e) => setCurrentComment(e.target.value)}
+              onChange={(e) => setCurrentComment(e.target.value)} // Обновляем локальное состояние
+              onBlur={() => handleCommentChange(currentProductId, currentComment)} // Сохраняем комментарий при потере фокуса
               placeholder="Введите комментарий..."
             />
             <div className="modal-actions">
