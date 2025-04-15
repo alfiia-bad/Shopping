@@ -277,16 +277,18 @@ const App = () => {
     const messageBody = cart
       .map((item) => {
         const product = products.find((p) => p.id === item.id);
-        return product ? `- ${product.name} x${item.quantity}` : `- Неизвестный товар x${item.quantity}`;
+        if (!product) return `- Неизвестный товар x${item.quantity}`;
+        const comment = product.comment?.trim(); // предполагается, что у продукта может быть поле comment
+        return comment
+          ? `- ${product.name} x${item.quantity} [${comment}]`
+          : `- ${product.name} x${item.quantity}`;
       })
       .join("\n");
 
-    const cartParams = cart
-      .map((item) => `${item.id}:${item.quantity}`)
-      .join(",");
+    const cartParams = cart.map((item) => `${item.id}:${item.quantity}`).join(",");
     const siteUrl = `${window.location.origin}?cart=${cartParams}`;
 
-    const message = `Список покупок:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить этот список покупок на сайт</a>`;
+    const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
@@ -337,14 +339,14 @@ const App = () => {
     const messageBody = favorites
       .map((productId, index) => {
         const product = products.find((p) => p.id === productId);
-        return product ? `${index + 1}. ${product.name}` : null;
+        return product ? `- ${product.name}` : null;
       })
       .filter(Boolean)
       .join("\n"); // Используем \n для переноса строк
 
     // Формируем ссылку на сайт с модальным окном
     const siteUrl = `${window.location.origin}?favorites=${favorites.join(",")}`;
-    const message = `Список избранных товаров:\n${messageBody}\n\n<a href="${siteUrl}">Загрузить это избранное на сайт</a>`;
+    const message = `Список избранных товаров:\n\n${messageBody}\n\n💟 <a href="${siteUrl}">Загрузить это избранное</a>`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
