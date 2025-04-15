@@ -109,7 +109,7 @@ def save_general_comment():
             conn.execute('UPDATE cart SET general_comment = ? WHERE id = "general"', (comment,))
         else:
             # Вставляем новую запись
-            conn.execute('INSERT INTO cart (id, general_comment) VALUES ("general", ?)', (comment,))
+            conn.execute('INSERT INTO cart (id, name, general_comment) VALUES ("general", "", ?)', (comment,))
         conn.commit()
 
     return jsonify({"success": True, "message": "Общий комментарий сохранён"})

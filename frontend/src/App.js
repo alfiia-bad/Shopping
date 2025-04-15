@@ -318,11 +318,11 @@ const App = () => {
 
     // Добавляем общий комментарий к корзине
     const generalComment = cartComment.trim()
-      ? `\n\nКомментарий к корзине: ${cartComment.trim()}`
+      ? `Комментарий к корзине: ${cartComment.trim()}`
       : "";
 
     // Итоговое сообщение
-    const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>${generalComment}`;
+    const message = `Список покупок:\n\n${messageBody}\n\n${generalComment}\n\n🛒 Загрузить этот список покупок (${siteUrl})`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
@@ -346,16 +346,22 @@ const App = () => {
 
   const sendUpdateRequest = async () => {
     try {
+      const siteUrl = `${window.location.origin}`; // Ссылка на главную страницу (вкладка Товары)
+      const message = `🚨 Обнови список покупок 🚨\n\n<a href="${siteUrl}">Перейти в приложение</a>`;
+
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: "🚨 Прошу обновить список покупок 🚨" }),
+        body: JSON.stringify({ cart: message, parse_mode: "HTML" }), // Передаём HTML-разметку
       });
+
       const data = await response.json();
       if (!response.ok || !data.success) {
+        console.error("Ошибка при отправке запроса:", await response.text());
         setShowNotification(true);
         setNotificationTimeout(setTimeout(() => setShowNotification(false), 5000));
       } else {
+        console.log("Запрос на обновление списка успешно отправлен в Telegram");
         setShowNotification(true);
         setNotificationTimeout(setTimeout(() => setShowNotification(false), 5000));
       }
