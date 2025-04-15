@@ -11,6 +11,7 @@ const products = [
   { id: "1", name: "Бананы", image: "/images/banana.png" },
   { id: "2", name: "Вода", image: "/images/water3.webp" },
   { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
+  { id: "4", name: "Кофе капсулы. Вкусный и великолепный. Ароматный", image: "" },
 ];
 
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
@@ -68,7 +69,7 @@ const App = () => {
       setTimeout(() => {
         const newCart = cartParam.split(",").map((item) => {
           const [id, quantity, comment] = item.split(":"); // Разделяем id, quantity и comment
-          const product = products.find((p) => p.id === id); // Ищем товар в массиве products
+const product = products.find((p) => p.id === id); // Ищем товар в массиве products
           return {
             id,
             name: product ? product.name : "Неизвестный товар", // Используем название из products
@@ -274,7 +275,7 @@ const App = () => {
 
   const sendToTelegram = async () => {
     if (cart.length === 0) return;
-  
+
     const messageBody = cart
       .map((item) => {
         const product = products.find((p) => p.id === item.id);
@@ -285,24 +286,24 @@ const App = () => {
           : `- ${product.name} x${item.quantity}`;
       })
       .join("\n");
-  
+
     const cartParams = cart
-      .map(
-        (item) =>
-          `${item.id}:${item.quantity}:${item.comment ? encodeURIComponent(item.comment) : ""}`
+.map(
+(item) =>
+`${item.id}:${item.quantity}:${item.comment ? encodeURIComponent(item.comment) : ""}`
       )
-      .join(",");
+.join(",");
     const siteUrl = `${window.location.origin}?cart=${cartParams}`;
-  
+
     const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>`;
-  
+
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: message, parse_mode: "HTML" }),
       });
-  
+
       if (!response.ok) {
         console.error("Ошибка отправки в Telegram");
       } else {
@@ -446,7 +447,18 @@ const App = () => {
 
       // Снимаем фокус с текстового поля и возвращаем экран к стандартному размеру
       document.activeElement.blur(); // Снимаем фокус с текстового поля
-      window.scrollTo({ top: 0, behavior: "smooth" }); // Возвращаем экран наверх
+      window.scrollTo(0, 0); // Возвращаем экран наверх
+
+      // iOS scroll fix (магия 💫)
+      setTimeout(() => {
+        const viewport = document.querySelector('meta[name=viewport]');
+        if (viewport) {
+          viewport.content = 'width=device-width, initial-scale=1.01';
+          setTimeout(() => {
+            viewport.content = 'width=device';
+          }, 300);
+        }
+      }, 300);
     } catch (error) {
       console.error("Ошибка при сохранении комментария:", error);
     }
