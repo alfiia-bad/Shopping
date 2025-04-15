@@ -555,9 +555,13 @@ align-items: center;
   width: 300px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-height: 80vh; /* Ограничиваем высоту модального окна */
+  max-height: 90vh; /* Ограничиваем высоту модального окна ВЕРНУТЬ 80*/
   overflow-y: auto; /* Добавляем прокрутку, если содержимое превышает высоту */
   box-sizing: border-box;
+  position: fixed; /* ✅ фиксируем чтобы не прыгала */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .modal p {
@@ -938,4 +942,14 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 .info-icon-wrapper:hover .info-hint {
   display: block; /* Показываем хинт при наведении */
+}
+
+.no-image-icon {
+  font-size: 48px; /* Размер иконки */
+  color: #ccc; /* Серый цвет */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ширина контейнера */
+  height: 100%; /* Высота контейнера */
 }

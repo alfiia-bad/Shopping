@@ -426,39 +426,48 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
 
   const saveComment = async () => {
     try {
+      const textarea = document.activeElement;
+
       // Обновляем локальное состояние корзины
       const updatedCart = cart.map((item) =>
         item.id === currentProductId ? { ...item, comment: currentComment } : item
       );
       setCart(updatedCart);
 
-      // Отправляем запрос на сервер для сохранения комментария
+      // Отправляем запрос на сервер
       await fetch(`${API_URL}/cart/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           productId: currentProductId,
-          comment: currentComment || "", // Отправляем пустую строку, если комментарий пустой
+          comment: currentComment || "",
         }),
       });
 
-      // Закрываем модальное окно после успешного сохранения
+      // Закрываем модалку
       setIsCommentModalOpen(false);
 
-      // Снимаем фокус с текстового поля и возвращаем экран к стандартному размеру
-      document.activeElement.blur(); // Снимаем фокус с текстового поля
-      window.scrollTo(0, 0); // Возвращаем экран наверх
+      // 💡 Убираем фокус и заставляем iOS вернуть размер экрана
+      if (textarea && typeof textarea.blur === "function") textarea.blur();
 
-      // iOS scroll fix (магия 💫)
+      // Принудительно возвращаем scroll и layout
       setTimeout(() => {
-        const viewport = document.querySelector('meta[name=viewport]');
-        if (viewport) {
-          viewport.content = 'width=393px, initial-scale=1.0'; // Устанавливаем ширину экрана iPhone
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // 💥 Хак: пересоздаем viewport, чтобы iOS пересчитал layout
+        const meta = document.querySelector("meta[name=viewport]");
+        if (meta) {
+          const original = meta.getAttribute("content");
+          meta.setAttribute("content", "width=393");
           setTimeout(() => {
-            viewport.content = 'width=device-width, initial-scale=1.0'; // Возвращаем стандартный viewport
-          }, 300);
+            meta.setAttribute("content", original || "width=device-width, initial-scale=1");
+          }, 200);
         }
+
+        // 🚑 На всякий случай принудительно триггерим resize
+        window.dispatchEvent(new Event("resize"));
       }, 300);
+
     } catch (error) {
       console.error("Ошибка при сохранении комментария:", error);
     }
