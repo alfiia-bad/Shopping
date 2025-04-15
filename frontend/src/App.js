@@ -123,10 +123,17 @@ const App = () => {
   }, [viewCart, viewFavorites, viewNotifications]);
 
   useEffect(() => {
-    fetch(`${API_URL}/cart`)
-      .then((res) => res.json())
-      .then((data) => setCart(data))
-      .catch((error) => console.error("Ошибка загрузки корзины:", error));
+    const fetchCart = async () => {
+      try {
+        const response = await fetch(`${API_URL}/cart`);
+        const data = await response.json();
+        setCart(data); // Устанавливаем корзину из базы данных
+      } catch (error) {
+        console.error("Ошибка загрузки корзины:", error);
+      }
+    };
+
+    fetchCart();
   }, []);
 
   useEffect(() => {
@@ -171,11 +178,11 @@ const App = () => {
       await fetch(`${API_URL}/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCart),
+        body: JSON.stringify(newCart), // Отправляем всю корзину, включая комментарии
       });
-      console.log("Корзина успешно обновлена на сервере");
+      console.log("Корзина успешно обновлена");
     } catch (error) {
-      console.error("Ошибка обновления корзины на сервере:", error);
+      console.error("Ошибка при обновлении корзины:", error);
     }
   };
 
@@ -455,6 +462,13 @@ const App = () => {
     setCurrentProductId(id); // Устанавливаем текущий ID товара
     setCurrentComment(product?.comment || ""); // Устанавливаем текущий комментарий (если есть)
     setIsCommentModalOpen(true); // Открываем модальное окно
+  };
+
+  const handleCommentChange = (id, comment) => {
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, comment } : item
+    );
+    updateCart(updatedCart); // Сохраняем изменения на сервере
   };
 
   const saveComment = async () => {

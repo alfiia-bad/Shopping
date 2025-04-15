@@ -109,7 +109,7 @@ def save_general_comment():
             conn.execute('UPDATE cart SET general_comment = ? WHERE id = "general"', (comment,))
         else:
             # Вставляем новую запись
-            conn.execute('INSERT INTO cart (id, name, general_comment) VALUES ("general", "", ?)', (comment,))
+            conn.execute('INSERT INTO cart (id, name, quantity, general_comment) VALUES ("general", "", 0, ?)', (comment,))
         conn.commit()
 
     return jsonify({"success": True, "message": "Общий комментарий сохранён"})
@@ -123,7 +123,7 @@ def get_general_comment():
             return jsonify({"comment": result[0]})
         return jsonify({"comment": ""})
 
-@app.route('/send-to-telegram', methods=['POST'])    
+@app.route('/send-to-telegram', methods=['POST'])
 def send_to_telegram():
     data = request.json
     cart = data.get('cart', '')
@@ -132,11 +132,27 @@ def send_to_telegram():
         return jsonify({"success": False, "message": "Корзина пуста"}), 400
 
     # Формируем сообщение
-    message = cart
+    cart_items = data.get('cartItems', [])
+    general_comment = data.get('comment', '').strip()
+    cart_params = data.get('cartParams', '')
+
+    # Формируем список товаров
+    cart_items_str = "\n".join([f"- {item['name']} x{item['quantity']}" for item in cart_items])
+
+    # Формируем ссылку
+    site_url = f"https://alfa-shop-ljmg.onrender.com?cart={cart_params}"
+    link_text = f'<a href="{site_url}">Загрузить этот список покупок</a>'
+
+    # Добавляем общий комментарий, если он есть
+    if general_comment:
+        message = f"Список покупок:\n\n{cart_items_str}\n\nКомментарий к корзине: {general_comment}\n\n{link_text}"
+    else:
+        message = f"Список покупок:\n\n{cart_items_str}\n\n{link_text}"
+
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
     try:
-        # Отправляем сообщение в Telegram с parse_mode: "HTML"
+        # Отправляем сообщение в Telegram
         response = requests.post(url, data={
             'chat_id': CHAT_ID,
             'text': message,
