@@ -91,37 +91,6 @@ def update_cart():
 
     return jsonify({"success": True}), 200
 
-@app.route('/cart/comment', methods=['POST'])
-def add_comment_to_cart():
-    data = request.json
-    product_id = data.get('productId')
-    comment = data.get('comment')
-
-    if not product_id:
-        return jsonify({"success": False, "message": "productId обязателен"}), 400
-
-    if comment is None or comment.strip() == "":
-        # Логика для удаления комментария
-        with sqlite3.connect(DB_PATH) as conn:
-            cursor = conn.execute('SELECT id FROM cart WHERE id = ?', (product_id,))
-            product = cursor.fetchone()
-            if product:
-                conn.execute('UPDATE cart SET comment = NULL WHERE id = ?', (product_id,))
-                conn.commit()
-                return jsonify({"success": True, "message": "Комментарий удалён"}), 200
-            else:
-                return jsonify({"success": False, "message": "Товар не найден"}), 404
-
-    # Логика для сохранения комментария
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT id FROM cart WHERE id = ?', (product_id,))
-        product = cursor.fetchone()
-        if product:
-            conn.execute('UPDATE cart SET comment = ? WHERE id = ?', (comment, product_id))
-            conn.commit()
-            return jsonify({"success": True, "message": "Комментарий сохранён"}), 200
-        else:
-            return jsonify({"success": False, "message": "Товар не найден"}), 404
 
 @app.route('/cart/general-comment', methods=['POST'])
 def save_general_comment():
@@ -133,7 +102,14 @@ def save_general_comment():
 
     # Сохраняем общий комментарий в базе данных
     with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('UPDATE cart SET general_comment = ? WHERE id = "general"', (comment,))
+        # Проверяем, существует ли запись с id = "general"
+        cursor = conn.execute('SELECT 1 FROM cart WHERE id = "general"')
+        if cursor.fetchone():
+            # Обновляем существующую запись
+            conn.execute('UPDATE cart SET general_comment = ? WHERE id = "general"', (comment,))
+        else:
+            # Вставляем новую запись
+            conn.execute('INSERT INTO cart (id, general_comment) VALUES ("general", ?)', (comment,))
         conn.commit()
 
     return jsonify({"success": True, "message": "Общий комментарий сохранён"})
@@ -143,7 +119,7 @@ def get_general_comment():
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.execute('SELECT general_comment FROM cart WHERE id = "general"')
         result = cursor.fetchone()
-        if result:
+        if result and result[0]:
             return jsonify({"comment": result[0]})
         return jsonify({"comment": ""})
 

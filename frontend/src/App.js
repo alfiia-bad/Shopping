@@ -142,28 +142,14 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const fetchCartComment = async () => {
-      try {
-        const response = await fetch(`${API_URL}/cart/comment`);
-        const data = await response.json();
-        if (data.comment) {
-          setCartComment(data.comment); // Устанавливаем комментарий из базы данных
-        }
-      } catch (error) {
-        console.error("Ошибка при загрузке комментария:", error);
-      }
-    };
-
-    fetchCartComment();
-  }, []);
-
-  useEffect(() => {
     const fetchGeneralComment = async () => {
       try {
         const response = await fetch(`${API_URL}/cart/general-comment`);
-        const data = await response.json();
-        if (data.comment) {
-          setCartComment(data.comment); // Устанавливаем общий комментарий из базы данных
+        if (response.ok) {
+          const data = await response.json();
+          setCartComment(data.comment || ""); // Устанавливаем общий комментарий из базы данных
+        } else {
+          console.error("Ошибка при загрузке общего комментария:", await response.text());
         }
       } catch (error) {
         console.error("Ошибка при загрузке общего комментария:", error);
@@ -473,16 +459,6 @@ const App = () => {
       );
       setCart(updatedCart);
 
-      // Отправляем запрос на сервер
-      await fetch(`${API_URL}/cart/comment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: currentProductId,
-          comment: currentComment || "",
-        }),
-      });
-
       // Закрываем модалку
       setIsCommentModalOpen(false);
 
@@ -518,12 +494,17 @@ const App = () => {
 
   const saveGeneralComment = async () => {
     try {
-      await fetch(`${API_URL}/cart/general-comment`, {
+      const response = await fetch(`${API_URL}/cart/general-comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ comment: cartComment.trim() }), // Отправляем общий комментарий
       });
-      console.log("Общий комментарий к корзине успешно сохранён");
+
+      if (!response.ok) {
+        console.error("Ошибка при сохранении общего комментария:", await response.text());
+      } else {
+        console.log("Общий комментарий к корзине успешно сохранён");
+      }
     } catch (error) {
       console.error("Ошибка при сохранении общего комментария к корзине:", error);
     }
