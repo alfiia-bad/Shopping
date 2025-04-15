@@ -453,9 +453,9 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
       setTimeout(() => {
         const viewport = document.querySelector('meta[name=viewport]');
         if (viewport) {
-          viewport.content = 'width=device-width, initial-scale=1.01';
+          viewport.content = 'width=393px, initial-scale=1.0'; // Устанавливаем ширину экрана iPhone
           setTimeout(() => {
-            viewport.content = 'width=device';
+            viewport.content = 'width=device-width, initial-scale=1.0'; // Возвращаем стандартный viewport
           }, 300);
         }
       }, 300);
@@ -589,6 +589,7 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
                         {product.image ? (
                           <img
                             src={product.image}
+                            alt="" // Пустой alt для декоративного изображения
                           />
                         ) : (
                           <MdOutlineHideImage className="no-image-icon" />
@@ -645,6 +646,7 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
                       {product.image ? (
                         <img
                           src={product.image}
+                          alt="" // Пустой alt для декоративного изображения
                         />
                       ) : (
                         <MdOutlineHideImage className="no-image-icon" />
