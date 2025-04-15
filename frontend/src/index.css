@@ -88,8 +88,8 @@ body {
 }
 
 .cart-with-badge .item-count-badge {
-  top: -8px;
-  right: -2px;
+  top: -5px;
+  right: -6px;
 }
 
 .header-right {
@@ -328,6 +328,7 @@ border: 1px solid #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 12px 16px;
   font-size: 16px;
   background-color: #A56AB4;
@@ -340,6 +341,26 @@ border: 1px solid #ddd;
 
 .send-button:hover {
   background-color: #934fb1;
+}
+
+.send-button.full-width {
+  width: 100%; /* Растягиваем кнопку на всю ширину */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; /* Интервал между иконкой и текстом */
+  padding: 12px 16px;
+  font-size: 16px;
+  background-color: #A56AB4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.send-button.full-width:hover {
+  background-color: #934fb1; /* Цвет при наведении */
 }
 
 .telegram-icon {

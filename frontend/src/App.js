@@ -693,7 +693,7 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
             <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
               Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
             </p>
-            <button className="send-button" onClick={sendUpdateRequest}>
+            <button className="send-button full-width" onClick={sendUpdateRequest}>
               <RiTelegram2Fill className="telegram-icon" />
               Запросить обновление
             </button>
