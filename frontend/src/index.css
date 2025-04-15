@@ -304,20 +304,18 @@ border: 1px solid #ddd;
 
 /* Кнопка отправки в телеграм */
 .send-button {
-  margin-top: 24px;
-  background-color: #A56AB4;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 16px;
+  margin-bottom: 80px; /* Добавляем отступ снизу, чтобы кнопка не пряталась за футер */
   display: flex;
   align-items: center;
-  gap: 8px;
   justify-content: center;
+  padding: 12px 16px;
+  font-size: 16px;
+  background-color: #A56AB4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  width: 100%; /* Растягиваем кнопку на всю ширину */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .send-button:hover {
@@ -904,7 +902,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
   resize: none; /* Запрещаем изменение размера текстового поля */
 }
 

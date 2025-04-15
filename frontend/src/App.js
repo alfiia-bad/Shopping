@@ -426,8 +426,6 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
 
   const saveComment = async () => {
     try {
-      const textarea = document.activeElement;
-
       // Обновляем локальное состояние корзины
       const updatedCart = cart.map((item) =>
         item.id === currentProductId ? { ...item, comment: currentComment } : item
@@ -447,14 +445,18 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
       // Закрываем модалку
       setIsCommentModalOpen(false);
 
-      // 💡 Убираем фокус и заставляем iOS вернуть размер экрана
-      if (textarea && typeof textarea.blur === "function") textarea.blur();
-
-      // Принудительно возвращаем scroll и layout
+      // 💡 iOS scroll fix
       setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        // Убираем фокус
+        document.activeElement?.blur();
 
-        // 💥 Хак: пересоздаем viewport, чтобы iOS пересчитал layout
+        // Принудительная перерисовка body
+        document.body.style.height = "101vh";
+        setTimeout(() => {
+          document.body.style.height = "100vh";
+        }, 50);
+
+        // Хак с viewport
         const meta = document.querySelector("meta[name=viewport]");
         if (meta) {
           const original = meta.getAttribute("content");
