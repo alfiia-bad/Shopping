@@ -141,6 +141,22 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
       .catch((err) => console.error("Ошибка загрузки избранного:", err));
   }, []);
 
+  useEffect(() => {
+    const fetchCartComment = async () => {
+      try {
+        const response = await fetch(`${API_URL}/cart/comment`);
+        const data = await response.json();
+        if (data.comment) {
+          setCartComment(data.comment); // Устанавливаем комментарий из базы данных
+        }
+      } catch (error) {
+        console.error("Ошибка при загрузке комментария:", error);
+      }
+    };
+
+    fetchCartComment();
+  }, []);
+
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
@@ -277,6 +293,7 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
   const sendToTelegram = async () => {
     if (cart.length === 0) return;
 
+    // Формируем сообщение для каждого товара
     const messageBody = cart
       .map((item) => {
         const product = products.find((p) => p.id === item.id);
@@ -288,15 +305,22 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
       })
       .join("\n");
 
+    // Формируем параметры корзины для ссылки
     const cartParams = cart
-.map(
-(item) =>
-`${item.id}:${item.quantity}:${item.comment ? encodeURIComponent(item.comment) : ""}`
+      .map(
+        (item) =>
+          `${item.id}:${item.quantity}:${item.comment ? encodeURIComponent(item.comment) : ""}`
       )
-.join(",");
+      .join(",");
     const siteUrl = `${window.location.origin}?cart=${cartParams}`;
 
-    const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>\n\nКомментарий к корзине: ${cartComment}`;
+    // Добавляем общий комментарий к корзине
+    const generalComment = cartComment.trim()
+      ? `\n\nКомментарий к корзине: ${cartComment.trim()}`
+      : "";
+
+    // Итоговое сообщение
+    const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>${generalComment}`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {

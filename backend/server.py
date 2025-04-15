@@ -148,20 +148,23 @@ def send_to_telegram():
 @app.route('/cart/send', methods=['POST'])
 def send_cart():
     data = request.json
-    cart_items = data.get('cartItems')
-    comment = data.get('comment')
+    cart_items = data.get('cartItems', [])
+    comment = data.get('comment', '').strip()
 
     if not cart_items:
         return jsonify({"success": False, "message": "Корзина пуста"}), 400
 
-    # Логика сохранения комментария в базе данных
+    # Сохраняем общий комментарий в базе данных
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute('UPDATE cart SET comment = ?', (comment,))
         conn.commit()
 
-    # Логика отправки корзины в Telegram
-    # Формируем сообщение
-    message = f"Корзина: {cart_items}\nКомментарий: {comment}"
+    # Формируем сообщение для Telegram
+    cart_items_str = "\n".join([f"- {item['name']} x{item['quantity']}" for item in cart_items])
+    message = f"Корзина:\n{cart_items_str}"
+    if comment:
+        message += f"\n\nКомментарий к корзине: {comment}"
+
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
     try:
