@@ -93,16 +93,29 @@ def add_comment_to_cart():
     product_id = data.get('productId')
     comment = data.get('comment')
 
-    if not product_id or not comment:
-        return jsonify({"success": False, "message": "productId и comment обязательны"}), 400
+    if not product_id:
+        return jsonify({"success": False, "message": "productId обязателен"}), 400
 
+    if comment is None or comment.strip() == "":
+        # Логика для удаления комментария
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.execute('SELECT id FROM cart WHERE id = ?', (product_id,))
+            product = cursor.fetchone()
+            if product:
+                conn.execute('UPDATE cart SET comment = NULL WHERE id = ?', (product_id,))
+                conn.commit()
+                return jsonify({"success": True, "message": "Комментарий удалён"}), 200
+            else:
+                return jsonify({"success": False, "message": "Товар не найден"}), 404
+
+    # Логика для сохранения комментария
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.execute('SELECT id FROM cart WHERE id = ?', (product_id,))
         product = cursor.fetchone()
         if product:
             conn.execute('UPDATE cart SET comment = ? WHERE id = ?', (comment, product_id))
             conn.commit()
-            return jsonify({"success": True}), 200
+            return jsonify({"success": True, "message": "Комментарий сохранён"}), 200
         else:
             return jsonify({"success": False, "message": "Товар не найден"}), 404
 

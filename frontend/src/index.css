@@ -893,7 +893,9 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 .info-icon-wrapper {
   position: relative; /* Для позиционирования хинта */
-  display: inline-block;
+  display: flex; /* Используем flexbox */
+  align-items: center; /* Выравниваем по вертикали */
+  justify-content: center; /* Выравниваем по горизонтали (опционально) */
 }
 
 .info-icon {
