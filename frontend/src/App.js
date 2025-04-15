@@ -35,7 +35,7 @@ const App = () => {
   const [currentProductId, setCurrentProductId] = useState(null);
   const [pendingCart, setPendingCart] = useState([]);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-const [cartComment, setCartComment] = useState("");
+  const [cartComment, setCartComment] = useState("");
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -70,7 +70,7 @@ const [cartComment, setCartComment] = useState("");
       setTimeout(() => {
         const newCart = cartParam.split(",").map((item) => {
           const [id, quantity, comment] = item.split(":"); // Разделяем id, quantity и comment
-const product = products.find((p) => p.id === id); // Ищем товар в массиве products
+          const product = products.find((p) => p.id === id); // Ищем товар в массиве products
           return {
             id,
             name: product ? product.name : "Неизвестный товар", // Используем название из products
@@ -155,6 +155,22 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
     };
 
     fetchCartComment();
+  }, []);
+
+  useEffect(() => {
+    const fetchGeneralComment = async () => {
+      try {
+        const response = await fetch(`${API_URL}/cart/general-comment`);
+        const data = await response.json();
+        if (data.comment) {
+          setCartComment(data.comment); // Устанавливаем общий комментарий из базы данных
+        }
+      } catch (error) {
+        console.error("Ошибка при загрузке общего комментария:", error);
+      }
+    };
+
+    fetchGeneralComment();
   }, []);
 
   const getQuantity = (id) => {
@@ -500,6 +516,19 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
     }
   };
 
+  const saveGeneralComment = async () => {
+    try {
+      await fetch(`${API_URL}/cart/general-comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment: cartComment.trim() }), // Отправляем общий комментарий
+      });
+      console.log("Общий комментарий к корзине успешно сохранён");
+    } catch (error) {
+      console.error("Ошибка при сохранении общего комментария к корзине:", error);
+    }
+  };
+
   const handleCancelComment = () => {
     // Сбрасываем текущий комментарий и закрываем модальное окно
     setCurrentComment("");
@@ -768,6 +797,13 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
                   placeholder="Добавьте комментарий к корзине..."
                   value={cartComment}
                   onChange={(e) => setCartComment(e.target.value)}
+                  onBlur={saveGeneralComment} // Сохраняем комментарий при потере фокуса
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); // Предотвращаем перенос строки
+                      saveGeneralComment(); // Сохраняем комментарий при нажатии Enter
+                    }
+                  }}
                 />
                 <button className="send-button" onClick={sendToTelegram}>
                   <RiTelegram2Fill className="telegram-icon" />

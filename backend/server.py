@@ -45,6 +45,10 @@ def update_database_schema():
         if "comment" not in columns:
             conn.execute("ALTER TABLE cart ADD COLUMN comment TEXT;")
             print("Колонка 'comment' успешно добавлена в таблицу 'cart'.")
+        # Проверяем, есть ли колонка 'general_comment' в таблице 'cart'
+        if "general_comment" not in columns:
+            conn.execute("ALTER TABLE cart ADD COLUMN general_comment TEXT;")
+            print("Колонка 'general_comment' успешно добавлена в таблицу 'cart'.")
 
 update_database_schema()
 
@@ -118,6 +122,30 @@ def add_comment_to_cart():
             return jsonify({"success": True, "message": "Комментарий сохранён"}), 200
         else:
             return jsonify({"success": False, "message": "Товар не найден"}), 404
+
+@app.route('/cart/general-comment', methods=['POST'])
+def save_general_comment():
+    data = request.json
+    comment = data.get('comment', '').strip()
+
+    if not comment:
+        return jsonify({"success": False, "message": "Комментарий пуст"}), 400
+
+    # Сохраняем общий комментарий в базе данных
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('UPDATE cart SET general_comment = ? WHERE id = "general"', (comment,))
+        conn.commit()
+
+    return jsonify({"success": True, "message": "Общий комментарий сохранён"})
+
+@app.route('/cart/general-comment', methods=['GET'])
+def get_general_comment():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute('SELECT general_comment FROM cart WHERE id = "general"')
+        result = cursor.fetchone()
+        if result:
+            return jsonify({"comment": result[0]})
+        return jsonify({"comment": ""})
 
 @app.route('/send-to-telegram', methods=['POST'])    
 def send_to_telegram():
