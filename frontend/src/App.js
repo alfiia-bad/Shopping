@@ -505,8 +505,9 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
               {viewFavorites && (
                 <>
                   <button
-                    className="icon-button purple" // Заменяем gray на purple
-                    onClick={handleOpenExportModal} // Открываем модалку
+                    className={`icon-button ${favorites.length === 0 ? "disabled" : "purple"}`}
+                    onClick={favorites.length > 0 ? handleOpenExportModal : null}
+                    disabled={favorites.length === 0} // Делаем кнопку неактивной, если нет избранных товаров
                   >
                     <RiTelegram2Fill className="icon" />
                   </button>

@@ -58,6 +58,12 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease;
   margin-right: 8px; /* Немного отступа от текста */
+  display: flex;
+  align-items: center; /* Выравниваем иконки по вертикали */
+  justify-content: center; /* Центрируем иконки по горизонтали */
+  position: relative; /* Для позиционирования значка item-count-badge */
+  height: 40px; /* Устанавливаем одинаковую высоту */
+  width: 40px; /* Устанавливаем одинаковую ширину */
 }
 
 .cart-button img {
@@ -68,8 +74,10 @@ body {
 /* Значок количества товаров */
 .item-count-badge {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  top: -5px; /* Регулируем позицию сверху */
+  right: -5px; /* Регулируем позицию справа */
+  width: 20px; /* Размер значка */
+  height: 20px; /* Размер значка */
   background-color: #A56AB4;
   color: white;
   font-size: 12px;
@@ -142,6 +150,9 @@ body {
   transition: background-color 0.2s ease;
   font-size: 24px;
   color: #333;
+  position: relative; /* Для позиционирования значка item-count-badge */
+  height: 40px; /* Устанавливаем одинаковую высоту */
+  width: 40px; /* Устанавливаем одинаковую ширину */
 }
 
 .icon-button img, .clear-button-icon img {
@@ -187,6 +198,13 @@ body {
 
 .icon-button.gray:hover {
   background-color: #bbb; /* Более тёмный серый при наведении */
+}
+
+.icon-button.disabled {
+  background-color: #ccc; /* Серый цвет для неактивной кнопки */
+  cursor: not-allowed; /* Указываем, что кнопка неактивна */
+  color: #fff; /* Цвет иконки */
+  opacity: 0.6; /* Уменьшаем прозрачность */
 }
 
 /* Main content */
