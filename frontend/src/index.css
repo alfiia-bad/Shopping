@@ -891,9 +891,35 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   resize: none;
 }
 
+.info-icon-wrapper {
+  position: relative; /* Для позиционирования хинта */
+  display: inline-block;
+}
+
 .info-icon {
   color: rgb(165, 106, 180); /* Фиолетовый цвет */
   font-size: 16px; /* Размер иконки */
   margin-left: 8px; /* Отступ слева от названия товара */
   cursor: pointer; /* Указываем, что элемент кликабельный */
+}
+
+.info-hint {
+  display: none; /* Скрываем хинт по умолчанию */
+  position: absolute;
+  top: 20px; /* Расположение хинта относительно иконки */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff; /* Белый фон */
+  color: #333; /* Цвет текста */
+  font-size: 10px; /* Размер шрифта */
+  padding: 4px 8px; /* Внутренние отступы */
+  border: 1px solid #ccc; /* Граница */
+  border-radius: 4px; /* Скругление углов */
+  white-space: nowrap; /* Запрещаем перенос текста */
+  z-index: 10; /* Поверх других элементов */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Тень */
+}
+
+.info-icon-wrapper:hover .info-hint {
+  display: block; /* Показываем хинт при наведении */
 }

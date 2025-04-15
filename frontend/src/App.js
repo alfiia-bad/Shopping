@@ -25,10 +25,10 @@ const CartItem = ({ item, handleOpenCommentModal }) => {
         />
         <p className="product-name">{item.name}</p>
         {item.comment && ( // Показываем иконку только если есть комментарий
-          <MdInfo
-            className="info-icon"
-            title={item.comment} // Показываем комментарий при наведении
-          />
+          <div className="info-icon-wrapper">
+            <MdInfo className="info-icon" />
+            <span className="info-hint">{item.comment}</span>
+          </div>
         )}
       </div>
       <div className="quantity-controls">
@@ -688,11 +688,31 @@ const App = () => {
             ) : (
               <>
                 {cart.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    item={item}
-                    handleOpenCommentModal={handleOpenCommentModal}
-                  />
+                  <div className="cart-item" key={item.id}>
+                    <div className="cart-item-header">
+                      <FaPencilAlt
+                        className="edit-icon"
+                        onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
+                      />
+                      <p className="product-name">{item.name}</p>
+                    </div>
+                    <div className="quantity-controls">
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        disabled={item.quantity === 0}
+                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
+                      >
+                        -
+                      </button>
+                      <span className="quantity">{item.quantity}</span>
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="qty-button plus"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
                 ))}
                 <button className="send-button" onClick={sendToTelegram}>
                   <RiTelegram2Fill className="telegram-icon" />
