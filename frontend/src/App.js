@@ -35,6 +35,7 @@ const App = () => {
   const [currentProductId, setCurrentProductId] = useState(null);
   const [pendingCart, setPendingCart] = useState([]);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+const [cartComment, setCartComment] = useState("");
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -295,7 +296,7 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
 .join(",");
     const siteUrl = `${window.location.origin}?cart=${cartParams}`;
 
-    const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>`;
+    const message = `Список покупок:\n\n${messageBody}\n\n🛒 <a href="${siteUrl}">Загрузить этот список покупок</a>\n\nКомментарий к корзине: ${cartComment}`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
@@ -737,6 +738,13 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
                     </div>
                   </div>
                 ))}
+{/* Новый инпут для комментария к корзине */}
+                <textarea
+                  className="cart-comment-input"
+                  placeholder="Добавьте комментарий к корзине..."
+                  value={cartComment}
+                  onChange={(e) => setCartComment(e.target.value)}
+                />
                 <button className="send-button" onClick={sendToTelegram}>
                   <RiTelegram2Fill className="telegram-icon" />
                   Отправить в Telegram
@@ -831,7 +839,7 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
         <div className="modal-overlay">
           <div className="modal">
             <h3 className="modal-title">Комментарий для товара:</h3>
-            <p className="modal-product-name">{products.find((p) => p.id === currentProductId)?.name || "Неизвестный товар"}</p>
+<p className="modal-product-name">{products.find((p) => p.id === currentProductId)?.name || "Неизвестный товар"}</p>
             <textarea
               className="comment-input"
               value={currentComment}
@@ -875,7 +883,14 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
 
       {showNotification && (
         <div className="telegram-notification">
+<a 
+            href="https://t.me/+IV3rD9KvL5UxYWRi" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="notification-link"
+          >
           Отправлено в Telegram!
+</a>
           <button className="close-notification" onClick={handleCloseNotification}>
             <MdClose className="icon" />
           </button>

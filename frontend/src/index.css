@@ -769,6 +769,28 @@ transition: background-color 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+.notification-link {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.notification-link:hover {
+  text-decoration: underline;
+}
+
+.close-notification {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Стили для кнопки "Запросить уведомление" */
 .update-button {
   width: 100%;
@@ -1010,4 +1032,21 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   align-items: center;
   width: 100%; /* Ширина контейнера */
   height: 100%; /* Высота контейнера */
+}
+
+.cart-comment-input {
+  width: 100%; /* Растягиваем на всю ширину */
+  height: calc(1.5em * 3); /* Высота в 3 строки */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: none; /* Отключаем возможность изменения размера вручную */
+  outline: none;
+  margin: 16px 0; /* Отступы сверху и снизу */
+  color: #333; /* Цвет текста */
+}
+
+.cart-comment-input::placeholder {
+  color: #aaa; /* Серый цвет для плейсхолдера */
 }
