@@ -88,8 +88,8 @@ body {
 }
 
 .cart-with-badge .item-count-badge {
-  top: -5px;
-  right: -6px;
+  top: -6px;
+  right: -5px;
 }
 
 .header-right {
@@ -614,14 +614,14 @@ align-items: center;
 .modal-title {
   font-weight: normal; /* Убираем жирность */
   font-weight: normal; /* Убираем жирность */
-  font-size: 18px;
-  margin-bottom: 8px;
+  font-size: 16px;
+  margin: 8px 0 8px; /* Добавляем отступ сверху 8 пикселей */
   color: #333; /* Цвет текста */
 }
 
 .modal-product-name {
   font-size: 16px;
-  font-weight: normal;
+  font-weight: bold;
   margin: 0 auto 12px; /* Отступ снизу */
   max-width: 100%;
   text-align: left; /* Выравнивание по левому краю */
