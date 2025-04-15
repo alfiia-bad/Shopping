@@ -438,6 +438,10 @@ const App = () => {
 
       // Закрываем модальное окно после успешного сохранения
       setIsCommentModalOpen(false);
+
+      // Снимаем фокус с текстового поля и возвращаем экран к стандартному размеру
+      document.activeElement.blur(); // Снимаем фокус с текстового поля
+      window.scrollTo({ top: 0, behavior: "smooth" }); // Возвращаем экран наверх
     } catch (error) {
       console.error("Ошибка при сохранении комментария:", error);
     }
