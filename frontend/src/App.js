@@ -658,7 +658,10 @@ const App = () => {
                         className="edit-icon"
                         onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
                       />
-                      <p className="product-name">{item.name}</p>
+                      <p className="product-name" style={{ margin: 0 }}>{item.name}</p>
+                      {item.comment?.trim() && (
+                        <MdInfo size={16} color="rgb(165, 106, 180)" />
+                      )}
                     </div>
                     <div className="quantity-controls">
                       <button
