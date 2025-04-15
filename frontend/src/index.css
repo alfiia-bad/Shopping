@@ -238,9 +238,17 @@ border: 1px solid #ddd;
 }
 
 .product-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Ограничиваем текст двумя строками */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Добавляем троеточие */
+  white-space: normal; /* Разрешаем перенос текста */
+  text-align: left; /* Выравниваем текст по левому краю */
+  font-size: 14px; /* Размер текста */
+  line-height: 1.4; /* Межстрочный интервал */
   margin: 10px 0;
   font-weight: 600;
-  text-align: center;
 }
 
 .image-container {
@@ -882,6 +890,8 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   cursor: pointer;
   color: #f0f0f0; /* Цвет иконки */
   margin-right: 8px; /* Отступ справа */
+  font-size: 20px; /* Фиксированный размер иконки */
+  flex-shrink: 0; /* Запрещаем уменьшение размера */
 }
 
 .comment-input {
@@ -899,6 +909,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   display: flex; /* Используем flexbox */
   align-items: center; /* Выравниваем по вертикали */
   justify-content: center; /* Выравниваем по горизонтали (опционально) */
+  margin-right: 16px; /* Отступ справа от иконки info */
 }
 
 .info-icon {

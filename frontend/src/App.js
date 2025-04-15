@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
-import { MdArrowBackIos, MdClose } from "react-icons/md";
+import { MdArrowBackIos, MdClose, MdOutlineHideImage } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete, MdInfo } from "react-icons/md";
@@ -586,7 +586,13 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
                         )}
                       </button>
                       <div className="image-container">
-                        <img src={product.image} alt={product.name} />
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                          />
+                        ) : (
+                          <MdOutlineHideImage className="no-image-icon" />
+                        )}
                       </div>
                       <p className="product-name">{product.name}</p>
                       <div className="quantity-controls">
@@ -636,7 +642,13 @@ const product = products.find((p) => p.id === id); // Ищем товар в м�
                       <FaHeart className="icon active" />
                     </button>
                     <div className="image-container">
-                      <img src={product.image} alt={product.name} />
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                        />
+                      ) : (
+                        <MdOutlineHideImage className="no-image-icon" />
+                      )}
                     </div>
                     <p className="product-name">{product.name}</p>
                     <div className="quantity-controls">
