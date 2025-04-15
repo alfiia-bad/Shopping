@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
-import { MdArrowBackIos, MdClose } from "react-icons/md";
+import { MdArrowBackIos, MdClose, MdInfo } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete } from "react-icons/md";
@@ -14,6 +14,42 @@ const products = [
 ];
 
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
+
+const CartItem = ({ item, handleOpenCommentModal }) => {
+  return (
+    <div className="cart-item">
+      <div className="cart-item-header">
+        <FaPencilAlt
+          className="edit-icon"
+          onClick={() => handleOpenCommentModal(item.id)}
+        />
+        <p className="product-name">{item.name}</p>
+        {item.comment && ( // Показываем иконку только если есть комментарий
+          <MdInfo
+            className="info-icon"
+            title={item.comment} // Показываем комментарий при наведении
+          />
+        )}
+      </div>
+      <div className="quantity-controls">
+        <button
+          onClick={() => removeFromCart(item.id)}
+          disabled={item.quantity === 0}
+          className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
+        >
+          -
+        </button>
+        <span className="quantity">{item.quantity}</span>
+        <button
+          onClick={() => addToCart(item)}
+          className="qty-button plus"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const App = () => {
   const [viewCart, setViewCart] = useState(false);
@@ -652,31 +688,11 @@ const App = () => {
             ) : (
               <>
                 {cart.map((item) => (
-                  <div className="cart-item" key={item.id}>
-                    <div className="cart-item-header">
-                      <FaPencilAlt
-                        className="edit-icon"
-                        onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
-                      />
-                      <p className="product-name">{item.name}</p>
-                    </div>
-                    <div className="quantity-controls">
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        disabled={item.quantity === 0}
-                        className={`qty-button minus ${item.quantity === 0 ? "disabled" : ""}`}
-                      >
-                        -
-                      </button>
-                      <span className="quantity">{item.quantity}</span>
-                      <button
-                        onClick={() => addToCart(item)}
-                        className="qty-button plus"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    handleOpenCommentModal={handleOpenCommentModal}
+                  />
                 ))}
                 <button className="send-button" onClick={sendToTelegram}>
                   <RiTelegram2Fill className="telegram-icon" />
