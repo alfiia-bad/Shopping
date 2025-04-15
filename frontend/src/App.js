@@ -5,7 +5,7 @@ import { FaHeart, FaPencilAlt } from "react-icons/fa";
 import { MdArrowBackIos, MdClose } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
-import { MdOutlineDelete } from "react-icons/md";
+import { MdOutlineDelete, MdInfo } from "react-icons/md";
 
 const products = [
   { id: "1", name: "Бананы", image: "/images/banana.png" },
