@@ -79,7 +79,7 @@ def update_cart():
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
 
     with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM cart')  # Удаляем старые записи
+        conn.execute('DELETE FROM cart WHERE id != "general"')  # Удаляем старые записи из корзины кроме общего комментария
         for item in data:
             # Пропускаем пустой "общий" объект, не являющийся товаром
             if item.get("id") == "general":

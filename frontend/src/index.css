@@ -1038,6 +1038,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   width: 100%; /* Растягиваем на всю ширину */
   height: calc(1.5em * 3); /* Высота в 3 строки */
   padding: 10px;
+  padding-bottom: 30px; /* ⬅️ Добавлен нижний паддинг, чтобы не перекрывал счетчик */
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -1045,6 +1046,10 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   outline: none;
   margin: 12px 0; /* Уменьшаем отступы сверху и снизу */
   color: #333; /* Цвет текста */
+}
+
+.cart-comment-input.input-error {
+  border-color: red; /* ⬅️ Красная рамка при лимите */
 }
 
 .cart-comment-input::placeholder {

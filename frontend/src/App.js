@@ -809,7 +809,9 @@ const App = () => {
 {/* Новый инпут для комментария к корзине */}
                 <div className="cart-comment-wrapper">                
                   <textarea
-                    className="cart-comment-input"
+                    className={`cart-comment-input ${
+                      cartComment.length >= 200 ? "input-error" : ""
+                    }`}
                     placeholder="Добавьте комментарий к корзине..."
                     value={cartComment}
                     maxLength={200} // Ограничиваем ввод до 200 символов
