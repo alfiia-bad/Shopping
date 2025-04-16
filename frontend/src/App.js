@@ -41,6 +41,7 @@ const App = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const favoritesParam = urlParams.get("favorites");
     const cartParam = urlParams.get("cart");
+    const generalCommentParam = urlParams.get("general-comment");
 
     if (favoritesParam) {
       // Переключаемся на вкладку "Избранное"
@@ -81,6 +82,11 @@ const App = () => {
 
         setPendingCart(newCart); // Сохраняем данные для модалки
         setIsCartModalOpen(true); // Открываем модалку
+
+        // Устанавливаем общий комментарий, если есть
+        if (generalCommentParam) {
+          setCartComment(decodeURIComponent(generalCommentParam));
+        }
 
         // Убираем параметры из URL
         window.history.replaceState(null, "", window.location.origin);
@@ -321,7 +327,10 @@ const App = () => {
           `${item.id}:${item.quantity}:${item.comment ? encodeURIComponent(item.comment) : ""}`
       )
       .join(",");
-    const siteUrl = `${window.location.origin}?cart=${cartParams}`;
+    const encodedGeneralComment = encodeURIComponent(cartComment.trim());
+    const siteUrl = `${window.location.origin}?cart=${cartParams}${
+      cartComment.trim() ? `&general-comment=${encodedGeneralComment}` : ""
+    }`;
 
     // Добавляем общий комментарий к корзине
     const generalComment = cartComment.trim()
