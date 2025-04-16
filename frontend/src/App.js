@@ -80,6 +80,11 @@ const App = () => {
           };
         });
 
+        const generalCommentParam = urlParams.get("general-comment");
+        if (generalCommentParam) {
+          setCartComment(decodeURIComponent(generalCommentParam)); // ⬅️ Записываем в форму
+        }
+
         setPendingCart(newCart); // Сохраняем данные для модалки
         setIsCartModalOpen(true); // Открываем модалку
 
