@@ -1064,12 +1064,25 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 .char-counter {
   position: absolute;
-  bottom: 8px;
+  bottom: 2px;
   right: 12px;
   font-size: 12px;
   color: gray;
 }
 
 .char-counter.limit-reached {
+  color: red;
+}
+
+.comment-wrapper {
+  position: relative;
+  margin-top: 12px;
+}
+
+.input-error {
+  border-color: red;
+}
+
+.limit-reached {
   color: red;
 }

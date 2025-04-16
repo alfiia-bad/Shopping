@@ -232,8 +232,8 @@ const App = () => {
   };
 
   const clearCart = () => {
-    updateCart(cart.filter(item => item.id === "general")); // Очищаем корзину Отправляем на сервер только те элементы, у которых id не "genera
-    setCart(cart.filter(item => item.id === "general")); // Обновляем локальное состояние: сохраняем только general
+    updateCart([]);  // Очищаем корзину Отправляем на сервер только те элементы, у которых id не "genera
+    setCart([]); // Обновляем локальное состояние: сохраняем только general
     setIsModalOpen(false); // Закрываем модалку
     // Убираем переключение на вкладку "Товары"
   };
@@ -542,47 +542,6 @@ const App = () => {
       console.error("Ошибка при сохранении комментария:", error);
     }
   };
-
-  // const saveComment = async () => {
-  //   try {
-  //     // Обновляем локальное состояние корзины
-  //     const updatedCart = cart.map((item) =>
-  //       item.id === currentProductId ? { ...item, comment: currentComment } : item
-  //     );
-  //     setCart(updatedCart);
-
-  //     // Закрываем модалку
-  //     setIsCommentModalOpen(false);
-
-  //     // 💡 iOS scroll fix
-  //     setTimeout(() => {
-  //       // Убираем фокус
-  //       document.activeElement?.blur();
-
-  //       // Принудительная перерисовка body
-  //       document.body.style.height = "101vh";
-  //       setTimeout(() => {
-  //         document.body.style.height = "100vh";
-  //       }, 50);
-
-  //       // Хак с viewport
-  //       const meta = document.querySelector("meta[name=viewport]");
-  //       if (meta) {
-  //         const original = meta.getAttribute("content");
-  //         meta.setAttribute("content", "width=393");
-  //         setTimeout(() => {
-  //           meta.setAttribute("content", original || "width=device-width, initial-scale=1");
-  //         }, 200);
-  //       }
-
-  //       // 🚑 На всякий случай принудительно триггерим resize
-  //       window.dispatchEvent(new Event("resize"));
-  //     }, 300);
-
-  //   } catch (error) {
-  //     console.error("Ошибка при сохранении комментария:", error);
-  //   }
-  // };
 
   const saveGeneralComment = async () => {
     try {
@@ -979,14 +938,21 @@ const App = () => {
           <div className="modal">
             <h3 className="modal-title">Комментарий для товара:</h3>
 <p className="modal-product-name">{products.find((p) => p.id === currentProductId)?.name || "Неизвестный товар"}</p>
-            <textarea
-              className="comment-input"
-              value={currentComment}
-              maxLength={50} // Ограничение на 50 символов
-              onChange={(e) => setCurrentComment(e.target.value)} // Обновляем локальное состояние
-              onBlur={() => handleCommentChange(currentProductId, currentComment)} // Сохраняем комментарий при потере фокуса
-              placeholder="Введите комментарий..."
-            />
+            <div className="comment-wrapper">
+              <textarea
+                className={`comment-input ${currentComment.length >= 50 ? "input-error" : ""}`}
+                value={currentComment}
+                maxLength={50} // Ограничение на 50 символов
+                onChange={(e) => setCurrentComment(e.target.value)} // Обновляем локальное состояние
+                onBlur={() => handleCommentChange(currentProductId, currentComment)} // Сохраняем комментарий при потере фокуса
+                placeholder="Введите комментарий..."
+              />
+              <div
+                className={`char-counter ${currentComment.length >= 50 ? "limit-reached" : ""}`}
+              >
+                {currentComment.length}/50
+              </div>
+            </div>
             <div className="modal-actions">
               <button className="modal-confirm" onClick={saveComment}>
                 Сохранить
