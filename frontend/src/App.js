@@ -325,11 +325,12 @@ const App = () => {
 
     // Добавляем общий комментарий к корзине
     const generalComment = cartComment.trim()
-      ? `Комментарий к корзине: ${cartComment.trim()}`
+      ? `\n\nКомментарий к корзине: ${cartComment.trim()}`
       : "";
 
     // Итоговое сообщение
-    const message = `Список покупок:\n\n${messageBody}\n\n${generalComment}\n\n🛒 Загрузить этот список покупок (${siteUrl})`;
+    const linkText = `<a href="${siteUrl}">🛒 Загрузить этот список покупок</a>`;
+    const message = `Список покупок:\n\n${messageBody}${generalComment}\n\n${linkText}`;
 
     try {
       const response = await fetch(`${API_URL}/send-to-telegram`, {
