@@ -12,6 +12,8 @@ const products = [
   { id: "2", name: "Вода", image: "/images/water3.webp" },
   { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
   { id: "4", name: "Кофе капсулы. Вкусный и великолепный. Ароматный", image: "" },
+  { id: "5", name: "Кофе капсулы. Вкусный и великолепный. Ароматныйаааааааааааа ааааааааа", image: "" },
+  { id: "6", name: "Кофе капсулы. Вкусный и великолепный. Ароматныйаааааааааааа ааааааааа", image: "" },
 ];
 
 const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
@@ -1000,7 +1002,6 @@ const App = () => {
                 value={currentComment}
                 maxLength={50} // Ограничение на 50 символов
                 onChange={(e) => setCurrentComment(e.target.value)} // Обновляем локальное состояние
-                onBlur={() => handleCommentChange(currentProductId, currentComment)} // Сохраняем комментарий при потере фокуса
                 placeholder="Введите комментарий..."
               />
               <div

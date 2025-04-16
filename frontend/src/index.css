@@ -1072,7 +1072,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 .char-counter {
   position: absolute;
-  bottom: 1px;
+  bottom: 0px; /* был 1 пиксель */
   right: 12px;
   font-size: 12px;
   color: gray;
