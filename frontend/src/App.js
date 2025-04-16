@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
@@ -13,6 +13,36 @@ const products = [
   { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
   { id: "4", name: "Кофе капсулы. Вкусный и великолепный. Ароматный", image: "" },
 ];
+
+const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
+  const nameRef = useRef(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  useEffect(() => {
+    const el = nameRef.current;
+    if (el) {
+      setIsTruncated(el.scrollWidth > el.clientWidth);
+    }
+  }, [name]);
+
+  return (
+    <div className="product-name-wrapper">
+      <p
+        className="product-name"
+        ref={nameRef}
+        title={isTruncated ? name : undefined} // хинт при обрезке
+      >
+        {name}
+      </p>
+      {commentHint && (
+        <div className="info-icon-wrapper">
+          <MdInfo size={16} color="rgb(165, 106, 180)" />
+          <span className="info-hint">{commentHint}</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
@@ -80,17 +110,27 @@ const App = () => {
         });
 
         const generalCommentParam = urlParams.get("general-comment");
+
         if (generalCommentParam) {
-          setCartComment(decodeURIComponent(generalCommentParam)); // ⬅️ Записываем в форму
-        }
+          const decodedComment = decodeURIComponent(generalCommentParam);
+          setCartComment(decodedComment);
+
+          // Сохраняем общий комментарий в базу
+          fetch(`${API_URL}/cart/general-comment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ comment: decodedComment }),
+          }).then((res) => {
+            if (!res.ok) {
+              console.error("Ошибка при сохранении общего комментария из URL");
+            }
+          }).catch((err) => {
+            console.error("Ошибка сети при сохранении общего комментария из URL", err);
+          });
+        }        
 
         setPendingCart(newCart); // Сохраняем данные для модалки
         setIsCartModalOpen(true); // Открываем модалку
-
-        // Устанавливаем общий комментарий, если есть
-        if (generalCommentParam) {
-          setCartComment(decodeURIComponent(generalCommentParam));
-        }
 
         // Убираем параметры из URL
         window.history.replaceState(null, "", window.location.origin);
@@ -247,9 +287,6 @@ const App = () => {
       if (result.success) {
         setCart([]);            // Очищаем корзину
         setCartComment("");     // Очищаем общий комментарий
-        setShowNotification(true); // Показываем уведомление
-        const timeout = setTimeout(() => setShowNotification(false), 5000);
-        setNotificationTimeout(timeout);
       } else {
         console.error("Ошибка при очистке корзины:", result.message);
       }
@@ -715,7 +752,7 @@ const App = () => {
                           <MdOutlineHideImage className="no-image-icon" />
                         )}
                       </div>
-                      <p className="product-name">{product.name}</p>
+                      <ProductNameWithHint name={product.name} />
                       <div className="quantity-controls">
                         <button
                           onClick={() => removeFromCart(product.id)}
@@ -772,7 +809,7 @@ const App = () => {
                         <MdOutlineHideImage className="no-image-icon" />
                       )}
                     </div>
-                    <p className="product-name">{product.name}</p>
+                    <ProductNameWithHint name={product.name} />
                     <div className="quantity-controls">
                       <button
                         onClick={() => removeFromCart(product.id)}
@@ -819,13 +856,10 @@ const App = () => {
                         className="edit-icon"
                         onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
                       />
-                      <p className="product-name" style={{ margin: 0 }}>{item.name}</p>
-                      {item.comment?.trim() && (
-                        <div className="info-icon-wrapper">
-                          <MdInfo size={16} color="rgb(165, 106, 180)" />
-                          <span className="info-hint">Есть комментарий</span>
-                        </div>
-                      )}
+                      <ProductNameWithHint
+                        name={item.name}
+                        commentHint={item.comment?.trim() ? "Есть комментарий" : null}
+                      />
                     </div>
                     <div className="quantity-controls">
                       <button
