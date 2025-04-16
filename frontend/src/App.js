@@ -69,6 +69,8 @@ const App = () => {
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [cartComment, setCartComment] = useState("");
 
+  const hasGeneralCommentFromUrl = useRef(false);
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const favoritesParam = urlParams.get("favorites");
@@ -116,6 +118,7 @@ const App = () => {
         if (generalCommentParam) {
           const decodedComment = decodeURIComponent(generalCommentParam);
           setCartComment(decodedComment);
+          hasGeneralCommentFromUrl.current = true;
 
           // Сохраняем общий комментарий в базу
           fetch(`${API_URL}/cart/general-comment`, {
@@ -201,6 +204,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (hasGeneralCommentFromUrl.current) return; // 💥 Не загружаем повторно, если уже был из URL
+
     const fetchGeneralComment = async () => {
       try {
         const response = await fetch(`${API_URL}/cart/general-comment`);
@@ -540,12 +545,12 @@ const App = () => {
     setIsCommentModalOpen(true); // Открываем модальное окно
   };
 
-  const handleCommentChange = (id, comment) => {
-    const updatedCart = cart.map((item) =>
-      item.id === id ? { ...item, comment } : item
-    );
-    updateCart(updatedCart.filter(item => item.id !== "general")); // Сохраняем изменения на сервере
-  };
+  // const handleCommentChange = (id, comment) => {
+  //   const updatedCart = cart.map((item) =>
+  //     item.id === id ? { ...item, comment } : item
+  //   );
+  //   updateCart(updatedCart.filter(item => item.id !== "general")); // Сохраняем изменения на сервере
+  // };
 
   const saveComment = async () => {
     try {
