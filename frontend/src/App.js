@@ -808,19 +808,23 @@ const App = () => {
                   </div>
                 ))}
 {/* Новый инпут для комментария к корзине */}
-                <textarea
-                  className="cart-comment-input"
-                  placeholder="Добавьте комментарий к корзине..."
-                  value={cartComment}
-                  onChange={(e) => setCartComment(e.target.value)}
-                  onBlur={saveGeneralComment} // Сохраняем комментарий при потере фокуса
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault(); // Предотвращаем перенос строки
-                      saveGeneralComment(); // Сохраняем комментарий при нажатии Enter
-                    }
-                  }}
-                />
+                <div className="cart-comment-wrapper">                
+                  <textarea
+                    className="cart-comment-input"
+                    placeholder="Добавьте комментарий к корзине..."
+                    value={cartComment}
+                    maxLength={200} // Ограничиваем ввод до 200 символов
+                    onChange={(e) => setCartComment(e.target.value)}
+                    onBlur={saveGeneralComment} // Сохраняем комментарий при потере фокуса
+                  />
+                  <div
+                    className={`char-counter ${
+                      cartComment.length >= 200 ? "limit-reached" : ""
+                    }`}
+                  >
+                    {cartComment.length}/200
+                  </div>
+                </div>
                 <button className="send-button" onClick={sendToTelegram}>
                   <RiTelegram2Fill className="telegram-icon" />
                   Отправить в Telegram
