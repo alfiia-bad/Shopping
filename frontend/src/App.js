@@ -217,7 +217,7 @@ const App = () => {
             i === index ? { ...item, quantity: item.quantity + 1 } : item
           )
         : [...cart, { ...product, quantity: 1 }];
-    updateCart(newCart);
+        updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
   };
 
   const removeFromCart = (productId) => {
@@ -228,11 +228,12 @@ const App = () => {
           : item
       )
       .filter((item) => item.quantity > 0);
-    updateCart(newCart);
+      updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
   };
 
   const clearCart = () => {
-    updateCart([]); // Очищаем корзину
+    updateCart(cart.filter(item => item.id === "general")); // Очищаем корзину Отправляем на сервер только те элементы, у которых id не "genera
+    setCart(cart.filter(item => item.id === "general")); // Обновляем локальное состояние: сохраняем только general
     setIsModalOpen(false); // Закрываем модалку
     // Убираем переключение на вкладку "Товары"
   };
@@ -453,7 +454,7 @@ const App = () => {
 
   const handleUpdateCart = () => {
     setCart(pendingCart); // Обновляем локальное состояние корзины
-    updateCartOnServer(pendingCart); // Отправляем данные на сервер
+    updateCartOnServer(pendingCart.filter(item => item.id !== "general")); // Отправляем данные на сервер
     setIsCartModalOpen(false); // Закрываем модалку
   };
 
@@ -482,32 +483,49 @@ const App = () => {
     const updatedCart = cart.map((item) =>
       item.id === id ? { ...item, comment } : item
     );
-    updateCart(updatedCart); // Сохраняем изменения на сервере
+    updateCart(updatedCart.filter(item => item.id !== "general")); // Сохраняем изменения на сервере
   };
 
   const saveComment = async () => {
     try {
-      // Обновляем локальное состояние корзины
-      const updatedCart = cart.map((item) =>
-        item.id === currentProductId ? { ...item, comment: currentComment } : item
-      );
-      setCart(updatedCart);
-
+      if (currentProductId === "general") {
+        // Если редактируем общий комментарий — отдельный API-запрос
+        await fetch("/comment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: "general",
+            comment: currentComment,
+          }),
+        });
+  
+        // Обновляем локальное состояние
+        const updatedCart = cart.map((item) =>
+          item.id === "general" ? { ...item, comment: currentComment } : item
+        );
+        setCart(updatedCart);
+      } else {
+        // Иначе — обновляем комментарий у товара
+        const updatedCart = cart.map((item) =>
+          item.id === currentProductId ? { ...item, comment: currentComment } : item
+        );
+        setCart(updatedCart);
+        updateCart(updatedCart.filter(item => item.id !== "general"));
+      }
+  
       // Закрываем модалку
       setIsCommentModalOpen(false);
-
+  
       // 💡 iOS scroll fix
       setTimeout(() => {
-        // Убираем фокус
         document.activeElement?.blur();
-
-        // Принудительная перерисовка body
         document.body.style.height = "101vh";
         setTimeout(() => {
           document.body.style.height = "100vh";
         }, 50);
-
-        // Хак с viewport
+  
         const meta = document.querySelector("meta[name=viewport]");
         if (meta) {
           const original = meta.getAttribute("content");
@@ -516,15 +534,55 @@ const App = () => {
             meta.setAttribute("content", original || "width=device-width, initial-scale=1");
           }, 200);
         }
-
-        // 🚑 На всякий случай принудительно триггерим resize
+  
         window.dispatchEvent(new Event("resize"));
       }, 300);
-
+  
     } catch (error) {
       console.error("Ошибка при сохранении комментария:", error);
     }
   };
+
+  // const saveComment = async () => {
+  //   try {
+  //     // Обновляем локальное состояние корзины
+  //     const updatedCart = cart.map((item) =>
+  //       item.id === currentProductId ? { ...item, comment: currentComment } : item
+  //     );
+  //     setCart(updatedCart);
+
+  //     // Закрываем модалку
+  //     setIsCommentModalOpen(false);
+
+  //     // 💡 iOS scroll fix
+  //     setTimeout(() => {
+  //       // Убираем фокус
+  //       document.activeElement?.blur();
+
+  //       // Принудительная перерисовка body
+  //       document.body.style.height = "101vh";
+  //       setTimeout(() => {
+  //         document.body.style.height = "100vh";
+  //       }, 50);
+
+  //       // Хак с viewport
+  //       const meta = document.querySelector("meta[name=viewport]");
+  //       if (meta) {
+  //         const original = meta.getAttribute("content");
+  //         meta.setAttribute("content", "width=393");
+  //         setTimeout(() => {
+  //           meta.setAttribute("content", original || "width=device-width, initial-scale=1");
+  //         }, 200);
+  //       }
+
+  //       // 🚑 На всякий случай принудительно триггерим resize
+  //       window.dispatchEvent(new Event("resize"));
+  //     }, 300);
+
+  //   } catch (error) {
+  //     console.error("Ошибка при сохранении комментария:", error);
+  //   }
+  // };
 
   const saveGeneralComment = async () => {
     try {
