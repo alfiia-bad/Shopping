@@ -231,11 +231,31 @@ const App = () => {
       updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
   };
 
-  const clearCart = () => {
-    updateCart([]);  // Очищаем корзину Отправляем на сервер только те элементы, у которых id не "genera
-    setCart([]); // Обновляем локальное состояние: сохраняем только general
-    setIsModalOpen(false); // Закрываем модалку
-    // Убираем переключение на вкладку "Товары"
+  // const clearCart = () => {
+  //   updateCart([]);  // Очищаем корзину 
+  //   setCart([]); // Обновляем локальное состояние
+  //   setIsModalOpen(false); // Закрываем модалку
+  //   // Убираем переключение на вкладку "Товары"
+  // };
+
+  const clearCart = async () => {
+    try {
+      const response = await fetch('https://alfa-shopping.onrender.com/cart', {
+        method: 'DELETE',
+      });
+      const result = await response.json();
+      if (result.success) {
+        setCart([]);               // Обновляем локальное состояние корзины
+        setGeneralComment('');     // Очищаем общий комментарий
+        showToast('Корзина очищена');
+      } else {
+        showToast('Ошибка при очистке корзины');
+      }
+    } catch (error) {
+      showToast('Ошибка сети при очистке корзины');
+    } finally {
+      setIsModalOpen(false);       // Закрываем модалку в любом случае
+    }
   };
 
   const addToFavorites = async (productId) => {

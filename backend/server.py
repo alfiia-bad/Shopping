@@ -95,6 +95,12 @@ def update_cart():
 
     return jsonify({"success": True}), 200
 
+@app.route('/cart', methods=['DELETE'])
+def clear_cart():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM cart')  # Удаляем всё, включая general
+        conn.commit()
+    return jsonify({"success": True, "message": "Корзина и общий комментарий очищены"}), 200
 
 @app.route('/cart/general-comment', methods=['POST'])
 def save_general_comment():

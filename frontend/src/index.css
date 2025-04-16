@@ -977,17 +977,6 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   flex-shrink: 0; /* Запрещаем уменьшение размера */
 }
 
-.comment-input {
-  width: 100%;
-  height: 80px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  resize: none; /* Запрещаем изменение размера текстового поля */
-  margin-bottom: 10px; /* Отступ между инпутом и кнопками */
-}
-
 .info-icon-wrapper {
   position: relative; /* Для позиционирования хинта */
   display: flex; /* Используем flexbox */
@@ -1034,55 +1023,59 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   height: 100%; /* Высота контейнера */
 }
 
+.comment-input,
 .cart-comment-input {
-  width: 100%; /* Растягиваем на всю ширину */
-  height: calc(1.5em * 3); /* Высота в 3 строки */
+  width: 100%;
+  height: 80px;
   padding: 10px;
-  padding-bottom: 30px; /* ⬅️ Добавлен нижний паддинг, чтобы не перекрывал счетчик */
+  padding-bottom: 30px; /* Чтобы не перекрывал счётчик */
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  resize: none; /* Отключаем возможность изменения размера вручную */
+  resize: none;
   outline: none;
-  margin: 12px 0; /* Уменьшаем отступы сверху и снизу */
-  color: #333; /* Цвет текста */
+  margin: 12px 0;
+  color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.comment-input:focus,
+.cart-comment-input:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.3); /* Мягкая фиолетовая подсветка */
+}
+
+.comment-input.input-error,
 .cart-comment-input.input-error {
-  border-color: red; /* ⬅️ Красная рамка при лимите */
+  border-color: red;
 }
 
+.comment-input::placeholder,
 .cart-comment-input::placeholder {
-  color: #aaa; /* Серый цвет для плейсхолдера */
-  font-size: 14px; /* Размер шрифта плейсхолдера */
+  color: #aaa;
+  font-size: 14px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.cart-comment-wrapper {
-  position: relative;
-}
-
-.char-counter {
-  position: absolute;
-  bottom: 2px;
-  right: 12px;
-  font-size: 12px;
-  color: gray;
-}
-
-.char-counter.limit-reached {
-  color: red;
-}
-
+.cart-comment-wrapper,
 .comment-wrapper {
   position: relative;
   margin-top: 12px;
 }
 
-.input-error {
-  border-color: red;
+.char-counter {
+  position: absolute;
+  bottom: 1px;
+  right: 12px;
+  font-size: 12px;
+  color: gray;
 }
 
+.char-counter.limit-reached,
 .limit-reached {
   color: red;
+}
+
+.input-error {
+  border-color: red;
 }
