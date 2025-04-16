@@ -240,21 +240,23 @@ const App = () => {
 
   const clearCart = async () => {
     try {
-      const response = await fetch('https://alfa-shopping.onrender.com/cart', {
+      const response = await fetch(`${API_URL}/cart`, {
         method: 'DELETE',
       });
       const result = await response.json();
       if (result.success) {
-        setCart([]);               // Обновляем локальное состояние корзины
-        setGeneralComment('');     // Очищаем общий комментарий
-        showToast('Корзина очищена');
+        setCart([]);            // Очищаем корзину
+        setCartComment("");     // Очищаем общий комментарий
+        setShowNotification(true); // Показываем уведомление
+        const timeout = setTimeout(() => setShowNotification(false), 5000);
+        setNotificationTimeout(timeout);
       } else {
-        showToast('Ошибка при очистке корзины');
+        console.error("Ошибка при очистке корзины:", result.message);
       }
     } catch (error) {
-      showToast('Ошибка сети при очистке корзины');
+      console.error("Ошибка сети при очистке корзины:", error);
     } finally {
-      setIsModalOpen(false);       // Закрываем модалку в любом случае
+      setIsModalOpen(false); // Закрываем модалку
     }
   };
 
