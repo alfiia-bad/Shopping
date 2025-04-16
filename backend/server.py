@@ -60,7 +60,7 @@ def get_db_connection():
 @app.route('/cart', methods=['GET'])
 def get_cart():
     with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT id, name, quantity, comment FROM cart')
+        cursor = conn.execute('SELECT id, name, quantity, comment FROM cart WHERE id != "general"')
         items = [
             {
                 "id": row[0],
@@ -127,40 +127,63 @@ def get_general_comment():
             return jsonify({"comment": result[0]})
         return jsonify({"comment": ""})
 
+# @app.route('/send-to-telegram', methods=['POST'])  # сообщения в Telegram
+# def send_to_telegram():
+#     data = request.json
+#     cart = data.get('cart', '')
+
+#     if not cart:
+#         return jsonify({"success": False, "message": "Корзина пуста"}), 400
+
+#     # Формируем сообщение
+#     cart_items = data.get('cartItems', [])
+#     general_comment = data.get('comment', '').strip()
+#     cart_params = data.get('cartParams', '')
+
+#     # Формируем список товаров
+#     cart_items_str = "\n".join([f"- {item['name']} x{item['quantity']}" for item in cart_items])
+
+#     # Формируем ссылку
+#     site_url = f"https://alfa-shop-ljmg.onrender.com?cart={cart_params}"
+#     link_text = f'<a href="{site_url}">Загрузить этот список покупок</a>'
+
+#     # Добавляем общий комментарий, если он есть
+#     if general_comment:
+#         message = f"Список покупок:\n\n{cart_items_str}\n\nКомментарий к корзине: {general_comment}\n\n{link_text}"
+#     else:
+#         message = f"Список покупок:\n\n{cart_items_str}\n\n{link_text}"
+
+#     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+
+#     try:
+#         # Отправляем сообщение в Telegram
+#         response = requests.post(url, data={
+#             'chat_id': CHAT_ID,
+#             'text': message,
+#             'parse_mode': 'HTML'  # Указываем HTML для форматирования
+#         })
+#         if response.status_code == 200:
+#             return jsonify({"success": True, "message": "Сообщение отправлено"})
+#         else:
+#             return jsonify({"success": False, "message": "Ошибка при отправке сообщения"}), 500
+#     except requests.exceptions.RequestException:
+#         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
+
 @app.route('/send-to-telegram', methods=['POST'])
 def send_to_telegram():
     data = request.json
-    cart = data.get('cart', '')
+    message = data.get('cart', '')
 
-    if not cart:
-        return jsonify({"success": False, "message": "Корзина пуста"}), 400
-
-    # Формируем сообщение
-    cart_items = data.get('cartItems', [])
-    general_comment = data.get('comment', '').strip()
-    cart_params = data.get('cartParams', '')
-
-    # Формируем список товаров
-    cart_items_str = "\n".join([f"- {item['name']} x{item['quantity']}" for item in cart_items])
-
-    # Формируем ссылку
-    site_url = f"https://alfa-shop-ljmg.onrender.com?cart={cart_params}"
-    link_text = f'<a href="{site_url}">Загрузить этот список покупок</a>'
-
-    # Добавляем общий комментарий, если он есть
-    if general_comment:
-        message = f"Список покупок:\n\n{cart_items_str}\n\nКомментарий к корзине: {general_comment}\n\n{link_text}"
-    else:
-        message = f"Список покупок:\n\n{cart_items_str}\n\n{link_text}"
+    if not message:
+        return jsonify({"success": False, "message": "Сообщение пустое"}), 400
 
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
     try:
-        # Отправляем сообщение в Telegram
         response = requests.post(url, data={
             'chat_id': CHAT_ID,
             'text': message,
-            'parse_mode': 'HTML'  # Указываем HTML для форматирования
+            'parse_mode': data.get('parse_mode', 'HTML')  # Оставим поддержку HTML
         })
         if response.status_code == 200:
             return jsonify({"success": True, "message": "Сообщение отправлено"})
