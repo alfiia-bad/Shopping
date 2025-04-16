@@ -41,8 +41,7 @@ const App = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const favoritesParam = urlParams.get("favorites");
     const cartParam = urlParams.get("cart");
-    const generalCommentParam = urlParams.get("general-comment");
-
+    
     if (favoritesParam) {
       // Переключаемся на вкладку "Избранное"
       setViewFavorites(true);
