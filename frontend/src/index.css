@@ -273,6 +273,11 @@ body {
   line-height: 1.4; /* Межстрочный интервал */
   margin: 10px 0;
   font-weight: 600;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
 }
 
 .product-name-wrapper {
@@ -280,6 +285,8 @@ body {
   align-items: center;
   gap: 6px;
   max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .image-container {

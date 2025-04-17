@@ -626,6 +626,9 @@ const App = () => {
         console.error("Ошибка при сохранении общего комментария:", await response.text());
       } else {
         console.log("Общий комментарий к корзине успешно сохранён");
+  
+        // 👉 ОБНОВЛЯЕМ локальное состояние, чтобы отобразилось в инпуте:
+        setCartComment(commentToSave.trim());
       }
     } catch (error) {
       console.error("Ошибка при сохранении общего комментария к корзине:", error);
