@@ -261,6 +261,16 @@ body {
   display: block;         /* ✅ Избавляемся от нижнего отступа картинки */
 }
 
+/* Контейнер для изображения и названия */
+.product-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
 .product-name {
   display: -webkit-box;
   -webkit-line-clamp: 2; /* Ограничиваем текст двумя строками */
@@ -268,7 +278,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis; /* Добавляем троеточие */
   white-space: normal; /* Разрешаем перенос текста */
-  text-align: left; /* Выравниваем текст по левому краю */
+  text-align: center; 
   font-size: 14px; /* Размер текста */
   line-height: 1.4; /* Межстрочный интервал */
   margin: 10px 0;
@@ -747,6 +757,13 @@ transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
   gap: 10px; /* Расстояние между кнопками */
+}
+
+.quantity-controls-wrapper {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .quantity {

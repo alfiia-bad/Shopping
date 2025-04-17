@@ -757,32 +757,38 @@ const App = () => {
                           <FiHeart className="icon" /> // Серый лайк
                         )}
                       </button>
-                      <div className="image-container">
-                        {product.image ? (
-                          <img
-                            src={product.image}
-                            alt="" // Пустой alt для декоративного изображения
-                          />
-                        ) : (
-                          <MdOutlineHideImage className="no-image-icon" />
-                        )}
+
+                      <div className="product-content">
+                        <div className="image-container">
+                          {product.image ? (
+                            <img
+                              src={product.image}
+                              alt="" // Пустой alt для декоративного изображения
+                            />
+                          ) : (
+                            <MdOutlineHideImage className="no-image-icon" />
+                          )}
+                        </div>
+                        <ProductNameWithHint name={product.name} />
                       </div>
-                      <ProductNameWithHint name={product.name} />
-                      <div className="quantity-controls">
-                        <button
-                          onClick={() => removeFromCart(product.id)}
-                          disabled={quantity === 0}
-                          className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
-                        >
-                          -
-                        </button>
-                        <span className="quantity">{quantity}</span>
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="qty-button plus"
-                        >
-                          +
-                        </button>
+
+                      <div className="quantity-controls-wrapper">
+                        <div className="quantity-controls">
+                          <button
+                            onClick={() => removeFromCart(product.id)}
+                            disabled={quantity === 0}
+                            className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
+                          >
+                            -
+                          </button>
+                          <span className="quantity">{quantity}</span>
+                          <button
+                            onClick={() => addToCart(product)}
+                            className="qty-button plus"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
