@@ -169,7 +169,7 @@ const App = () => {
     }
   }, [viewCart, viewFavorites, viewNotifications]);
 
-  useEffect(() => {
+  useEffect(() => {      // КОРЗИНА ТУТ ПЕРЕПИСАН КУСОК КОДА
     const fetchCart = async () => {
       try {
         const response = await fetch(`${API_URL}/cart`);
@@ -181,21 +181,32 @@ const App = () => {
     };
 
     fetchCart();
+    const intervalId = setInterval(fetchCart, 5000); // Обновляем корзину каждые 5 секунд  - для polling
+    return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
   }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [viewCart, viewFavorites, viewNotifications]);
   
-  useEffect(() => {
-    // Загружаем избранное с сервера при загрузке страницы
-    fetch(`${API_URL}/favorites`)
-      .then((res) => res.json())
-      .then((data) => setFavorites(data))
-      .catch((err) => console.error("Ошибка загрузки избранного:", err));
+  useEffect(() => {   // ИЗБРАННОЕ ТУТ ПЕРЕПИСАН КУСОК КОДА
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch(`${API_URL}/favorites`);
+        const data = await res.json();
+        setFavorites(data); // Обновляем локальное состояние с сервера
+      } catch (err) {
+        console.error("Ошибка загрузки избранного:", err);
+      }
+    };
+  
+    fetchFavorites(); // Первая загрузка
+  
+    const intervalId = setInterval(fetchFavorites, 5000); // Обновляем общий комментарий каждые 5 секунд - для polling
+    return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {  // ОБЩИЙ КОММЕНТАРИЙ ТУТ ПЕРЕПИСАН КУСОК КОДА
     if (hasGeneralCommentFromUrl.current) return; // 💥 Не загружаем повторно, если уже был из URL
 
     const fetchGeneralComment = async () => {
@@ -213,6 +224,8 @@ const App = () => {
     };
 
     fetchGeneralComment();
+    const intervalId = setInterval(fetchGeneralComment, 5000); // Обновляем общий комментарий каждые 5 секунд - для polling
+    return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
   }, []);
 
   const getQuantity = (id) => {
@@ -269,13 +282,6 @@ const App = () => {
       .filter((item) => item.quantity > 0);
       updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
   };
-
-  // const clearCart = () => {
-  //   updateCart([]);  // Очищаем корзину 
-  //   setCart([]); // Обновляем локальное состояние
-  //   setIsModalOpen(false); // Закрываем модалку
-  //   // Убираем переключение на вкладку "Товары"
-  // };
 
   const clearCart = async () => {
     try {
