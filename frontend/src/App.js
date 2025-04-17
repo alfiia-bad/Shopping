@@ -24,6 +24,7 @@ const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хи
     <div
       className="product-name-wrapper"
       onClick={() => setShowFullText((prev) => !prev)} // Переключение по тапу
+      style={{ textAlign: align }} // Это выравнивание всей обёртки
     >
       <p
         className="product-name"
@@ -33,6 +34,7 @@ const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хи
           overflow: showFullText ? 'visible' : 'hidden',
           display: '-webkit-box',
           WebkitBoxOrient: 'vertical',
+          textAlign: align, // Вот оно! Центр или влево
         }}
       >
         {name}
@@ -880,6 +882,7 @@ const App = () => {
                       <ProductNameWithHint
                         name={item.name}
                         commentHint={item.comment?.trim() ? "Есть комментарий" : null}
+                        align="left"
                       />
                     </div>
                     <div className="quantity-controls">
