@@ -18,13 +18,22 @@ const products = [
 
 const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
   const nameRef = useRef(null);
+  const [showFullText, setShowFullText] = useState(false);
 
   return (
-    <div className="product-name-wrapper">
+    <div
+      className="product-name-wrapper"
+      onClick={() => setShowFullText((prev) => !prev)} // Переключение по тапу
+    >
       <p
         className="product-name"
         ref={nameRef}
-        title={name}
+        style={{
+          WebkitLineClamp: showFullText ? 'unset' : 2,
+          overflow: showFullText ? 'visible' : 'hidden',
+          display: '-webkit-box',
+          WebkitBoxOrient: 'vertical',
+        }}
       >
         {name}
       </p>
@@ -62,6 +71,7 @@ const App = () => {
   const [cartComment, setCartComment] = useState("");
 
   const hasGeneralCommentFromUrl = useRef(false);
+  const generalCommentFromUrl = useRef("");
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -109,21 +119,9 @@ const App = () => {
 
         if (generalCommentParam) {
           const decodedComment = decodeURIComponent(generalCommentParam);
-          setCartComment(decodedComment);
+          generalCommentFromUrl.current = decodedComment; // <-- добавили это
+          setCartComment(decodedComment); // можно оставить для отображения
           hasGeneralCommentFromUrl.current = true;
-
-        //   // Сохраняем общий комментарий в базу
-        //   fetch(`${API_URL}/cart/general-comment`, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ comment: decodedComment }),
-        //   }).then((res) => {
-        //     if (!res.ok) {
-        //       console.error("Ошибка при сохранении общего комментария из URL");
-        //     }
-        //   }).catch((err) => {
-        //     console.error("Ошибка сети при сохранении общего комментария из URL", err);
-        //   });
         }        
 
         setPendingCart(newCart); // Сохраняем данные для модалки
@@ -613,13 +611,17 @@ const App = () => {
   };
 
   const saveGeneralComment = async () => {
+    const commentToSave = hasGeneralCommentFromUrl.current
+      ? generalCommentFromUrl.current
+      : cartComment;
+  
     try {
       const response = await fetch(`${API_URL}/cart/general-comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comment: cartComment.trim() }), // Отправляем общий комментарий
+        body: JSON.stringify({ comment: commentToSave.trim() }),
       });
-
+  
       if (!response.ok) {
         console.error("Ошибка при сохранении общего комментария:", await response.text());
       } else {
