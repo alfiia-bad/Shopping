@@ -181,8 +181,8 @@ const App = () => {
     };
 
     fetchCart();
-    const intervalId = setInterval(fetchCart, 5000); // Обновляем корзину каждые 5 секунд  - для polling
-    return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
+    //const intervalId = setInterval(fetchCart, 5000); // Обновляем корзину каждые 5 секунд  - для polling
+    //return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
   }, []);
 
   useEffect(() => {
@@ -202,8 +202,8 @@ const App = () => {
   
     fetchFavorites(); // Первая загрузка
   
-    const intervalId = setInterval(fetchFavorites, 5000); // Обновляем общий комментарий каждые 5 секунд - для polling
-    return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
+    //const intervalId = setInterval(fetchFavorites, 5000); // Обновляем общий комментарий каждые 5 секунд - для polling
+    //return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
   }, []);
 
   useEffect(() => {  // ОБЩИЙ КОММЕНТАРИЙ ТУТ ПЕРЕПИСАН КУСОК КОДА
@@ -224,8 +224,8 @@ const App = () => {
     };
 
     fetchGeneralComment();
-    const intervalId = setInterval(fetchGeneralComment, 5000); // Обновляем общий комментарий каждые 5 секунд - для polling
-    return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
+    //const intervalId = setInterval(fetchGeneralComment, 5000); // Обновляем общий комментарий каждые 5 секунд - для polling
+    //return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента - для polling
   }, []);
 
   const getQuantity = (id) => {
