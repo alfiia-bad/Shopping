@@ -18,16 +18,6 @@ const products = [
 
 const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
   const nameRef = useRef(null);
-  const [isTruncated, setIsTruncated] = useState(false);
-
-  useEffect(() => {
-    const el = nameRef.current;
-    if (el) {
-      const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
-      const lines = Math.round(el.offsetHeight / lineHeight);
-      setIsTruncated(lines > 2); // т.к. у тебя clamp на 2 строки
-    }
-  }, [name]);
 
   return (
     <div className="product-name-wrapper">
