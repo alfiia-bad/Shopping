@@ -23,7 +23,7 @@ const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хи
   useEffect(() => {
     const el = nameRef.current;
     if (el) {
-      setIsTruncated(el.scrollWidth > el.clientWidth);
+      setIsTruncated(el.scrollHeight > el.clientHeight); // Проверяем, обрезан ли текст
     }
   }, [name]);
 

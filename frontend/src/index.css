@@ -221,7 +221,7 @@ body {
   grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке по умолчанию */
   gap: 20px;
   justify-items: stretch;
-  padding: 0 0px;
+  padding: 0 0px 80px;
   width: 100%;
 }
 
@@ -241,9 +241,12 @@ body {
   height: 100%;
   position: relative; /* Для позиционирования кнопки "Избранное" */
   overflow: visible; /* Убедитесь, что элементы внутри карточки не обрезаются */
-transition: none; /* Убираем плавные переходы */
+  transition: none; /* Убираем плавные переходы */
   transform: none; /* Убираем масштабирование */
-border: 1px solid #ddd;
+  border: 1px solid #ddd;
+  box-sizing: border-box; /* ✅ Главное добавление — фиксит padding-проблему */
+  min-width: 0;            /* ✅ Предотвращает переполнение сетки */
+  max-width: 100%;         /* ✅ Не даёт карточке вылезти за пределы колонки */
 }
 
 .product-card:hover {
@@ -255,6 +258,7 @@ border: 1px solid #ddd;
   max-width: 100%;
   height: auto;
   border-radius: 8px;
+  display: block;         /* ✅ Избавляемся от нижнего отступа картинки */
 }
 
 .product-name {
@@ -923,7 +927,7 @@ opacity: 1; /* Убедимся, что кнопка всегда видима *
   grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке по умолчанию */
   gap: 20px; /* Расстояние между карточками */
   justify-items: stretch;
-  padding: 0 0px;
+  padding: 0 0px 80px; 
   width: 100%;
 }
 
