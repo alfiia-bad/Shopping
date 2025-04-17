@@ -16,7 +16,7 @@ const products = [
   { id: "6", name: "Кофе капсулы. Вкусный и великолепный. Ароматныйаааааааааааа ааааааааа", image: "" },
 ];
 
-const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
+const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
   const nameRef = useRef(null);
   const [showFullText, setShowFullText] = useState(false);
 
