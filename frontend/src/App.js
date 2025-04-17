@@ -23,7 +23,9 @@ const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хи
   useEffect(() => {
     const el = nameRef.current;
     if (el) {
-      setIsTruncated(el.scrollHeight > el.clientHeight); // Проверяем, обрезан ли текст
+      const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
+      const lines = Math.round(el.offsetHeight / lineHeight);
+      setIsTruncated(lines > 2); // т.к. у тебя clamp на 2 строки
     }
   }, [name]);
 
@@ -120,18 +122,18 @@ const App = () => {
           setCartComment(decodedComment);
           hasGeneralCommentFromUrl.current = true;
 
-          // Сохраняем общий комментарий в базу
-          fetch(`${API_URL}/cart/general-comment`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ comment: decodedComment }),
-          }).then((res) => {
-            if (!res.ok) {
-              console.error("Ошибка при сохранении общего комментария из URL");
-            }
-          }).catch((err) => {
-            console.error("Ошибка сети при сохранении общего комментария из URL", err);
-          });
+        //   // Сохраняем общий комментарий в базу
+        //   fetch(`${API_URL}/cart/general-comment`, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify({ comment: decodedComment }),
+        //   }).then((res) => {
+        //     if (!res.ok) {
+        //       console.error("Ошибка при сохранении общего комментария из URL");
+        //     }
+        //   }).catch((err) => {
+        //     console.error("Ошибка сети при сохранении общего комментария из URL", err);
+        //   });
         }        
 
         setPendingCart(newCart); // Сохраняем данные для модалки
