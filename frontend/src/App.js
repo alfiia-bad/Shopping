@@ -34,7 +34,7 @@ const ProductNameWithHint = ({ name, commentHint = null }) => {   // Тут хи
       <p
         className="product-name"
         ref={nameRef}
-        title={isTruncated ? name : undefined} // хинт при обрезке
+        title={name}
       >
         {name}
       </p>
@@ -520,10 +520,21 @@ const App = () => {
     setIsExportModalOpen(false); // Закрываем модальное окно экспорта
   };
 
-  const handleUpdateCart = () => {
-    setCart(pendingCart); // Обновляем локальное состояние корзины
-    updateCartOnServer(pendingCart.filter(item => item.id !== "general")); // Отправляем данные на сервер
-    setIsCartModalOpen(false); // Закрываем модалку
+  const handleUpdateCart = async () => {
+    try {
+      // 1. Обновляем корзину на сервере (без general-комментария)
+      await updateCartOnServer(pendingCart.filter(item => item.id !== "general"));
+  
+      // 2. Сохраняем общий комментарий на сервере
+      await saveGeneralComment();
+  
+      // 3. Обновляем локальное состояние
+      setCart(pendingCart);
+      setPendingCart([]);
+      setIsCartModalOpen(false);
+    } catch (err) {
+      console.error("Ошибка при обновлении корзины и общего комментария:", err);
+    }
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
