@@ -162,7 +162,7 @@ const App = () => {
       setViewFavorites(false);
       setViewNotifications(false);
     }
-  }, [productsLoaded]);
+  }, [products, productsLoaded]);
 
   useEffect(() => {
     // Сохраняем активную вкладку в localStorage
