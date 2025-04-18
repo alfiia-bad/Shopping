@@ -134,7 +134,8 @@ def update_cart():
 @app.route('/cart', methods=['DELETE'])
 def clear_cart():
     with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM cart')  # Удаляем всё, включая general
+        conn.execute('DELETE FROM cart')  # Удаляем все товары из корзины
+        conn.execute('UPDATE general_comment SET "general-comment" = "" WHERE id = 1') # Очищаем общий комментарий
         conn.commit()
     return jsonify({"success": True, "message": "Корзина и общий комментарий очищены"}), 200
 

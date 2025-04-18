@@ -63,16 +63,18 @@ const App = () => {
   const [pendingCart, setPendingCart] = useState([]);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [cartComment, setCartComment] = useState("");
+  const [productsLoaded, setProductsLoaded] = useState(false);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
 
-  useEffect(() => {  // Загрузка списка товаров из API при монтировании компонента
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
         setProducts(data);
+        setProductsLoaded(true); // <-- Флаг загрузки
       } catch (error) {
         console.error("Ошибка загрузки товаров:", error);
       }
@@ -160,7 +162,7 @@ const App = () => {
       setViewFavorites(false);
       setViewNotifications(false);
     }
-  }, [products]);
+  }, [productsLoaded]);
 
   useEffect(() => {
     // Сохраняем активную вкладку в localStorage
