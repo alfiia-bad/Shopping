@@ -7,14 +7,7 @@ import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete, MdInfo } from "react-icons/md";
 
-const products = [
-  { id: "1", name: "Бананы", image: "/images/banana.png" },
-  { id: "2", name: "Вода", image: "/images/water3.webp" },
-  { id: "3", name: "Кофе", image: "/images/coffee.jpg" },
-  { id: "4", name: "Кофе капсулы. Вкусный и великолепный. Ароматный", image: "" },
-  { id: "5", name: "Кофе капсулы. Вкусный и великолепный. Ароматныйаааааааааааа ааааааааа", image: "" },
-  { id: "6", name: "Кофе капсулы. Вкусный и великолепный. Ароматныйаааааааааааа ааааааааа", image: "" },
-];
+const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
 const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
   const nameRef = useRef(null);
@@ -49,9 +42,8 @@ const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => 
   );
 };
 
-const API_URL = "https://alfa-shop-ljmg.onrender.com";
-
 const App = () => {
+  const [products, setProducts] = useState([]); 
   const [viewCart, setViewCart] = useState(false);
   const [viewFavorites, setViewFavorites] = useState(false);
   const [viewNotifications, setViewNotifications] = useState(false);
@@ -74,6 +66,20 @@ const App = () => {
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
+
+  useEffect(() => {  // Загрузка списка товаров из API при монтировании компонента
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${API_URL}/products`);
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Ошибка загрузки товаров:", error);
+      }
+    };
+  
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -329,36 +335,42 @@ const App = () => {
   };  
 
   const updateFavorites = async () => {
+    if (!products.length) {
+      console.error("Товары ещё не загружены. Подождите.");
+      return;
+    }
+  
     const lines = favoritesInput.split("\n").map((line) => line.trim());
+  
     const validFavorites = lines.filter((line) =>
       products.some((product) => product.id === line)
     );
-
+  
     const invalidFavorites = lines.filter(
       (line) => !products.some((product) => product.id === line)
     );
-
+  
     if (invalidFavorites.length > 0) {
-      setShowInvalidFavoritesBadge(true); // Показываем бейдж
-      setTimeout(() => setShowInvalidFavoritesBadge(false), 5000); // Скрываем бейдж через 5 секунд
+      setShowInvalidFavoritesBadge(true);
+      setTimeout(() => setShowInvalidFavoritesBadge(false), 5000);
     }
-
+  
     if (validFavorites.length === 0) {
       console.error("Некорректные данные: ни один из товаров не найден.");
       return;
     }
-
+  
     try {
       const response = await fetch(`${API_URL}/favorites`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ favorites: validFavorites }),
       });
-
+  
       if (response.ok) {
         const updatedFavorites = await response.json();
-        setFavorites(updatedFavorites.favorites); // Обновляем локальное состояние
-        setFavoritesInput(""); // Очищаем инпут
+        setFavorites(updatedFavorites.favorites);
+        setFavoritesInput("");
       } else {
         console.error("Ошибка обновления избранного");
       }
@@ -553,13 +565,6 @@ const App = () => {
     setCurrentComment(product?.comment || ""); // Устанавливаем текущий комментарий (если есть)
     setIsCommentModalOpen(true); // Открываем модальное окно
   };
-
-  // const handleCommentChange = (id, comment) => {
-  //   const updatedCart = cart.map((item) =>
-  //     item.id === id ? { ...item, comment } : item
-  //   );
-  //   updateCart(updatedCart.filter(item => item.id !== "general")); // Сохраняем изменения на сервере
-  // };
 
   const saveComment = async () => {
     try {

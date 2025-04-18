@@ -23,34 +23,59 @@ DB_PATH = 'cart.db'
 
 def init_db():
     with sqlite3.connect(DB_PATH) as conn:
+        # Таблица товаров в корзине
         conn.execute('''
             CREATE TABLE IF NOT EXISTS cart (
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
-                quantity INTEGER NOT NULL
+                quantity INTEGER NOT NULL,
+                comment TEXT
             )
         ''')
+
+        # Таблица избранных товаров
         conn.execute('''
             CREATE TABLE IF NOT EXISTS favorites (
                 product_id TEXT PRIMARY KEY
             )
-        ''')        
+        ''')
+
+        # Таблица всех продуктов
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                image_url TEXT
+            )
+        ''')
+
+        # Таблица общего комментария к корзине (одна строка)
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS general_comment (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                "general-comment" TEXT
+            )
+        ''')
+
+        # Гарантируем, что строка с id = 1 всегда есть
+        result = conn.execute('SELECT COUNT(*) FROM general_comment').fetchone()[0]
+        if result == 0:
+            conn.execute('INSERT INTO general_comment (id, "general-comment") VALUES (1, "")')
+
+        # Начальные товары (вставляются только если их ещё нет)
+        existing = conn.execute('SELECT COUNT(*) FROM products').fetchone()[0]
+        if existing == 0:
+            initial_products = [
+                ("1", "Бананы", "/images/banana.png"),
+                ("2", "Вода", "/images/water3.webp"),
+                ("3", "Кофе", "/images/coffee.jpg"),
+                ("4", "Кофе капсулы. Вкусный и великолепный. Ароматный", ""),
+                ("5", "Кофе капсулы. Вкусный и великолепный. Ароматныйаааааааааааа ааааааааа", ""),
+                ("6", "Кофе капсулы. Вкусный и великолепный. Ароматныйаааааааааааа ааааааааа", ""),
+            ]
+            conn.executemany('INSERT INTO products (id, name, image_url) VALUES (?, ?, ?)', initial_products)
+
 init_db()
-
-def update_database_schema():
-    with sqlite3.connect(DB_PATH) as conn:
-        # Проверяем, есть ли колонка 'comment' в таблице 'cart'
-        cursor = conn.execute("PRAGMA table_info(cart);")
-        columns = [row[1] for row in cursor.fetchall()]
-        if "comment" not in columns:
-            conn.execute("ALTER TABLE cart ADD COLUMN comment TEXT;")
-            print("Колонка 'comment' успешно добавлена в таблицу 'cart'.")
-        # Проверяем, есть ли колонка 'general_comment' в таблице 'cart'
-        if "general_comment" not in columns:
-            conn.execute("ALTER TABLE cart ADD COLUMN general_comment TEXT;")
-            print("Колонка 'general_comment' успешно добавлена в таблицу 'cart'.")
-
-update_database_schema()
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -318,7 +343,7 @@ def update_cart_item(item_id):
 
 if __name__ == '__main__':
     # Обновляем схему базы данных перед запуском приложения
-    update_database_schema()
+#    update_database_schema()
 
     # Получаем порт из переменных окружения или используем 5000 по умолчанию
     port = int(os.environ.get("PORT", 5000))
