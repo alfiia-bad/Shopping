@@ -146,24 +146,42 @@ def update_cart_incrementally():
     return jsonify({"success": True}), 200
 
 @app.route('/cart', methods=['POST'])
-def update_cart():
+def merge_cart():
     data = request.json
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
 
     with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM cart WHERE id != "general"')  # Удаляем старые записи из корзины кроме общего комментария
-        for item in data:
-            # Пропускаем пустой "общий" объект, не являющийся товаром
-            if item.get("id") == "general":
-                continue
+        conn.row_factory = sqlite3.Row
+        existing_items = {
+            row["id"]: row for row in conn.execute('SELECT * FROM cart WHERE id != "general"').fetchall()
+        }
 
+        for item in data:
             if 'id' not in item or 'name' not in item or 'quantity' not in item:
                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
-            conn.execute(
-                'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
-                (item['id'], item['name'], item['quantity'], item.get('comment', ""))
-            )
+
+            if item['id'] == "general":
+                # Обрабатываем общий комментарий отдельно
+                general_comment = item.get("comment", "").strip()
+                conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (general_comment,))
+                continue
+
+            current = existing_items.get(item['id'])
+            if current:
+                # Обновляем количество и комментарий
+                new_quantity = current['quantity'] + item['quantity']
+                conn.execute(
+                    'UPDATE cart SET quantity = ?, comment = ? WHERE id = ?',
+                    (new_quantity, item.get("comment", current['comment']), item['id'])
+                )
+            else:
+                # Добавляем новый товар
+                conn.execute(
+                    'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
+                    (item['id'], item['name'], item['quantity'], item.get("comment", ""))
+                )
+
         conn.commit()
 
     return jsonify({"success": True}), 200

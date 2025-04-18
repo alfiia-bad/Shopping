@@ -810,9 +810,9 @@ const App = () => {
 
                       <div className="product-content">
                         <div className="image-container">
-                          {product.image ? (
+                          {product.image_url ? (
                             <img
-                              src={product.image}
+                              src={product.image_url}
                               alt="" // Пустой alt для декоративного изображения
                             />
                           ) : (
