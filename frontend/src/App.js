@@ -166,7 +166,7 @@ const App = () => {
     // fallback: tab from URL or localStorage
     const tabFromUrl = urlParams.get("tab") || localStorage.getItem("activeTab") || "products";
     setTab(tabFromUrl);
-  }, [productsLoaded]);
+  }, [productsLoaded, products]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
