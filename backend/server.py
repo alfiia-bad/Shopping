@@ -179,42 +179,6 @@ def send_to_telegram():
     except requests.exceptions.RequestException:
         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
 
-# @app.route('/cart/send', methods=['POST'])
-# def send_cart():
-#     data = request.json
-#     cart_items = data.get('cartItems', [])
-#     comment = data.get('comment', '').strip()
-
-#     if not cart_items:
-#         return jsonify({"success": False, "message": "Корзина пуста"}), 400
-
-#     # Сохраняем общий комментарий в базе данных
-#     with sqlite3.connect(DB_PATH) as conn:
-#         conn.execute('UPDATE cart SET comment = ?', (comment,))
-#         conn.commit()
-
-#     # Формируем сообщение для Telegram
-#     cart_items_str = "\n".join([f"- {item['name']} x{item['quantity']}" for item in cart_items])
-#     message = f"Корзина:\n{cart_items_str}"
-#     if comment:
-#         message += f"\n\nКомментарий к корзине: {comment}"
-
-#     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-
-#     try:
-#         # Отправляем сообщение в Telegram
-#         response = requests.post(url, data={
-#             'chat_id': CHAT_ID,
-#             'text': message,
-#             'parse_mode': 'HTML'
-#         })
-#         if response.status_code == 200:
-#             return jsonify({"success": True, "message": "Корзина отправлена"})
-#         else:
-#             return jsonify({"success": False, "message": "Ошибка при отправке корзины"}), 500
-#     except requests.exceptions.RequestException:
-#         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
-
 @app.route("/favorites", methods=["GET"])
 def get_favorites():
     conn = get_db_connection()

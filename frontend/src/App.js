@@ -67,189 +67,100 @@ const App = () => {
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
 
-  useEffect(() => {
-    const fetchProductsAndParseUrl = async () => {
+  useEffect(() => {  // Загрузка списка товаров из API при монтировании компонента
+    const fetchProducts = async () => {
       try {
-        // Загружаем список товаров
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
         setProducts(data);
-  
-        // После загрузки товаров разбираем параметры URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const favoritesParam = urlParams.get("favorites");
-        const cartParam = urlParams.get("cart");
-  
-        if (favoritesParam) {
-          setViewFavorites(true);
-          setViewCart(false);
-          setViewNotifications(false);
-  
-          setTimeout(() => {
-            const favoritesArray = favoritesParam.split(",");
-            setFavoritesInput(favoritesArray.join("\n"));
-            setIsFavoritesModalOpen(true);
-            window.history.replaceState(null, "", window.location.origin);
-          }, 100);
-          return;
-        }
-  
-        if (cartParam) {
-          setViewCart(true);
-          setViewFavorites(false);
-          setViewNotifications(false);
-  
-          setTimeout(() => {
-            const newCart = cartParam.split(",").map((item) => {
-              const [id, quantity, comment] = item.split(":");
-              const product = data.find((p) => p.id === id);
-              return {
-                id,
-                name: product ? product.name : "Неизвестный товар",
-                price: product?.price ?? 0,
-                quantity: parseInt(quantity, 10),
-                comment: comment ? decodeURIComponent(comment) : "",
-              };
-            });
-  
-            const generalCommentParam = urlParams.get("general-comment");
-            if (generalCommentParam) {
-              const decodedComment = decodeURIComponent(generalCommentParam);
-              generalCommentFromUrl.current = decodedComment;
-              setCartComment(decodedComment);
-              hasGeneralCommentFromUrl.current = true;
-            }
-  
-            setPendingCart(newCart);
-            setIsCartModalOpen(true);
-            window.history.replaceState(null, "", window.location.origin);
-          }, 100);
-          return;
-        }
-  
-        // Восстановление вкладки из localStorage, если нет параметров
-        const activeTab = localStorage.getItem("activeTab");
-        if (activeTab === "cart") {
-          setViewCart(true);
-          setViewFavorites(false);
-          setViewNotifications(false);
-        } else if (activeTab === "favorites") {
-          setViewFavorites(true);
-          setViewCart(false);
-          setViewNotifications(false);
-        } else if (activeTab === "notifications") {
-          setViewNotifications(true);
-          setViewCart(false);
-          setViewFavorites(false);
-        } else {
-          setViewCart(false);
-          setViewFavorites(false);
-          setViewNotifications(false);
-        }
-  
       } catch (error) {
         console.error("Ошибка загрузки товаров:", error);
       }
     };
   
-    fetchProductsAndParseUrl();
+    fetchProducts();
   }, []);
-  
 
-  // useEffect(() => {  // Загрузка списка товаров из API при монтировании компонента
-  //   const fetchProducts = async () => {
-  //     try {
-  //       const response = await fetch(`${API_URL}/products`);
-  //       const data = await response.json();
-  //       setProducts(data);
-  //     } catch (error) {
-  //       console.error("Ошибка загрузки товаров:", error);
-  //     }
-  //   };
-  
-  //   fetchProducts();
-  // }, []);
-
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const favoritesParam = urlParams.get("favorites");
-  //   const cartParam = urlParams.get("cart");
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const favoritesParam = urlParams.get("favorites");
+    const cartParam = urlParams.get("cart");
     
-  //   if (favoritesParam) {
-  //     // Переключаемся на вкладку "Избранное"
-  //     setViewFavorites(true);
-  //     setViewCart(false);
-  //     setViewNotifications(false);
+    if (favoritesParam) {
+      // Переключаемся на вкладку "Избранное"
+      setViewFavorites(true);
+      setViewCart(false);
+      setViewNotifications(false);
 
-  //     // Открываем модальное окно
-  //     setTimeout(() => {
-  //       const favoritesArray = favoritesParam.split(",");
-  //       setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
-  //       setIsFavoritesModalOpen(true); // Открываем модалку
+      // Открываем модальное окно
+      setTimeout(() => {
+        const favoritesArray = favoritesParam.split(",");
+        setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
+        setIsFavoritesModalOpen(true); // Открываем модалку
 
-  //       // Убираем параметры из URL
-  //       window.history.replaceState(null, "", window.location.origin);
-  //     }, 100); // Даем время для рендера вкладки
-  //     return; // Прерываем выполнение, чтобы не использовать localStorage
-  //   }
+        // Убираем параметры из URL
+        window.history.replaceState(null, "", window.location.origin);
+      }, 100); // Даем время для рендера вкладки
+      return; // Прерываем выполнение, чтобы не использовать localStorage
+    }
 
-  //   if (cartParam) {
-  //     // Переключаемся на вкладку "Корзина"
-  //     setViewCart(true);
-  //     setViewFavorites(false);
-  //     setViewNotifications(false);
+    if (cartParam) {
+      // Переключаемся на вкладку "Корзина"
+      setViewCart(true);
+      setViewFavorites(false);
+      setViewNotifications(false);
 
-  //     // Открываем модальное окно
-  //     setTimeout(() => {
-  //       const newCart = cartParam.split(",").map((item) => {
-  //         const [id, quantity, comment] = item.split(":"); // Разделяем id, quantity и comment
-  //         const product = products.find((p) => p.id === id); // Ищем товар в массиве products
-  //         return {
-  //           id,
-  //           name: product ? product.name : "Неизвестный товар", // Используем название из products
-  //           quantity: parseInt(quantity, 10),
-  //           comment: comment ? decodeURIComponent(comment) : "", // Декодируем комментарий, если он есть
-  //         };
-  //       });
+      // Открываем модальное окно
+      setTimeout(() => {
+        const newCart = cartParam.split(",").map((item) => {
+          const [id, quantity, comment] = item.split(":"); // Разделяем id, quantity и comment
+          const product = products.find((p) => p.id === Number(id)); // Ищем товар в массиве products
+          return {
+            id,
+            name: product ? product.name : "Неизвестный товар", // Используем название из products
+            quantity: parseInt(quantity, 10),
+            comment: comment ? decodeURIComponent(comment) : "", // Декодируем комментарий, если он есть
+          };
+        });
 
-  //       const generalCommentParam = urlParams.get("general-comment");
+        const generalCommentParam = urlParams.get("general-comment");
 
-  //       if (generalCommentParam) {
-  //         const decodedComment = decodeURIComponent(generalCommentParam);
-  //         generalCommentFromUrl.current = decodedComment; // <-- добавили это
-  //         setCartComment(decodedComment); // можно оставить для отображения
-  //         hasGeneralCommentFromUrl.current = true;
-  //       }        
+        if (generalCommentParam) {
+          const decodedComment = decodeURIComponent(generalCommentParam);
+          generalCommentFromUrl.current = decodedComment; // <-- добавили это
+          setCartComment(decodedComment); // можно оставить для отображения
+          hasGeneralCommentFromUrl.current = true;
+        }        
 
-  //       setPendingCart(newCart); // Сохраняем данные для модалки
-  //       setIsCartModalOpen(true); // Открываем модалку
+        setPendingCart(newCart); // Сохраняем данные для модалки
+        setIsCartModalOpen(true); // Открываем модалку
 
-  //       // Убираем параметры из URL
-  //       window.history.replaceState(null, "", window.location.origin);
-  //     }, 100); // Даем время для рендера вкладки
-  //     return; // Прерываем выполнение, чтобы не использовать localStorage
-  //   }
+        // Убираем параметры из URL
+        window.history.replaceState(null, "", window.location.origin);
+      }, 100); // Даем время для рендера вкладки
+      return; // Прерываем выполнение, чтобы не использовать localStorage
+    }
 
-  //   // Если параметров в URL нет, используем localStorage
-  //   const activeTab = localStorage.getItem("activeTab");
-  //   if (activeTab === "cart") {
-  //     setViewCart(true);
-  //     setViewFavorites(false);
-  //     setViewNotifications(false);
-  //   } else if (activeTab === "favorites") {
-  //     setViewFavorites(true);
-  //     setViewCart(false);
-  //     setViewNotifications(false);
-  //   } else if (activeTab === "notifications") {
-  //     setViewNotifications(true);
-  //     setViewCart(false);
-  //     setViewFavorites(false);
-  //   } else {
-  //     setViewCart(false);
-  //     setViewFavorites(false);
-  //     setViewNotifications(false);
-  //   }
-  // }, [products]);
+    // Если параметров в URL нет, используем localStorage
+    const activeTab = localStorage.getItem("activeTab");
+    if (activeTab === "cart") {
+      setViewCart(true);
+      setViewFavorites(false);
+      setViewNotifications(false);
+    } else if (activeTab === "favorites") {
+      setViewFavorites(true);
+      setViewCart(false);
+      setViewNotifications(false);
+    } else if (activeTab === "notifications") {
+      setViewNotifications(true);
+      setViewCart(false);
+      setViewFavorites(false);
+    } else {
+      setViewCart(false);
+      setViewFavorites(false);
+      setViewNotifications(false);
+    }
+  }, [products]);
 
   useEffect(() => {
     // Сохраняем активную вкладку в localStorage
