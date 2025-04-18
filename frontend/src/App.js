@@ -166,17 +166,21 @@ const App = () => {
     }
   }, [products, productsLoaded]);
 
-  useEffect(() => {
-    // Сохраняем активную вкладку в localStorage
+  useEffect(() => {  // Сохраняем активную вкладку в localStorage и URL
+    let tab = "products"; // по умолчанию
     if (viewCart) {
-      localStorage.setItem("activeTab", "cart");
+      tab = "cart";
     } else if (viewFavorites) {
-      localStorage.setItem("activeTab", "favorites");
+      tab = "favorites";
     } else if (viewNotifications) {
-      localStorage.setItem("activeTab", "notifications");
-    } else {
-      localStorage.setItem("activeTab", "products");
+      tab = "notifications";
     }
+  
+    localStorage.setItem("activeTab", tab);
+  
+    const url = new URL(window.location);
+    url.searchParams.set("tab", tab);
+    window.history.replaceState({}, "", url);
   }, [viewCart, viewFavorites, viewNotifications]);
 
   useEffect(() => {      // КОРЗИНА ТУТ ПЕРЕПИСАН КУСОК КОДА
@@ -574,6 +578,8 @@ const App = () => {
 
   const saveComment = async () => {
     try {
+      let updatedCart;
+  
       if (currentProductId === "general") {
         // Если редактируем общий комментарий — отдельный API-запрос
         await fetch("/comment", {
@@ -588,17 +594,32 @@ const App = () => {
         });
   
         // Обновляем локальное состояние
-        const updatedCart = cart.map((item) =>
+        updatedCart = cart.map((item) =>
           item.id === "general" ? { ...item, comment: currentComment } : item
         );
         setCart(updatedCart);
       } else {
         // Иначе — обновляем комментарий у товара
-        const updatedCart = cart.map((item) =>
+        updatedCart = cart.map((item) =>
           item.id === currentProductId ? { ...item, comment: currentComment } : item
         );
         setCart(updatedCart);
-        updateCart(updatedCart.filter(item => item.id !== "general"));
+        updateCart(updatedCart.filter((item) => item.id !== "general"));
+      }
+  
+      // Если корзина (без general) стала пустой — удаляем общий комментарий
+      const cartWithoutGeneral = updatedCart.filter((item) => item.id !== "general");
+      if (cartWithoutGeneral.length === 0) {
+        try {
+          await fetch(`${API_URL}/general-comment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ comment: "" }),
+          });
+          setCartComment("");
+        } catch (error) {
+          console.error("Ошибка при удалении общего комментария:", error);
+        }
       }
   
       // Закрываем модалку
@@ -623,7 +644,6 @@ const App = () => {
   
         window.dispatchEvent(new Event("resize"));
       }, 300);
-  
     } catch (error) {
       console.error("Ошибка при сохранении комментария:", error);
     }
