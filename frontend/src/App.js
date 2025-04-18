@@ -6,6 +6,7 @@ import { MdArrowBackIos, MdClose, MdOutlineHideImage } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete, MdInfo } from "react-icons/md";
+import { showToast } from './Toast';
 
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
