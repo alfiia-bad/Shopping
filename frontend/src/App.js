@@ -529,9 +529,7 @@ const App = () => {
 
   const handleCloseFavoritesModal = () => {
     setIsFavoritesModalOpen(false); // Закрываем модальное окно
-    setViewFavorites(true); // Переключаемся на вкладку "Избранное"
-    setViewCart(false);
-    setViewNotifications(false);
+    setTab("favorites"); // Переключаемся на вкладку "Избранное"
 
     // Убираем параметры из URL
     window.history.replaceState(null, "", window.location.origin);
@@ -695,11 +693,7 @@ const App = () => {
             <div className="header-left">
               <button
                 className="back-button"
-                onClick={() => {
-                  setViewCart(false);
-                  setViewNotifications(false);
-                  setViewFavorites(false);
-                }}
+                onClick={() => setTab("products")}
               >
                 <MdArrowBackIos className="icon" />
               </button>
@@ -748,7 +742,7 @@ const App = () => {
             <div className="cart-with-badge">
               <button
                 className="cart-button"
-                onClick={() => setViewCart(true)}
+                onClick={() => setTab("cart")}
               >
                 <LuShoppingCart className="icon" />
               </button>
@@ -1013,9 +1007,7 @@ const App = () => {
                 onClick={() => {
                   updateFavorites(); // Обновляем избранное
                   setIsFavoritesModalOpen(false); // Закрываем модальное окно
-                  setViewFavorites(true); // Переключаемся на вкладку "Избранное"
-                  setViewCart(false);
-                  setViewNotifications(false);
+                  setTab("favorites"); // Переключаемся на вкладку "Избранное"
                   handleCloseFavoritesModal(); // Закрываем модалку и очищаем URL
                 }}
               >
@@ -1141,44 +1133,28 @@ const App = () => {
       <nav className="bottom-nav">
         <button
           className={`nav-item ${!viewCart && !viewNotifications && !viewFavorites ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(false);
-            setViewFavorites(false);
-          }}
+          onClick={() => setTab("")}
         >
           <FiShoppingBag className="icon" />
           <span className="label">Товары</span>
         </button>
         <button
           className={`nav-item ${viewFavorites ? "active" : ""}`}
-          onClick={() => {
-            setViewFavorites(true);
-            setViewCart(false);
-            setViewNotifications(false);
-          }}
+          onClick={() => setTab("favorites")}
         >
           <FiHeart className="icon" />
           <span className="label">Избранное</span>
         </button>
         <button
           className={`nav-item ${viewNotifications ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(false);
-            setViewNotifications(true);
-            setViewFavorites(false);
-          }}
+          onClick={() => setTab("notifications")}
         >
           <FiBell className="icon" />
           <span className="label">Уведомления</span>
         </button>
         <button
           className={`nav-item ${viewCart ? "active" : ""}`}
-          onClick={() => {
-            setViewCart(true);
-            setViewNotifications(false);
-            setViewFavorites(false);
-          }}
+          onClick={() => setTab("cart")}
         >
           <LuShoppingCart className="icon" />
           <span className="label">Корзина</span>
