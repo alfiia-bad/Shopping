@@ -16,6 +16,7 @@ app = Flask(
 
 @app.route('/images/<path:filename>')
 def serve_image(filename):
+    print("Запрос на картинку:", filename)
     return send_from_directory(os.path.join(app.root_path, 'images'), filename)
 
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -111,6 +112,38 @@ def get_cart():
             for row in cursor.fetchall()
         ]
     return jsonify(items)  # Flask автоматически использует UTF-8
+
+@app.route('/cart/update', methods=['POST'])
+def update_cart_incrementally():
+    data = request.json
+    if not isinstance(data, list):
+        return jsonify({"success": False, "message": "Неверный формат данных"}), 400
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        for item in data:
+            # Проверка обязательных полей
+            if 'id' not in item or 'quantity' not in item:
+                return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
+            if not isinstance(item['quantity'], int) or item['quantity'] < 1:
+                return jsonify({"success": False, "message": "Количество должно быть целым числом и больше 0"}), 400
+
+            # Получаем текущую запись товара
+            current_item = conn.execute('SELECT * FROM cart WHERE id = ?', (item['id'],)).fetchone()
+            if current_item:
+                new_quantity = current_item['quantity'] + item['quantity']  # Увеличиваем или уменьшаем
+                if new_quantity <= 0:
+                    conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))  # Если количество <= 0, удаляем товар
+                else:
+                    conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (new_quantity, item['id']))  # Обновляем количество
+            else:
+                # Если товара нет в корзине, добавляем новый товар
+                conn.execute(
+                    'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
+                    (item['id'], item['name'], item['quantity'], item.get('comment', ""))
+                )
+        conn.commit()
+
+    return jsonify({"success": True}), 200
 
 @app.route('/cart', methods=['POST'])
 def update_cart():

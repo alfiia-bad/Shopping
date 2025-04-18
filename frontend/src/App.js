@@ -228,6 +228,16 @@ const App = () => {
     fetchGeneralComment();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('/cart')
+        .then(response => response.json())
+        .then(data => setCart(data));  // Обновляем состояние корзины
+    }, 5000);  // Интервал в 5 секунд
+  
+    return () => clearInterval(interval);  // Очищаем интервал при размонтировании компонента
+  }, []);
+
   const getQuantity = (id) => {
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
@@ -802,7 +812,7 @@ const App = () => {
                         <div className="image-container">
                           {product.image ? (
                             <img
-                              src={`https://alfa-shop-ljmg.onrender.com${product.image}`}
+                              src={product.image}
                               alt="" // Пустой alt для декоративного изображения
                             />
                           ) : (
