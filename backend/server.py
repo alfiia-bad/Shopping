@@ -82,6 +82,17 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+@app.route('/products', methods=['GET'])
+def get_products():
+    conn = get_db_connection()
+    cursor = conn.execute('SELECT id, name, image_url FROM products')
+    products = [
+        {"id": row["id"], "name": row["name"], "image_url": row["image_url"]}
+        for row in cursor.fetchall()
+    ]
+    conn.close()
+    return jsonify(products)
+
 @app.route('/cart', methods=['GET'])
 def get_cart():
     with sqlite3.connect(DB_PATH) as conn:
@@ -132,19 +143,8 @@ def save_general_comment():
     data = request.json
     comment = data.get('comment', '').strip()
 
-    if not comment:
-        return jsonify({"success": False, "message": "Комментарий пуст"}), 400
-
-    # Сохраняем общий комментарий в базе данных
     with sqlite3.connect(DB_PATH) as conn:
-        # Проверяем, существует ли запись с id = "general"
-        cursor = conn.execute('SELECT 1 FROM cart WHERE id = "general"')
-        if cursor.fetchone():
-            # Обновляем существующую запись
-            conn.execute('UPDATE cart SET general_comment = ? WHERE id = "general"', (comment,))
-        else:
-            # Вставляем новую запись
-            conn.execute('INSERT INTO cart (id, name, quantity, general_comment) VALUES ("general", "", 0, ?)', (comment,))
+        conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (comment,))
         conn.commit()
 
     return jsonify({"success": True, "message": "Общий комментарий сохранён"})
@@ -152,11 +152,9 @@ def save_general_comment():
 @app.route('/cart/general-comment', methods=['GET'])
 def get_general_comment():
     with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT general_comment FROM cart WHERE id = "general"')
+        cursor = conn.execute('SELECT "general-comment" FROM general_comment WHERE id = 1')
         result = cursor.fetchone()
-        if result and result[0]:
-            return jsonify({"comment": result[0]})
-        return jsonify({"comment": ""})
+        return jsonify({"comment": result[0] if result else ""})
 
 @app.route('/send-to-telegram', methods=['POST'])
 def send_to_telegram():
