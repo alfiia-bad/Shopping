@@ -1031,16 +1031,16 @@ const App = () => {
       </main>
 
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-80">
-            <h2 className="text-lg font-semibold mb-4">Добавить товар</h2>
-            
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <h2 className="modal-header">Добавить товар</h2>
+
             <input
               type="text"
               placeholder="Название товара"
               value={newProductName}
               onChange={(e) => setNewProductName(e.target.value)}
-              className="cart-comment-input mb-3"
+              className="input-field"
             />
 
             <input
@@ -1048,21 +1048,21 @@ const App = () => {
               placeholder="banana.png..."
               value={newProductImage}
               onChange={(e) => setNewProductImage(e.target.value)}
-              className="cart-comment-input mb-4"
+              className="input-field"
             />
 
-            <div className="flex justify-end space-x-2">
+            <div className="button-group">
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900"
+                className="button-cancel"
               >
                 Отмена
               </button>
               <button
                 onClick={handleAddProduct}
-                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+                className="button-add"
               >
-                Добавить
+              Добавить
               </button>
             </div>
           </div>
