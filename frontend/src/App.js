@@ -145,8 +145,10 @@ const App = () => {
       return; // Прерываем выполнение, чтобы не использовать localStorage
     }
 
-    // Если параметров в URL нет, используем localStorage
-    const activeTab = localStorage.getItem("activeTab");
+    // Сначала пробуем взять активную вкладку из URL (?tab=cart и т.д.)
+    const tabFromUrl = urlParams.get("tab");
+    const activeTab = tabFromUrl || localStorage.getItem("activeTab");
+
     if (activeTab === "cart") {
       setViewCart(true);
       setViewFavorites(false);
@@ -294,6 +296,20 @@ const App = () => {
     if (!hasProducts) {
       setCartComment("");
       generalCommentFromUrl.current = "";
+
+      // 🔥 Удаляем общий комментарий с сервера
+      fetch(`${API_URL}/cart/general-comment`, {
+        method: "DELETE",
+      })
+        .then(res => {
+          if (!res.ok) {
+            console.error("Ошибка при удалении общего комментария:", res.statusText);
+          } else {
+            console.log("Общий комментарий успешно удалён");
+          }
+        })
+
+        .catch(err => console.error("Ошибка при удалении комментария:", err));
     }
 
     updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
@@ -801,7 +817,7 @@ const App = () => {
                         <div className="image-container">
                           {product.image ? (
                             <img
-                              src={product.image}
+                              src={`https://alfa-shop-ljmg.onrender.com${product.image}`}
                               alt="" // Пустой alt для декоративного изображения
                             />
                           ) : (
