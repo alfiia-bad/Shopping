@@ -690,6 +690,20 @@ const App = () => {
     }
   };
 
+  function showToast(message, type = "success") {  // Создаём кастомный тост
+    const toast = document.createElement("div");
+    toast.className = `custom-toast ${type}`;
+    toast.innerText = message;
+    document.body.appendChild(toast);
+  
+    setTimeout(() => {
+      toast.remove();
+    }, 5000);
+  
+    toast.addEventListener("click", () => toast.remove());
+  }
+  
+
   const handleAddProduct = async () => {  // Добавляем новый товар
     if (!newProductName.trim()) return;
   
