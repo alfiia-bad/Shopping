@@ -262,6 +262,60 @@ def serve(path):
 def favicon():
     return '', 204
 
+@app.route('/cart/item', methods=['POST'])
+def add_or_update_cart_item():
+    data = request.json
+    item_id = data.get('id')
+    name = data.get('name')
+    quantity = data.get('quantity')
+    comment = data.get('comment', '')
+
+    if not item_id or not name or quantity is None:
+        return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute('SELECT 1 FROM cart WHERE id = ?', (item_id,))
+        if cursor.fetchone():
+            conn.execute(
+                'UPDATE cart SET name = ?, quantity = ?, comment = ? WHERE id = ?',
+                (name, quantity, comment, item_id)
+            )
+        else:
+            conn.execute(
+                'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
+                (item_id, name, quantity, comment)
+            )
+        conn.commit()
+
+    return jsonify({"success": True, "message": "Товар обновлён или добавлен"}), 200
+
+
+@app.route('/cart/item/<item_id>', methods=['DELETE'])
+def delete_cart_item(item_id):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM cart WHERE id = ?', (item_id,))
+        conn.commit()
+    return jsonify({"success": True, "message": "Товар удалён"}), 200
+
+
+@app.route('/cart/item/<item_id>', methods=['PUT'])
+def update_cart_item(item_id):
+    data = request.json
+    quantity = data.get('quantity')
+    comment = data.get('comment')
+
+    if quantity is None and comment is None:
+        return jsonify({"success": False, "message": "Нет данных для обновления"}), 400
+
+    with sqlite3.connect(DB_PATH) as conn:
+        if quantity is not None:
+            conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (quantity, item_id))
+        if comment is not None:
+            conn.execute('UPDATE cart SET comment = ? WHERE id = ?', (comment, item_id))
+        conn.commit()
+
+    return jsonify({"success": True, "message": "Товар обновлён"}), 200
+
 if __name__ == '__main__':
     # Обновляем схему базы данных перед запуском приложения
     update_database_schema()
