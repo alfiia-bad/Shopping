@@ -44,9 +44,6 @@ const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => 
 
 const App = () => {
   const [products, setProducts] = useState([]); 
-  // const [viewCart, setViewCart] = useState(false);
-  // const [viewFavorites, setViewFavorites] = useState(false);
-  // const [viewNotifications, setViewNotifications] = useState(false);
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,6 +62,9 @@ const App = () => {
   const [cartComment, setCartComment] = useState("");
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("products");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductImage, setNewProductImage] = useState("");
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -664,7 +664,7 @@ const App = () => {
     }
   };
 
-  const saveGeneralComment = async () => {
+  const saveGeneralComment = async () => {              // Сохраняем общий комментарий в корзине
     const commentToSave = hasGeneralCommentFromUrl.current
       ? generalCommentFromUrl.current
       : cartComment;
@@ -686,6 +686,35 @@ const App = () => {
       }
     } catch (error) {
       console.error("Ошибка при сохранении общего комментария к корзине:", error);
+    }
+  };
+
+  const handleAddProduct = async () => {  // Добавляем новый товар
+    if (!newProductName.trim()) return;
+  
+    const product = {
+      name: newProductName,
+      image_url: newProductImage,
+    };
+  
+    try {
+      const res = await fetch(`${API_URL}/products`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product),
+      });
+  
+      const data = await res.json();
+      if (data.success) {
+        showToast("Товар добавлен");
+        setNewProductName("");
+        setNewProductImage("");
+        setIsAddModalOpen(false);
+      } else {
+        showToast("Ошибка: " + data.message, "error");
+      }
+    } catch (err) {
+      showToast("Ошибка при добавлении", "error");
     }
   };
 
@@ -913,6 +942,12 @@ const App = () => {
               <RiTelegram2Fill className="telegram-icon" />
               Запросить обновление
             </button>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="w-full mt-2 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
+            >
+              + Добавить товар
+            </button>
           </div>
         ) : (
           <div className="cart-list">
@@ -981,7 +1016,46 @@ const App = () => {
         )}
       </main>
 
-      {isModalOpen && (
+      {isAddModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-80">
+            <h2 className="text-lg font-semibold mb-4">Добавить товар</h2>
+            
+            <input
+              type="text"
+              placeholder="Название товара"
+              value={newProductName}
+              onChange={(e) => setNewProductName(e.target.value)}
+              className="cart-comment-input mb-3"
+            />
+
+            <input
+              type="text"
+              placeholder="banana.png..."
+              value={newProductImage}
+              onChange={(e) => setNewProductImage(e.target.value)}
+              className="cart-comment-input mb-4"
+            />
+
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleAddProduct}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+              >
+                Добавить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isModalOpen && (   // Модальное окно для очистки корзины
         <div className="modal-overlay">
           <div className="modal">
             <p>Удаление безвозвратно. Вы уверены?</p>

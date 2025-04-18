@@ -87,6 +87,32 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+@app.route('/products', methods=['POST'])
+def add_product():
+    data = request.get_json()
+    name = data.get('name', '').strip()
+    image_url = data.get('image_url', '').strip()
+
+    if not name:
+        return jsonify({"success": False, "message": "Имя обязательно"}), 400
+
+    # Добавляем /images/
+    if image_url:
+        image_url = f"/images/{image_url}"
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        # Получить следующий доступный id
+        cursor.execute('SELECT MAX(CAST(id AS INTEGER)) FROM products')
+        result = cursor.fetchone()
+        next_id = str((result[0] or 0) + 1)
+
+        cursor.execute('INSERT INTO products (id, name, image_url) VALUES (?, ?, ?)',
+                       (next_id, name, image_url))
+        conn.commit()
+
+    return jsonify({"success": True, "id": next_id})
+
 @app.route('/products', methods=['GET'])
 def get_products():
     conn = get_db_connection()
@@ -170,7 +196,7 @@ def merge_cart():
             current = existing_items.get(item['id'])
             if current:
                 # Обновляем количество и комментарий
-                new_quantity = current['quantity'] + item['quantity']
+                new_quantity = item['quantity']
                 conn.execute(
                     'UPDATE cart SET quantity = ?, comment = ? WHERE id = ?',
                     (new_quantity, item.get("comment", current['comment']), item['id'])
