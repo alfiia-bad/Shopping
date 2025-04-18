@@ -16,7 +16,7 @@ app = Flask(
 
 @app.route('/images/<path:filename>')
 def serve_image(filename):
-    return send_from_directory('images', filename)
+    return send_from_directory(os.path.join(app.root_path, 'images'), filename)
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -143,23 +143,27 @@ def clear_cart():
         conn.commit()
     return jsonify({"success": True, "message": "Корзина и общий комментарий очищены"}), 200
 
-@app.route('/cart/general-comment', methods=['POST'])
-def save_general_comment():
-    data = request.json
-    comment = data.get('comment', '').strip()
+@app.route('/cart/general-comment', methods=['POST', 'GET', 'DELETE'])  # Добавляем DELETE метод
+def handle_general_comment():
+    if request.method == 'POST':  # Для сохранения общего комментария
+        data = request.json
+        comment = data.get('comment', '').strip()
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (comment,))
+            conn.commit()
+        return jsonify({"success": True, "message": "Общий комментарий сохранён"})
 
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (comment,))
-        conn.commit()
-
-    return jsonify({"success": True, "message": "Общий комментарий сохранён"})
-
-@app.route('/cart/general-comment', methods=['GET'])
-def get_general_comment():
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT "general-comment" FROM general_comment WHERE id = 1')
-        result = cursor.fetchone()
-        return jsonify({"comment": result[0] if result else ""})
+    elif request.method == 'GET':  # Для получения общего комментария
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.execute('SELECT "general-comment" FROM general_comment WHERE id = 1')
+            result = cursor.fetchone()
+            return jsonify({"comment": result[0] if result else ""})
+    
+    elif request.method == 'DELETE':  # Для удаления общего комментария
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute('UPDATE general_comment SET "general-comment" = "" WHERE id = 1')  # Устанавливаем пустой комментарий
+            conn.commit()
+        return jsonify({"success": True, "message": "Общий комментарий удалён"})
 
 @app.route('/send-to-telegram', methods=['POST'])
 def send_to_telegram():

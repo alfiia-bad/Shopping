@@ -44,9 +44,9 @@ const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => 
 
 const App = () => {
   const [products, setProducts] = useState([]); 
-  const [viewCart, setViewCart] = useState(false);
-  const [viewFavorites, setViewFavorites] = useState(false);
-  const [viewNotifications, setViewNotifications] = useState(false);
+  // const [viewCart, setViewCart] = useState(false);
+  // const [viewFavorites, setViewFavorites] = useState(false);
+  // const [viewNotifications, setViewNotifications] = useState(false);
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,128 +64,119 @@ const App = () => {
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [cartComment, setCartComment] = useState("");
   const [productsLoaded, setProductsLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState("products");
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
 
+  const setTab = (tab) => {
+    setActiveTab(tab);
+    localStorage.setItem("activeTab", tab);
+    const url = new URL(window.location);
+    url.searchParams.set("tab", tab);
+    window.history.replaceState({}, "", url);
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${API_URL}/products`);
-        const data = await response.json();
+        const res = await fetch(`${API_URL}/products`);
+        const data = await res.json();
         setProducts(data);
-        setProductsLoaded(true); // <-- Флаг загрузки
+        setProductsLoaded(true);
       } catch (error) {
         console.error("Ошибка загрузки товаров:", error);
       }
     };
-  
-    fetchProducts();
+    fetchData();
   }, []);
 
   useEffect(() => {
-    if (!productsLoaded) return; // Ждем, пока загрузятся продукты
+    const fetchCart = async () => {
+      try {
+        const res = await fetch(`${API_URL}/cart`);
+        const data = await res.json();
+        setCart(data);
+      } catch (error) {
+        console.error("Ошибка загрузки корзины:", error);
+      }
+    };
+    fetchCart();
+  }, []);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch(`${API_URL}/favorites`);
+        const data = await res.json();
+        setFavorites(data);
+      } catch (error) {
+        console.error("Ошибка загрузки избранного:", error);
+      }
+    };
+    fetchFavorites();
+  }, []);
+
+  useEffect(() => {
+    if (!productsLoaded) return;
 
     const urlParams = new URLSearchParams(window.location.search);
     const favoritesParam = urlParams.get("favorites");
     const cartParam = urlParams.get("cart");
-    
+    const generalCommentParam = urlParams.get("general-comment");
+
     if (favoritesParam) {
-      // Переключаемся на вкладку "Избранное"
-      setViewFavorites(true);
-      setViewCart(false);
-      setViewNotifications(false);
-
-      // Открываем модальное окно
+      setTab("favorites");
       setTimeout(() => {
-        const favoritesArray = favoritesParam.split(",");
-        setFavoritesInput(favoritesArray.join("\n")); // Заполняем инпут
-        setIsFavoritesModalOpen(true); // Открываем модалку
-
-        // Убираем параметры из URL
+        setFavoritesInput(favoritesParam.split(",").join("\n"));
+        setIsFavoritesModalOpen(true);
         window.history.replaceState(null, "", window.location.origin);
-      }, 100); // Даем время для рендера вкладки
-      return; // Прерываем выполнение, чтобы не использовать localStorage
+      }, 100);
+      return;
     }
 
     if (cartParam) {
-      // Переключаемся на вкладку "Корзина"
-      setViewCart(true);
-      setViewFavorites(false);
-      setViewNotifications(false);
-
-      // Открываем модальное окно
+      setTab("cart");
       setTimeout(() => {
-        const newCart = cartParam.split(",").map((item) => {
-          const [id, quantity, comment] = item.split(":"); // Разделяем id, quantity и comment
-          const product = products.find((p) => p.id === Number(id)); // Ищем товар в массиве products
+        const items = cartParam.split(",").map((item) => {
+          const [id, quantity, comment] = item.split(":");
+          const product = products.find((p) => Number(p.id) === Number(id));
           return {
-            id,
-            name: product ? product.name : "Неизвестный товар", // Используем название из products
-            quantity: parseInt(quantity, 10),
-            comment: comment ? decodeURIComponent(comment) : "", // Декодируем комментарий, если он есть
+            id: Number(id),
+            name: product?.name || "Неизвестный товар",
+            quantity: Number(quantity) || 1,
+            comment: comment ? decodeURIComponent(comment) : "",
           };
         });
 
-        const generalCommentParam = urlParams.get("general-comment");
-
         if (generalCommentParam) {
-          const decodedComment = decodeURIComponent(generalCommentParam);
-          generalCommentFromUrl.current = decodedComment; // <-- добавили это
-          setCartComment(decodedComment); // можно оставить для отображения
+          const decoded = decodeURIComponent(generalCommentParam);
+          generalCommentFromUrl.current = decoded;
+          setCartComment(decoded);
           hasGeneralCommentFromUrl.current = true;
-        }        
+        }
 
-        setPendingCart(newCart); // Сохраняем данные для модалки
-        setIsCartModalOpen(true); // Открываем модалку
-
-        // Убираем параметры из URL
+        setPendingCart(items);
+        setIsCartModalOpen(true);
         window.history.replaceState(null, "", window.location.origin);
-      }, 100); // Даем время для рендера вкладки
-      return; // Прерываем выполнение, чтобы не использовать localStorage
+      }, 100);
+      return;
     }
 
-    // Сначала пробуем взять активную вкладку из URL (?tab=cart и т.д.)
-    const tabFromUrl = urlParams.get("tab");
-    const activeTab = tabFromUrl || localStorage.getItem("activeTab");
+    // fallback: tab from URL or localStorage
+    const tabFromUrl = urlParams.get("tab") || localStorage.getItem("activeTab") || "products";
+    setTab(tabFromUrl);
+  }, [productsLoaded]);
 
-    if (activeTab === "cart") {
-      setViewCart(true);
-      setViewFavorites(false);
-      setViewNotifications(false);
-    } else if (activeTab === "favorites") {
-      setViewFavorites(true);
-      setViewCart(false);
-      setViewNotifications(false);
-    } else if (activeTab === "notifications") {
-      setViewNotifications(true);
-      setViewCart(false);
-      setViewFavorites(false);
-    } else {
-      setViewCart(false);
-      setViewFavorites(false);
-      setViewNotifications(false);
-    }
-  }, [products, productsLoaded]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeTab]);
 
-  useEffect(() => {  // Сохраняем активную вкладку в localStorage и URL
-    let tab = "products"; // по умолчанию
-    if (viewCart) {
-      tab = "cart";
-    } else if (viewFavorites) {
-      tab = "favorites";
-    } else if (viewNotifications) {
-      tab = "notifications";
-    }
-  
-    localStorage.setItem("activeTab", tab);
-  
-    const url = new URL(window.location);
-    url.searchParams.set("tab", tab);
-    window.history.replaceState({}, "", url);
-  }, [viewCart, viewFavorites, viewNotifications]);
+  const viewCart = activeTab === "cart";
+  const viewFavorites = activeTab === "favorites";
+  const viewNotifications = activeTab === "notifications";
 
-  useEffect(() => {      // КОРЗИНА ТУТ ПЕРЕПИСАН КУСОК КОДА
+  useEffect(() => {      // КОРЗИНА ТУТ ПЕРЕПИСАН КУСОК КОДА ///////////
     const fetchCart = async () => {
       try {
         const response = await fetch(`${API_URL}/cart`);
