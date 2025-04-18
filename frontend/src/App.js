@@ -84,6 +84,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (!productsLoaded) return; // Ждем, пока загрузятся продукты
+
     const urlParams = new URLSearchParams(window.location.search);
     const favoritesParam = urlParams.get("favorites");
     const cartParam = urlParams.get("cart");
@@ -281,7 +283,16 @@ const App = () => {
           : item
       )
       .filter((item) => item.quantity > 0);
-      updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
+
+    const hasProducts = newCart.some(item => item.id !== "general");
+
+    // Если нет товаров — очищаем комментарий
+    if (!hasProducts) {
+      setCartComment("");
+      generalCommentFromUrl.current = "";
+    }
+
+    updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
   };
 
   const clearCart = async () => {
