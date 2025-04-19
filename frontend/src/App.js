@@ -6,6 +6,7 @@ import { MdArrowBackIos, MdClose, MdOutlineHideImage } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { MdOutlineDelete, MdInfo } from "react-icons/md";
+import { useSwipeable } from "react-swipeable";
 
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
@@ -73,8 +74,6 @@ const App = () => {
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
-  const touchStartX = useRef(null);
-  const touchEndX = useRef(null);
 
   const setTab = useCallback((tab) => {   // Устанавливаем активную вкладку
     setActiveTab(tab);
@@ -100,35 +99,20 @@ const App = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {  // Свайп для переключения между вкладками
-    const handleTouchStart = (e) => {
-      if (e.touches[0].clientX < 30) {
-        touchStartX.current = e.touches[0].clientX;
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (!viewFavorites) {
+        setTab("favorites");
       }
-    };
-
-    const handleTouchEnd = (e) => {
-      if (touchStartX.current !== null) {
-        touchEndX.current = e.changedTouches[0].clientX;
-        const diff = touchEndX.current - touchStartX.current;
-        if (diff > 50) {
-          // свайп вправо
-          setTab("products");
-        }
+    },
+    onSwipedRight: () => {
+      if (viewFavorites) {
+        setTab("products");
       }
-      touchStartX.current = null;
-      touchEndX.current = null;
-    };
-
-    const container = document.querySelector(".app-container");
-    container.addEventListener("touchstart", handleTouchStart);
-    container.addEventListener("touchend", handleTouchEnd);
-
-    return () => {
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [setTab]);
+    },
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true
+  });
 
   useEffect(() => { // Загрузка корзины и избранного при первом рендере
     const fetchCart = async () => {
@@ -952,7 +936,7 @@ const App = () => {
 
       <main className="main-content">
         {!viewCart && !viewNotifications && !viewFavorites ? (
-          <>
+          <div {...handlers}>
             <div className="search-bar">
               <div className="search-input-wrapper">
                 <FiSearch className="search-icon" />
@@ -1033,62 +1017,64 @@ const App = () => {
                 <p className="no-results">Ничего не найдено</p>
               )}
             </div>
-          </>
+          </div>
         ) : viewFavorites ? (
-          <div className="favorites-view">
-            {favorites.length > 0 ? (
-              favorites.map((productId) => {
-                const product = products.find((p) => p.id === productId);
+          <div {...handlers}>
+            <div className="favorites-view">
+              {favorites.length > 0 ? (
+                favorites.map((productId) => {
+                  const product = products.find((p) => p.id === productId);
 
-                // Если товар не найден, пропускаем его
-                if (!product) {
-                  console.warn(`Товар с идентификатором ${productId} не найден.`);
-                  return null;
-                }
+                  // Если товар не найден, пропускаем его
+                  if (!product) {
+                    console.warn(`Товар с идентификатором ${productId} не найден.`);
+                    return null;
+                  }
 
-                const quantity = getQuantity(product.id); // Получаем текущее количество товара
+                  const quantity = getQuantity(product.id); // Получаем текущее количество товара
 
-                return (
-                  <div className="product-card" key={productId}>
-                    <button
-                      className="favorite-button"
-                      onClick={() => removeFromFavorites(productId)}
-                    >
-                      <FaHeart className="icon active" />
-                    </button>
-                    <div className="image-container">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt="" // Пустой alt для декоративного изображения
-                        />
-                      ) : (
-                        <MdOutlineHideImage className="no-image-icon" />
-                      )}
-                    </div>
-                    <ProductNameWithHint name={product.name} />
-                    <div className="quantity-controls">
+                  return (
+                    <div className="product-card" key={productId}>
                       <button
-                        onClick={() => removeFromCart(product.id)}
-                        disabled={quantity === 0}
-                        className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
+                        className="favorite-button"
+                        onClick={() => removeFromFavorites(productId)}
                       >
-                        -
+                        <FaHeart className="icon active" />
                       </button>
-                      <span className="quantity">{quantity}</span>
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="qty-button plus"
-                      >
-                        +
-                      </button>
+                      <div className="image-container">
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt="" // Пустой alt для декоративного изображения
+                          />
+                        ) : (
+                          <MdOutlineHideImage className="no-image-icon" />
+                        )}
+                      </div>
+                      <ProductNameWithHint name={product.name} />
+                      <div className="quantity-controls">
+                        <button
+                          onClick={() => removeFromCart(product.id)}
+                          disabled={quantity === 0}
+                          className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
+                        >
+                          -
+                        </button>
+                        <span className="quantity">{quantity}</span>
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="qty-button plus"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="cart-empty">Нет избранных товаров</p>
-            )}
+                  );
+                })
+              ) : (
+                <p className="cart-empty">Нет избранных товаров</p>
+              )}
+            </div>
           </div>
         ) : viewNotifications ? (
           <div className="notifications-view">
