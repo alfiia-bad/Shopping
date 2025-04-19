@@ -84,6 +84,7 @@ const App = () => {
       try {
         const res = await fetch(`${API_URL}/products`);
         const data = await res.json();
+        console.log("Товары с бэкенда:", data);  // Логируем данные с бэкенда
         setProducts(data);
         setProductsLoaded(true);
       } catch (error) {
@@ -121,6 +122,8 @@ const App = () => {
 
   useEffect(() => {
     if (!productsLoaded) return;
+
+    console.log("Товары загружены:", products);  // Логируем товары после загрузки
 
     const urlParams = new URLSearchParams(window.location.search);
     const favoritesParam = urlParams.get("favorites");
@@ -584,7 +587,8 @@ const App = () => {
       product.name.toLowerCase().includes(input.toLowerCase()) ||
       product.name.toLowerCase().includes(convertedInput.toLowerCase())
     );
-  
+
+    console.log("Отфильтрованные товары:", filtered); // Логируем отфильтрованные товары  
     setFilteredProducts(filtered);
   };
 
