@@ -1242,7 +1242,6 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 /* Кнопка с прозрачной обводкой */
 .custom-add-button {
-  border: 1px solid rgba(0, 0, 0, 0.3);
   background-color: transparent;
   padding: 8px;
   border-radius: 8px;
@@ -1250,14 +1249,13 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 .custom-add-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #333;
 }
 
 /* Обёртка для тултипов */
 .tooltip-wrapper {
   position: relative;
   display: inline-block;
-  margin-right: 10px;
 }
 
 /* Текст тултипа */

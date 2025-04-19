@@ -80,18 +80,19 @@ const App = () => {
     window.history.replaceState({}, "", url);
   };
 
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`${API_URL}/products`);
+      const data = await res.json();
+      console.log("Товары с бэкенда:", data);
+      setProducts(data);
+      setProductsLoaded(true);
+    } catch (error) {
+      console.error("Ошибка загрузки товаров:", error);
+    }
+  };
+  
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${API_URL}/products`);
-        const data = await res.json();
-        console.log("Товары с бэкенда:", data);  // Логируем данные с бэкенда
-        setProducts(data);
-        setProductsLoaded(true);
-      } catch (error) {
-        console.error("Ошибка загрузки товаров:", error);
-      }
-    };
     fetchData();
   }, []);
 
@@ -760,6 +761,7 @@ const App = () => {
         setNewProductName("");
         setNewProductImage("");
         setIsAddModalOpen(false);
+        fetchData();
       } else {
         showToast("Ошибка: " + data.message, "error");
       }
@@ -850,6 +852,7 @@ const App = () => {
               >
                 <FaPencilAlt className="icon black-icon" />
               </button>
+              <span className="tooltip">редактировать товары</span>
               <div className="tooltip-wrapper">
                 <button    // Добавляем кнопку для добавления товара
                   className="add-button custom-add-button"
@@ -1170,8 +1173,14 @@ const App = () => {
       )}
 
       {isModalOpen && (   // Модальное окно для очистки корзины
-        <div className="modal-overlay">
-          <div className="modal">
+        <div
+          className="modal-overlay"
+          onClick={() => setIsModalOpen(false)} // Клик по фону — закрыть модалку
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()} // Клик внутри модалки — не закрывать
+          > 
             <p>Удаление безвозвратно. Вы уверены?</p>
             <div className="modal-actions">
               <button onClick={clearCart} className="modal-confirm">
