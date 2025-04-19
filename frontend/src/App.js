@@ -784,6 +784,8 @@ const App = () => {
     setIsCommentModalOpen(false);
   };
 
+  const displayedProducts = searchTerm.trim() ? filteredProducts : products;
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -885,8 +887,8 @@ const App = () => {
             </div>
 
             <div className="product-list">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => {
+              {displayedProducts.length > 0 ? (
+                displayedProducts.map((product) => {
                   const quantity = getQuantity(product.id);
                   return (
                     <div className="product-card" key={product.id}>
