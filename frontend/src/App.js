@@ -67,6 +67,7 @@ const App = () => {
   const [newProductImage, setNewProductImage] = useState("");
   const [newProductNameError, setNewProductNameError] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -842,18 +843,30 @@ const App = () => {
             <h2 className="header-title">Список товаров</h2> 
             <div className="header-actions">
               <button
-                className="add-button"
-                onClick={() => setIsAddModalOpen(true)}
+                className="add-button custom-add-button"
+                onClick={() => {
+                  setIsEditModalOpen(true);
+                }}
               >
-                <FiPlus className="icon" />
+                <FaPencilAlt className="icon black-icon" />
               </button>
-              <div className="cart-with-badge">
-                <button
+              <div className="tooltip-wrapper">
+                <button    // Добавляем кнопку для добавления товара
+                  className="add-button custom-add-button"
+                  onClick={() => setIsAddModalOpen(true)}
+                >
+                  <FiPlus className="icon black-icon" />
+                </button>
+                <span className="tooltip">добавить товар</span>
+              </div>
+              <div className="cart-with-badge tooltip-wrapper">
+                <button  // Кнопка для перехода в корзину
                   className="cart-button"
                   onClick={() => setTab("cart")}
                 >
                   <LuShoppingCart className="icon" />
                 </button>
+                <span className="tooltip">перейти в корзину</span>
                 {!viewCart && totalItems > 0 && (
                   <div className="item-count-badge">{totalItems}</div>
                 )}
@@ -1012,12 +1025,6 @@ const App = () => {
               <RiTelegram2Fill className="telegram-icon" />
               Запросить обновление
             </button>
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="w-full mt-2 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
-            >
-              + Добавить товар
-            </button>
           </div>
         ) : (
           <div className="cart-list">
@@ -1110,22 +1117,6 @@ const App = () => {
               className="input-field"
             />
 
-            {products.length > 0 && (
-              <div className="added-products-list">
-                {products.map((item) => (
-                  <div key={item.id} className="added-product-item">
-                    <span>{item.name}</span>
-                    <button
-                      className="delete-icon-button"
-                      onClick={() => handleDeleteProduct(item.id)}
-                    >
-                      <MdOutlineDelete />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
             <div className="modal-actions">
               <button
                 onClick={handleAddProduct}
@@ -1140,6 +1131,40 @@ const App = () => {
                 Отмена
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {isEditModalOpen && (  // Модальное окно для редактирования товаров
+        <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+          <div
+            className="modal-container"
+            onClick={(e) => e.stopPropagation()} // чтобы клик внутри не закрывал
+          >
+            <div className="modal-header-with-close">
+              <h2 className="modal-header">Редактировать товары</h2>
+              <button className="close-button" onClick={() => setIsEditModalOpen(false)}>
+                <MdClose className="icon" />
+              </button>
+            </div>
+
+            {products.length > 0 ? (
+              <div className="added-products-list scrollable">
+                {products.map((item) => (
+                  <div key={item.id} className="added-product-item">
+                    <span>{item.name}</span>
+                    <button
+                      className="delete-icon-button"
+                      onClick={() => handleDeleteProduct(item.id)}
+                    >
+                      <MdOutlineDelete />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-products">Список пуст</p>
+            )}
           </div>
         </div>
       )}
@@ -1163,7 +1188,7 @@ const App = () => {
         </div>
       )}
 
-      {isFavoritesModalOpen && (
+      {isFavoritesModalOpen && (  // Модальное окно для обновления избранного
         <div className="modal-overlay">
           <div className="modal">
             <h3 className="modal-title">Избранное обновится безвозвратно. Вы уверены?</h3>
@@ -1197,7 +1222,7 @@ const App = () => {
         </div>
       )}
 
-      {isExportModalOpen && (
+      {isExportModalOpen && (  // Модальное окно для экспорта избранного в Telegram
         <div className="modal-overlay">
           <div className="modal">
             <p>Выгрузить текущие избранные товары в Telegram?</p>

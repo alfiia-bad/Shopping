@@ -1171,6 +1171,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 .comment-wrapper {
   position: relative;
   margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 .char-counter {
@@ -1232,4 +1233,76 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 .add-button .icon {
   font-size: 20px;
+}
+
+/* Черная иконка */
+.black-icon {
+  color: black;
+}
+
+/* Кнопка с прозрачной обводкой */
+.custom-add-button {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.custom-add-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Обёртка для тултипов */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Текст тултипа */
+.tooltip {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+
+  position: absolute;
+  z-index: 1;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Показываем тултип при наведении */
+.tooltip-wrapper:hover .tooltip {
+  visibility: visible;
+}
+
+.modal-header-with-close {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.scrollable {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.no-products {
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+  margin-top: 20px;
 }

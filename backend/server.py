@@ -124,6 +124,14 @@ def get_products():
     conn.close()
     return jsonify(products)
 
+@app.route('/products/<product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM products WHERE id = ?', (product_id,))
+        conn.commit()
+    return jsonify({"success": True, "message": f"Товар с id={product_id} удалён"}), 200
+
 @app.route('/cart', methods=['GET'])
 def get_cart():
     with sqlite3.connect(DB_PATH) as conn:
