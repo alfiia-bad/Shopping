@@ -590,12 +590,9 @@ const App = () => {
 
   const handleClearSearch = () => {   // Очистка поиска
     setSearchTerm("");
+    setFilteredProducts([]); // Очистка отфильтрованных товаров
   };
-
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+ 
   const handleOpenCommentModal = (id) => {
     const product = cart.find((item) => item.id === id); // Находим товар в корзине
     setCurrentProductId(id); // Устанавливаем текущий ID товара
