@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
@@ -76,13 +76,13 @@ const App = () => {
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
 
-  const setTab = (tab) => { // Устанавливаем активную вкладку
+  const setTab = useCallback((tab) => {   // Устанавливаем активную вкладку
     setActiveTab(tab);
     localStorage.setItem("activeTab", tab);
     const url = new URL(window.location);
     url.searchParams.set("tab", tab);
     window.history.replaceState({}, "", url);
-  };
+  }, []);
 
   const fetchData = async () => { // Загрузка товаров с бэкенда
     try {
