@@ -66,6 +66,7 @@ const App = () => {
   const [newProductName, setNewProductName] = useState("");
   const [newProductImage, setNewProductImage] = useState("");
   const [newProductNameError, setNewProductNameError] = useState(false);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
