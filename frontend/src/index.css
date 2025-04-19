@@ -611,7 +611,7 @@ body {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-align-items: center;
+  align-items: center;
   justify-content: center;
   align-items: center;
   z-index: 1001;
@@ -642,6 +642,7 @@ align-items: center;
   padding: 0.5rem 0.75rem;
   margin-bottom: 1rem;
   outline: none;
+  font-size: 16px;
 }
 
 .input-field:focus {
@@ -1152,6 +1153,13 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   border-color: red;
 }
 
+.input-error-text {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: -0.75rem;
+  margin-bottom: 1rem;
+}
+
 .comment-input::placeholder,
 .cart-comment-input::placeholder {
   color: #aaa;
@@ -1186,7 +1194,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   position: fixed;
   bottom: 90px;
   left: 20px;
-  background-color: #7c3aed;
+  background-color: #934fb1;
   color: white;
   padding: 12px 16px;
   border-radius: 6px;
@@ -1199,4 +1207,29 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 .custom-toast.error {
   background-color: #e53e3e;
+}
+
+/* Кнопка добавить товар */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-button {
+  background-color: #A56AB4;
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-button:hover {
+  background-color: #934fb1;
+}
+
+.add-button .icon {
+  font-size: 20px;
 }

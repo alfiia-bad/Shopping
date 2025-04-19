@@ -65,6 +65,7 @@ const App = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newProductName, setNewProductName] = useState("");
   const [newProductImage, setNewProductImage] = useState("");
+  const [newProductNameError, setNewProductNameError] = useState(false);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -572,11 +573,21 @@ const App = () => {
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+  const handleSearchChange = (e) => {  // Поиск по товарам
+    const input = e.target.value;
+    setSearchTerm(input);
+  
+    const convertedInput = switchLayout(input);
+  
+    const filtered = products.filter((product) =>
+      product.name.toLowerCase().includes(input.toLowerCase()) ||
+      product.name.toLowerCase().includes(convertedInput.toLowerCase())
+    );
+  
+    setFilteredProducts(filtered);
   };
 
-  const handleClearSearch = () => {
+  const handleClearSearch = () => {   // Очистка поиска
     setSearchTerm("");
   };
 
@@ -702,9 +713,31 @@ const App = () => {
     toast.addEventListener("click", () => toast.remove());
   }
   
+  function switchLayout(str) {  // Функция для переключения раскладки клавиатуры
+    const en = "`qwertyuiop[]asdfghjkl;'zxcvbnm,."
+    const ru = "ёйцукенгшщзхъфывапролджэячсмитьбю"
+    
+    return str
+      .split('')
+      .map(char => {
+        const lowerChar = char.toLowerCase();
+        const index = en.indexOf(lowerChar);
+        if (index === -1) return char;
+  
+        const isUpper = char !== lowerChar;
+        const translated = ru[index] || char;
+        return isUpper ? translated.toUpperCase() : translated;
+      })
+      .join('');
+  }
 
-  const handleAddProduct = async () => {  // Добавляем новый товар
-    if (!newProductName.trim()) return;
+  const handleAddProduct = async () => { // Добавляем новый товар
+    if (!newProductName.trim()) {
+      setNewProductNameError(true);
+      return;
+    }
+  
+    setNewProductNameError(false);
   
     const product = {
       name: newProductName,
@@ -729,6 +762,17 @@ const App = () => {
       }
     } catch (err) {
       showToast("Ошибка при добавлении", "error");
+    }
+  }; 
+  
+  const handleDeleteProduct = async (productId) => { // Удаляем товар
+    try {
+      await fetch(`${API_URL}/products/${productId}`, {
+        method: "DELETE",
+      });
+      setProducts((prev) => prev.filter((item) => item.id !== productId));
+    } catch (err) {
+      showToast("Ошибка при удалении", "error");
     }
   };
 
@@ -791,17 +835,25 @@ const App = () => {
           </>
         ) : (
           <>
-            <h2 className="header-title">Список товаров</h2>
-            <div className="cart-with-badge">
+            <h2 className="header-title">Список товаров</h2> 
+            <div className="header-actions">
               <button
-                className="cart-button"
-                onClick={() => setTab("cart")}
+                className="add-button"
+                onClick={() => setIsAddModalOpen(true)}
               >
-                <LuShoppingCart className="icon" />
+                <FiPlus className="icon" />
               </button>
-              {!viewCart && totalItems > 0 && (
-                <div className="item-count-badge">{totalItems}</div>
-              )}
+              <div className="cart-with-badge">
+                <button
+                  className="cart-button"
+                  onClick={() => setTab("cart")}
+                >
+                  <LuShoppingCart className="icon" />
+                </button>
+                {!viewCart && totalItems > 0 && (
+                  <div className="item-count-badge">{totalItems}</div>
+                )}
+              </div>
             </div>
           </>
         )}
@@ -1030,7 +1082,7 @@ const App = () => {
         )}
       </main>
 
-      {isAddModalOpen && (
+      {isAddModalOpen && ( // Модальное окно для добавления товара
         <div className="modal-overlay">
           <div className="modal-container">
             <h2 className="modal-header">Добавить товар</h2>
@@ -1040,29 +1092,48 @@ const App = () => {
               placeholder="Название товара"
               value={newProductName}
               onChange={(e) => setNewProductName(e.target.value)}
-              className="input-field"
+              className={`input-field ${newProductNameError ? 'input-error' : ''}`}
             />
+            {newProductNameError && (
+              <p className="input-error-text">* обязательное поле</p>
+            )}
 
             <input
               type="text"
-              placeholder="banana.png..."
+              placeholder="Banana.png..."
               value={newProductImage}
               onChange={(e) => setNewProductImage(e.target.value)}
               className="input-field"
             />
 
-            <div className="button-group">
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="button-cancel"
-              >
-                Отмена
-              </button>
+            {products.length > 0 && (
+              <div className="added-products-list">
+                {products.map((item) => (
+                  <div key={item.id} className="added-product-item">
+                    <span>{item.name}</span>
+                    <button
+                      className="delete-icon-button"
+                      onClick={() => handleDeleteProduct(item.id)}
+                    >
+                      <MdOutlineDelete />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="modal-actions">
               <button
                 onClick={handleAddProduct}
-                className="button-add"
+                className="modal-confirm"
               >
-              Добавить
+                Добавить
+              </button>
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="modal-cancel"
+              >
+                Отмена
               </button>
             </div>
           </div>
@@ -1147,7 +1218,7 @@ const App = () => {
         </div>
       )}
 
-      {isCommentModalOpen && (
+      {isCommentModalOpen && ( // Модальное окно для редактирования комментария к товару
         <div className="modal-overlay">
           <div className="modal">
             <h3 className="modal-title">Комментарий для товара:</h3>
