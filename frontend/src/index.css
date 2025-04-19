@@ -1245,11 +1245,19 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   background-color: transparent;
   padding: 8px;
   border-radius: 8px;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.2s;
 }
 
+/* Иконки — серо-чёрного цвета */
+.custom-add-button .icon {
+  font-size: 20px;
+  color: #333;
+}
+
 .custom-add-button:hover {
-  background-color: #333;
+  background-color: #dfdcdc;
 }
 
 /* Обёртка для тултипов */
@@ -1274,6 +1282,13 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
+}
+
+/* Специально для корзины — прижимаем тултип к правому краю */
+.cart-with-badge .tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
 }
 
 /* Показываем тултип при наведении */
@@ -1303,4 +1318,12 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   font-size: 14px;
   color: #888;
   margin-top: 20px;
+}
+
+.edit-input {
+  flex-grow: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }

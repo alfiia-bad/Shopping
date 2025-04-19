@@ -68,11 +68,15 @@ const App = () => {
   const [newProductNameError, setNewProductNameError] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editedName, setEditedName] = useState("");
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
 
-  const setTab = (tab) => {
+  const setTab = (tab) => { // Устанавливаем активную вкладку
     setActiveTab(tab);
     localStorage.setItem("activeTab", tab);
     const url = new URL(window.location);
@@ -80,7 +84,7 @@ const App = () => {
     window.history.replaceState({}, "", url);
   };
 
-  const fetchData = async () => {
+  const fetchData = async () => { // Загрузка товаров с бэкенда
     try {
       const res = await fetch(`${API_URL}/products`);
       const data = await res.json();
@@ -92,11 +96,41 @@ const App = () => {
     }
   };
   
-  useEffect(() => {
+  useEffect(() => {   // Загрузка товаров при первом рендере
     fetchData();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {  // Свайп для переключения между вкладками
+    const handleTouchStart = (e) => {
+      if (e.touches[0].clientX < 30) {
+        touchStartX.current = e.touches[0].clientX;
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      if (touchStartX.current !== null) {
+        touchEndX.current = e.changedTouches[0].clientX;
+        const diff = touchEndX.current - touchStartX.current;
+        if (diff > 50) {
+          // свайп вправо
+          setTab("products");
+        }
+      }
+      touchStartX.current = null;
+      touchEndX.current = null;
+    };
+
+    const container = document.querySelector(".app-container");
+    container.addEventListener("touchstart", handleTouchStart);
+    container.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [setTab]);
+
+  useEffect(() => { // Загрузка корзины и избранного при первом рендере
     const fetchCart = async () => {
       try {
         const res = await fetch(`${API_URL}/cart`);
@@ -109,7 +143,7 @@ const App = () => {
     fetchCart();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {   // Загрузка избранного при первом рендере
     const fetchFavorites = async () => {
       try {
         const res = await fetch(`${API_URL}/favorites`);
@@ -122,7 +156,7 @@ const App = () => {
     fetchFavorites();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {  // Обработка URL-параметров при загрузке страницы
     if (!productsLoaded) return;
 
     console.log("Товары загружены:", products);  // Логируем товары после загрузки
@@ -245,7 +279,7 @@ const App = () => {
     return () => clearInterval(interval);  // Очищаем интервал при размонтировании компонента
   }, []);
 
-  const getQuantity = (id) => {
+  const getQuantity = (id) => { // Получаем количество товара в корзине
     const item = cart.find((item) => item.id === id);
     return item ? item.quantity : 0;
   };
@@ -417,6 +451,41 @@ const App = () => {
     setShowNotification(false);
     if (notificationTimeout) {
       clearTimeout(notificationTimeout);
+    }
+  };
+
+  const startEdit = (id, name) => { // Начинаем редактировать товар
+    setEditingId(id);
+    setEditedName(name);
+  };
+  
+  const saveEdit = async () => {
+    if (editingId === null) return;
+    const trimmed = editedName.trim();
+    if (!trimmed) return;
+  
+    try {
+      const res = await fetch(`${API_URL}/products/${editingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: trimmed }),
+      });
+  
+      const result = await res.json();
+      if (result.success) {
+        setProducts((prev) =>
+          prev.map((item) =>
+            item.id === editingId ? { ...item, name: trimmed } : item
+          )
+        );
+      } else {
+        showToast("Ошибка: " + result.message, "error");
+      }
+    } catch (error) {
+      showToast("Ошибка при сохранении", "error");
+    } finally {
+      setEditingId(null);
+      setEditedName("");
     }
   };
 
@@ -716,6 +785,8 @@ const App = () => {
   
     toast.addEventListener("click", () => toast.remove());
   }
+
+  
   
   function switchLayout(str) {  // Функция для переключения раскладки клавиатуры
     const en = "`qwertyuiop[]asdfghjkl;'zxcvbnm,."
@@ -1097,7 +1168,14 @@ const App = () => {
       </main>
 
       {isAddModalOpen && ( // Модальное окно для добавления товара
-        <div className="modal-overlay">
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target.classList.contains("modal-overlay")) {
+              setIsAddModalOpen(false);  // Закрываем модалку при клике на фон
+            }
+          }}
+        >
           <div className="modal-container">
             <h2 className="modal-header">Добавить товар</h2>
 
@@ -1138,11 +1216,59 @@ const App = () => {
         </div>
       )}
 
-      {isEditModalOpen && (  // Модальное окно для редактирования товаров
-        <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+      {/* {isAddModalOpen && ( // Модальное окно для добавления товара
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <h2 className="modal-header">Добавить товар</h2>
+
+            <input
+              type="text"
+              placeholder="Название товара"
+              value={newProductName}
+              onChange={(e) => setNewProductName(e.target.value)}
+              className={`input-field ${newProductNameError ? 'input-error' : ''}`}
+            />
+            {newProductNameError && (
+              <p className="input-error-text">* обязательное поле</p>
+            )}
+
+            <input
+              type="text"
+              placeholder="Banana.png..."
+              value={newProductImage}
+              onChange={(e) => setNewProductImage(e.target.value)}
+              className="input-field"
+            />
+
+            <div className="modal-actions">
+              <button
+                onClick={handleAddProduct}
+                className="modal-confirm"
+              >
+                Добавить
+              </button>
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="modal-cancel"
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
+
+      {isEditModalOpen && (
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            saveEdit(); // сохраняем, если редактируется
+            setIsEditModalOpen(false);
+          }}
+        >
           <div
             className="modal-container"
-            onClick={(e) => e.stopPropagation()} // чтобы клик внутри не закрывал
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header-with-close">
               <h2 className="modal-header">Редактировать товары</h2>
@@ -1151,22 +1277,55 @@ const App = () => {
               </button>
             </div>
 
+            {/* 🔍 Поиск */}
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Поиск товара"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* 📦 Список товаров */}
             {products.length > 0 ? (
-              <div className="added-products-list scrollable">
-                {products.map((item) => (
-                  <div key={item.id} className="added-product-item">
-                    <span>{item.name}</span>
-                    <button
-                      className="delete-icon-button"
-                      onClick={() => handleDeleteProduct(item.id)}
-                    >
-                      <MdOutlineDelete />
-                    </button>
-                  </div>
-                ))}
+              <div className="cart-list scrollable">
+                {products
+                  .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map((item) => (
+                    <div key={item.id} className="cart-item">
+                      {editingId === item.id ? (
+                        <input
+                          autoFocus
+                          value={editedName}
+                          onChange={(e) => setEditedName(e.target.value)}
+                          onBlur={saveEdit}
+                          className="edit-input"
+                        />
+                      ) : (
+                        <>
+                          <span>{item.name}</span>
+                          <div className="cart-item-header">
+                            <button
+                              className="icon-button"
+                              onClick={() => startEdit(item.id, item.name)}
+                            >
+                              <FaPencilAlt />
+                            </button>
+                            <button
+                              className="delete-icon-button"
+                              onClick={() => handleDeleteProduct(item.id)}
+                            >
+                              <MdOutlineDelete />
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
               </div>
             ) : (
-              <p className="no-products">Список пуст</p>
+              <p className="cart-empty">Список пуст</p>
             )}
           </div>
         </div>
@@ -1232,23 +1391,27 @@ const App = () => {
       )}
 
       {isExportModalOpen && (  // Модальное окно для экспорта избранного в Telegram
-        <div className="modal-overlay">
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target.classList.contains("modal-overlay")) {
+              handleCloseExportModal();
+            }
+          }}
+        >
           <div className="modal">
             <p>Выгрузить текущие избранные товары в Telegram?</p>
             <div className="modal-actions">
               <button
                 className="modal-confirm"
                 onClick={() => {
-                  sendFavoritesToTelegram(); // Выгружаем избранное
-                  handleCloseExportModal(); // Закрываем модалку
+                  sendFavoritesToTelegram();
+                  handleCloseExportModal();
                 }}
               >
                 Выгрузить
               </button>
-              <button
-                className="modal-cancel"
-                onClick={handleCloseExportModal} // Закрываем модалку
-              >
+              <button className="modal-cancel" onClick={handleCloseExportModal}>
                 Отмена
               </button>
             </div>
