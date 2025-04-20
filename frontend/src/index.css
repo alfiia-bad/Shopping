@@ -1259,7 +1259,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 .add-button {
   background-color: #A56AB4;
   color: white;
-  padding: 8px;
+  padding: 4px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
@@ -1360,11 +1360,14 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 .edit-input {
-  flex-grow: 1;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  width: 100%;
   font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  outline: none;
+  color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .edit-input:focus {
@@ -1428,6 +1431,6 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 .close-icon {
-  color: #333;
-  font-size: 18px;
+  color: #934fb1;
+  font-size: 24px;
 }

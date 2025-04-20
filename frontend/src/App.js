@@ -1313,7 +1313,7 @@ const App = () => {
                               className="edit-icon-product"
                               onClick={() => startEdit(item.id, item.name)}
                             >
-                              <FaPencilAlt />
+                              <LuPencil />
                             </button>
                             <button
                               className="edit-icon-product"

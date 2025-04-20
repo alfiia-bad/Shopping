@@ -170,7 +170,7 @@ def update_cart_incrementally():
     data = request.json
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
-    
+
     with sqlite3.connect(DB_PATH) as conn:
         conn.row_factory = sqlite3.Row
         for item in data:
@@ -183,17 +183,18 @@ def update_cart_incrementally():
             # Получаем текущую запись товара
             current_item = conn.execute('SELECT * FROM cart WHERE id = ?', (item['id'],)).fetchone()
             if current_item:
-                new_quantity = current_item['quantity'] + item['quantity']  # Увеличиваем или уменьшаем
+                new_quantity = current_item['quantity'] + item['quantity']
                 if new_quantity <= 0:
-                    conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))  # Если количество <= 0, удаляем товар
+                    conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
                 else:
-                    conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (new_quantity, item['id']))  # Обновляем количество
+                    conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (new_quantity, item['id']))
             else:
-                # Если товара нет в корзине, добавляем новый товар
-                conn.execute(
-                    'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
-                    (item['id'], item['name'], item['quantity'], item.get('comment', ""))
-                )
+                # Проверка: не добавлять товар с отрицательным или нулевым количеством
+                if item['quantity'] > 0:
+                    conn.execute(
+                        'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
+                        (item['id'], item['name'], item['quantity'], item.get('comment', ""))
+                    )
         conn.commit()
 
     return jsonify({"success": True}), 200
@@ -215,21 +216,21 @@ def merge_cart():
                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
 
             if item['id'] == "general":
-                # Обрабатываем общий комментарий отдельно
                 general_comment = item.get("comment", "").strip()
                 conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (general_comment,))
                 continue
 
+            if item['quantity'] <= 0:
+                conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
+                continue
+
             current = existing_items.get(item['id'])
             if current:
-                # Обновляем количество и комментарий
-                new_quantity = item['quantity']
                 conn.execute(
                     'UPDATE cart SET quantity = ?, comment = ? WHERE id = ?',
-                    (new_quantity, item.get("comment", current['comment']), item['id'])
+                    (item['quantity'], item.get("comment", current['comment']), item['id'])
                 )
             else:
-                # Добавляем новый товар
                 conn.execute(
                     'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
                     (item['id'], item['name'], item['quantity'], item.get("comment", ""))
