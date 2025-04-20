@@ -46,7 +46,8 @@ const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => 
 const App = () => {
   const [products, setProducts] = useState([]); 
   const [cart, setCart] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTermProducts, setSearchTermProducts] = useState('');
+  const [searchTermEdit, setSearchTermEdit] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -201,7 +202,7 @@ const App = () => {
   const viewFavorites = activeTab === "favorites";
   const viewNotifications = activeTab === "notifications";
 
-  useEffect(() => {      // КОРЗИНА ТУТ ПЕРЕПИСАН КУСОК КОДА ///////////
+  useEffect(() => {      // Корзина ТУТ ПЕРЕПИСАН КУСОК КОДА ///////////
     const fetchCart = async () => {
       try {
         const response = await fetch(`${API_URL}/cart`);
@@ -253,14 +254,18 @@ const App = () => {
     fetchGeneralComment();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch('/cart')
-        .then(response => response.json())
-        .then(data => setCart(data));  // Обновляем состояние корзины
-    }, 5000);  // Интервал в 5 секунд
-  
-    return () => clearInterval(interval);  // Очищаем интервал при размонтировании компонента
+  useEffect(() => {      // КОРЗИНА ТУТ ПЕРЕПИСАН КУСОК КОДА ///////////
+    const fetchCart = async () => {
+      try {
+        const response = await fetch(`${API_URL}/cart`);
+        const data = await response.json();
+        setCart(data); // Устанавливаем корзину из базы данных
+      } catch (error) {
+        console.error("Ошибка загрузки корзины:", error);
+      }
+    };
+
+    fetchCart();
   }, []);
 
   const getQuantity = (id) => { // Получаем количество товара в корзине
@@ -268,14 +273,14 @@ const App = () => {
     return item ? item.quantity : 0;
   };
 
-  const updateCart = async (newCart) => {
+  const updateCart = async (newCart) => { // Обновляем корзину на сервере
     setCart(newCart);
-
+  
     try {
       await fetch(`${API_URL}/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCart), // Отправляем всю корзину, включая комментарии
+        body: JSON.stringify(newCart),
       });
       console.log("Корзина успешно обновлена");
     } catch (error) {
@@ -283,59 +288,95 @@ const App = () => {
     }
   };
 
-  const updateCartOnServer = async (newCart) => {
+  const incrementCart = async (productId, name, delta) => { // Увеличиваем количество товара в корзине
+    const updatedItem = {
+      id: productId,
+      name,
+      quantity: delta, // например, +1 или -1
+    };
+  
     try {
-      await fetch(`${API_URL}/cart`, {
+      const response = await fetch(`${API_URL}/cart/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCart),
+        body: JSON.stringify([updatedItem]),
       });
-      console.log("Корзина успешно обновлена на сервере");
-    } catch (error) {
-      console.error("Ошибка обновления корзины на сервере:", error);
+  
+      if (response.ok) {
+        // Обновляем локальное состояние
+        const updatedCart = [...cart];
+        const existingItemIndex = updatedCart.findIndex((item) => item.id === productId);
+  
+        if (existingItemIndex !== -1) {
+          // Обновляем количество
+          updatedCart[existingItemIndex].quantity += delta;
+          if (updatedCart[existingItemIndex].quantity <= 0) {
+            updatedCart.splice(existingItemIndex, 1); // удаляем если 0 или меньше
+          }
+        } else if (delta > 0) {
+          updatedCart.push({ id: productId, name, quantity: delta });
+        }
+  
+        setCart(updatedCart);
+      } else {
+        console.error("Ошибка при обновлении корзины");
+      }
+    } catch (err) {
+      console.error("Ошибка сети при обновлении корзины", err);
     }
   };
 
-  const addToCart = (product) => {
-    const index = cart.findIndex((item) => item.id === product.id);
-    const newCart =
-      index > -1
-        ? cart.map((item, i) =>
-            i === index ? { ...item, quantity: item.quantity + 1 } : item
-          )
-        : [...cart, { ...product, quantity: 1 }];
-        updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
+  // const updateCartOnServer = async (newCart) => {
+  //   try {
+  //     await fetch(`${API_URL}/cart`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(newCart),
+  //     });
+  //     console.log("Корзина успешно обновлена на сервере");
+  //   } catch (error) {
+  //     console.error("Ошибка обновления корзины на сервере:", error);
+  //   }
+  // };
+
+  const addToCart = (product) => { // Добавляем товар в корзину
+    incrementCart(product.id, product.name, +1);
   };
 
   const removeFromCart = (productId) => {
+    const product = cart.find((item) => item.id === productId);
+  
+    if (product) {
+      incrementCart(productId, product.name, -1);
+    }
+  
+    // Проверяем, останутся ли товары после удаления
     const newCart = cart
       .map((item) =>
         item.id === productId
           ? { ...item, quantity: item.quantity - 1 }
           : item
       )
-      .filter((item) => item.quantity > 0);
-
-    const hasProducts = newCart.some(item => item.id !== "general");
-
-    // Если нет товаров — очищаем комментарий
+      .filter((item) => item.quantity > 0 && item.id !== "general");
+  
+    const hasProducts = newCart.length > 0;
+  
     if (!hasProducts) {
       setCartComment("");
       generalCommentFromUrl.current = "";
-
+  
       // 🔥 Удаляем общий комментарий с сервера
       fetch(`${API_URL}/cart/general-comment`, {
         method: "DELETE",
       })
-        .then(res => {
+        .then((res) => {
           if (!res.ok) {
             console.error("Ошибка при удалении общего комментария:", res.statusText);
           } else {
             console.log("Общий комментарий успешно удалён");
           }
         })
-
-        .catch(err => console.error("Ошибка при удалении комментария:", err));
+        .catch((err) => console.error("Ошибка при удалении комментария:", err));
     }
 
     updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
@@ -634,7 +675,7 @@ const App = () => {
 
   const handleSearchChange = (e) => {  // Поиск по товарам
     const input = e.target.value;
-    setSearchTerm(input);
+    setSearchTermProducts(input); 
   
     const convertedInput = switchLayout(input);
   
@@ -642,14 +683,14 @@ const App = () => {
       product.name.toLowerCase().includes(input.toLowerCase()) ||
       product.name.toLowerCase().includes(convertedInput.toLowerCase())
     );
-
-    console.log("Отфильтрованные товары:", filtered); // Логируем отфильтрованные товары  
-    setFilteredProducts(filtered);
+  
+    console.log("Отфильтрованные товары:", filtered);
+    setFilteredProducts(filtered); // сохранение отфильтрованных результатов
   };
-
-  const handleClearSearch = () => {   // Очистка поиска
-    setSearchTerm("");
-    setFilteredProducts([]); // Очистка отфильтрованных товаров
+  
+  const handleClearSearch = () => { // Очистка поля поиска
+    setSearchTermProducts(""); 
+    setFilteredProducts([]);
   };
  
   const handleOpenCommentModal = (id) => {
@@ -849,7 +890,7 @@ const App = () => {
     setIsCommentModalOpen(false);
   };
 
-  const displayedProducts = searchTerm.trim() ? filteredProducts : products;
+  const displayedProducts = searchTermProducts.trim() ? filteredProducts : products;
 
   return (
     <div className="app-container">
@@ -950,14 +991,11 @@ const App = () => {
                 <input
                   type="text"
                   placeholder="Поиск товаров..."
-                  value={searchTerm}
+                  value={searchTermProducts}
                   onChange={handleSearchChange}
                 />
-                {searchTerm && (
-                  <button
-                    className="clear-search-button"
-                    onClick={handleClearSearch}
-                  >
+                {searchTermProducts && (
+                  <button className="clear-search-button" onClick={() => setSearchTermProducts('')}>
                     <MdClose className="icon" />
                   </button>
                 )}
@@ -1215,6 +1253,7 @@ const App = () => {
           onClick={() => {
             saveEdit(); // сохраняем, если редактируется
             setIsEditModalOpen(false);
+            setSearchTermEdit('');
           }}
         >
           <div
@@ -1233,8 +1272,8 @@ const App = () => {
               <input
                 type="text"
                 placeholder="Поиск товара"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchTermEdit}
+                onChange={(e) => setSearchTermEdit(e.target.value)}
               />
             </div>
 
@@ -1242,7 +1281,7 @@ const App = () => {
             {products.length > 0 ? (
               <div className="cart-list scrollable">
                 {products
-                  .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .filter((item) => item.name.toLowerCase().includes(searchTermEdit.toLowerCase()))
                   .map((item) => (
                     <div key={item.id} className="edit-cart-item">
                       {editingId === item.id ? (
