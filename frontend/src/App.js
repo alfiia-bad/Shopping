@@ -4,9 +4,8 @@ import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi
 import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
 import { MdArrowBackIos, MdClose, MdOutlineHideImage } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
-import { LuShoppingCart } from "react-icons/lu";
+import { LuShoppingCart, LuPencil } from "react-icons/lu";
 import { MdOutlineDelete, MdInfo } from "react-icons/md";
-import { useSwipeable } from "react-swipeable";
 
 const API_URL = "https://alfa-shop-ljmg.onrender.com";
 
@@ -74,6 +73,8 @@ const App = () => {
   const [editedName, setEditedName] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [productToDelete, setProductToDelete] = useState(null);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -101,21 +102,6 @@ const App = () => {
   useEffect(() => {   // Загрузка товаров при первом рендере
     fetchData();
   }, []);
-
-  const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      if (!viewFavorites) {
-        setTab("favorites");
-      }
-    },
-    onSwipedRight: () => {
-      if (viewFavorites) {
-        setTab("products");
-      }
-    },
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true
-  });
 
   useEffect(() => { // Загрузка корзины при первом рендере
     const fetchCart = async () => {
@@ -206,20 +192,6 @@ const App = () => {
   const viewFavorites = activeTab === "favorites";
   const viewNotifications = activeTab === "notifications";
 
-  // useEffect(() => {      // Загрузка корзины при первом рендере
-  //   const fetchCart = async () => {
-  //     try {
-  //       const response = await fetch(`${API_URL}/cart`);
-  //       const data = await response.json();
-  //       setCart(data); // Устанавливаем корзину из базы данных
-  //     } catch (error) {
-  //       console.error("Ошибка загрузки корзины:", error);
-  //     }
-  //   };
-
-  //   fetchCart();
-  // }, []);
-
   useEffect(() => { // Прокрутка страницы вверх при переключении между вкладками
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [viewCart, viewFavorites, viewNotifications]);
@@ -235,6 +207,38 @@ const App = () => {
       document.body.style.overflow = 'auto'; // на всякий случай при размонтировании
     };
   }, [isEditModalOpen]);
+
+  const minSwipeDistance = 50; // Минимальная дистанция для свайпа
+
+  const onTouchStart = (e) => { // Начало свайпа
+    setTouchEndX(null); // Сброс перед новым свайпом
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => { // Движение пальца по экрану
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => { // Конец свайпа
+    if (!touchStartX || !touchEndX) return;
+  
+    const distance = touchStartX - touchEndX;
+    if (Math.abs(distance) < minSwipeDistance) return;
+  
+    if (distance > 0) {
+      // Swipe left
+      if (viewCart || viewNotifications) {
+        setTab("products"); // Возврат на Товары
+      } else if (!viewFavorites) {
+        setTab("favorites"); // Из Товаров в Избранное
+      }
+    } else {
+      // Swipe right
+      if (viewFavorites) {
+        setTab("products"); // Возврат на Товары
+      }
+    }
+  };
   
   useEffect(() => {   // Инициализация избранного при первом рендере
     const fetchFavorites = async () => {
@@ -253,7 +257,7 @@ const App = () => {
   useEffect(() => {  // Загрузка общего комментария из базы данных
     if (hasGeneralCommentFromUrl.current) return; // 💥 Не загружаем повторно, если уже был из URL
 
-    const fetchGeneralComment = async () => {
+    const fetchGeneralComment = async () => { // Получаем общий комментарий из базы данных
       try {
         const response = await fetch(`${API_URL}/cart/general-comment`);
         if (response.ok) {
@@ -270,19 +274,6 @@ const App = () => {
     fetchGeneralComment();
   }, []);
 
-  // useEffect(() => {      
-  //   const fetchCart = async () => {
-  //     try {
-  //       const response = await fetch(`${API_URL}/cart`);
-  //       const data = await response.json();
-  //       setCart(data); // Устанавливаем корзину из базы данных
-  //     } catch (error) {
-  //       console.error("Ошибка загрузки корзины:", error);
-  //     }
-  //   };
-
-  //   fetchCart();
-  // }, []);
 
   const getQuantity = (id) => { // Получаем количество товара в корзине
     const item = cart.find((item) => item.id === id);
@@ -408,7 +399,7 @@ const App = () => {
     }
   };
 
-  const addToFavorites = async (productId) => {
+  const addToFavorites = async (productId) => { // Добавляем товар в избранное
     try {
       await fetch(`${API_URL}/favorites`, {
         method: "POST",
@@ -421,7 +412,7 @@ const App = () => {
     }
   };
 
-  const removeFromFavorites = async (productId) => {
+  const removeFromFavorites = async (productId) => { // Удаляем товар из избранного
     try {
       await fetch(`${API_URL}/favorites`, {
         method: "DELETE",
@@ -434,7 +425,7 @@ const App = () => {
     }
   };  
 
-  const updateFavorites = async () => {
+  const updateFavorites = async () => { // Обновляем избранное
     if (!products.length) {
       console.error("Товары ещё не загружены. Подождите.");
       return;
@@ -960,7 +951,7 @@ const App = () => {
                   setIsEditModalOpen(true);
                 }}
               >
-                <FaPencilAlt className="icon black-icon" />
+                <LuPencil className="icon black-icon" />
               </button>
               <span className="tooltip">редактировать товары</span>
               <div className="tooltip-wrapper">
@@ -989,9 +980,14 @@ const App = () => {
         )}
       </header>
 
-      <main className="main-content">  
+      <main className="main-content">
         {!viewCart && !viewNotifications && !viewFavorites ? (
-          <div {...handlers} className="swipe-container">
+          <div
+            className="swipe-container"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             <div className="search-bar">
               <div className="search-input-wrapper">
                 <FiSearch className="search-icon" />
@@ -1024,19 +1020,16 @@ const App = () => {
                         }
                       >
                         {favorites.includes(product.id) ? (
-                          <FaHeart className="icon active" /> // Фиолетовый лайк
+                          <FaHeart className="icon active" />
                         ) : (
-                          <FiHeart className="icon" /> // Серый лайк
+                          <FiHeart className="icon" />
                         )}
                       </button>
 
                       <div className="product-content">
                         <div className="image-container">
                           {product.image_url ? (
-                            <img
-                              src={product.image_url}
-                              alt="" // Пустой alt для декоративного изображения
-                            />
+                            <img src={product.image_url} alt="" />
                           ) : (
                             <MdOutlineHideImage className="no-image-icon" />
                           )}
@@ -1071,19 +1064,22 @@ const App = () => {
             </div>
           </div>
         ) : viewFavorites ? (
-          <div {...handlers} className="swipe-container">
+          <div
+            className="swipe-container"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             <div className="favorites-view">
               {favorites.length > 0 ? (
                 favorites.map((productId) => {
                   const product = products.find((p) => p.id === productId);
-
-                  // Если товар не найден, пропускаем его
                   if (!product) {
                     console.warn(`Товар с идентификатором ${productId} не найден.`);
                     return null;
                   }
 
-                  const quantity = getQuantity(product.id); // Получаем текущее количество товара
+                  const quantity = getQuantity(product.id);
 
                   return (
                     <div className="product-card" key={productId}>
@@ -1095,10 +1091,7 @@ const App = () => {
                       </button>
                       <div className="image-container">
                         {product.image ? (
-                          <img
-                            src={product.image}
-                            alt="" // Пустой alt для декоративного изображения
-                          />
+                          <img src={product.image} alt="" />
                         ) : (
                           <MdOutlineHideImage className="no-image-icon" />
                         )}
@@ -1129,27 +1122,39 @@ const App = () => {
             </div>
           </div>
         ) : viewNotifications ? (
-          <div className="notifications-view">
-            <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
-              Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
-            </p>
-            <button className="send-button full-width" onClick={sendUpdateRequest}>
-              <RiTelegram2Fill className="telegram-icon" />
-              Запросить обновление
-            </button>
+          <div
+            className="swipe-container"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="notifications-view">
+              <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
+                Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
+              </p>
+              <button className="send-button full-width" onClick={sendUpdateRequest}>
+                <RiTelegram2Fill className="telegram-icon" />
+                Запросить обновление
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="cart-list">
-            {cart.length === 0 ? (
-              <p className="cart-empty">Корзина пуста</p>
-            ) : (
-              <>
-                {cart.map((item) => (
+        ) : viewCart ? (
+          <div
+            className="swipe-container"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="cart-list">
+              {cart.length === 0 ? (
+                <p className="cart-empty">Корзина пуста</p>
+              ) : (
+                cart.map((item) => (
                   <div className="cart-item" key={item.id}>
                     <div className="cart-item-header">
                       <FaPencilAlt
                         className="edit-icon"
-                        onClick={() => handleOpenCommentModal(item.id)} // Открываем модальное окно
+                        onClick={() => handleOpenCommentModal(item.id)}
                       />
                       <ProductNameWithHint
                         name={item.name}
@@ -1174,35 +1179,30 @@ const App = () => {
                       </button>
                     </div>
                   </div>
-                ))}
-{/* Новый инпут для комментария к корзине */}
-                <div className="cart-comment-wrapper">                
-                  <textarea
-                    className={`cart-comment-input ${
-                      cartComment.length >= 200 ? "input-error" : ""
-                    }`}
-                    placeholder="Добавьте комментарий к корзине..."
-                    value={cartComment}
-                    maxLength={200} // Ограничиваем ввод до 200 символов
-                    onChange={(e) => setCartComment(e.target.value)}
-                    onBlur={saveGeneralComment} // Сохраняем комментарий при потере фокуса
-                  />
-                  <div
-                    className={`char-counter ${
-                      cartComment.length >= 200 ? "limit-reached" : ""
-                    }`}
-                  >
-                    {cartComment.length}/200
-                  </div>
+                ))
+              )}
+
+              <div className="cart-comment-wrapper">
+                <textarea
+                  className={`cart-comment-input ${cartComment.length >= 200 ? "input-error" : ""}`}
+                  placeholder="Добавьте комментарий к корзине..."
+                  value={cartComment}
+                  maxLength={200}
+                  onChange={(e) => setCartComment(e.target.value)}
+                  onBlur={saveGeneralComment}
+                />
+                <div className={`char-counter ${cartComment.length >= 200 ? "limit-reached" : ""}`}>
+                  {cartComment.length}/200
                 </div>
-                <button className="send-button" onClick={sendToTelegram}>
-                  <RiTelegram2Fill className="telegram-icon" />
-                  Отправить в Telegram
-                </button>
-              </>
-            )}
+              </div>
+
+              <button className="send-button" onClick={sendToTelegram}>
+                <RiTelegram2Fill className="telegram-icon" />
+                Отправить в Telegram
+              </button>
+            </div>
           </div>
-        )}
+        ) : null}
       </main>
 
       {isAddModalOpen && ( // Модальное окно для добавления товара
