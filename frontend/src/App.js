@@ -657,7 +657,7 @@ const App = () => {
   const handleUpdateCart = async () => {
     try {
       // 1. Обновляем корзину на сервере (без general-комментария)
-      await updateCartOnServer(pendingCart.filter(item => item.id !== "general"));
+      await updateCart(pendingCart.filter(item => item.id !== "general"));
   
       // 2. Сохраняем общий комментарий на сервере
       await saveGeneralComment();
