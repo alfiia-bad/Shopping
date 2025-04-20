@@ -326,19 +326,6 @@ const App = () => {
     }
   };
 
-  // const updateCartOnServer = async (newCart) => {
-  //   try {
-  //     await fetch(`${API_URL}/cart`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(newCart),
-  //     });
-  //     console.log("Корзина успешно обновлена на сервере");
-  //   } catch (error) {
-  //     console.error("Ошибка обновления корзины на сервере:", error);
-  //   }
-  // };
-
   const addToCart = (product) => { // Добавляем товар в корзину
     incrementCart(product.id, product.name, +1);
   };
@@ -347,7 +334,11 @@ const App = () => {
     const product = cart.find((item) => item.id === productId);
   
     if (product) {
-      incrementCart(productId, product.name, -1);
+      if (product.quantity > 1) {
+        incrementCart(productId, product.name, -1);
+      } else {
+        deleteProductFromCart(productId);  // Функция для удаления товара
+      }
     }
   
     // Проверяем, останутся ли товары после удаления
@@ -982,7 +973,7 @@ const App = () => {
         )}
       </header>
 
-      <main className="main-content">
+      <main className="main-content">  
         {!viewCart && !viewNotifications && !viewFavorites ? (
           <div {...handlers} className="swipe-container">
             <div className="search-bar">
@@ -1247,7 +1238,7 @@ const App = () => {
         </div>
       )}
 
-      {isEditModalOpen && (
+      {isEditModalOpen && ( // Модальное окно для редактирования товаров
         <div
           className="modal-overlay"
           onClick={() => {
@@ -1263,18 +1254,24 @@ const App = () => {
             <div className="modal-header-with-close">
               <h2 className="modal-header">Редактировать товары</h2>
               <button className="close-button" onClick={() => setIsEditModalOpen(false)}>
-                <MdClose className="icon" />
+                <MdClose className="icon close-icon" />
               </button>
             </div>
 
             {/* 🔍 Поиск */}
             <div className="search-input-wrapper">
+              <FiSearch className="search-icon" />
               <input
                 type="text"
                 placeholder="Поиск товара"
                 value={searchTermEdit}
                 onChange={(e) => setSearchTermEdit(e.target.value)}
               />
+              {searchTermEdit && (
+                <button className="clear-search-button" onClick={() => setSearchTermEdit('')}>
+                  <MdClose className="icon" />
+                </button>
+              )}
             </div>
 
             {/* 📦 Список товаров */}

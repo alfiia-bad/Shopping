@@ -172,6 +172,7 @@ def update_cart_incrementally():
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
     
     with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
         for item in data:
             # Проверка обязательных полей
             if 'id' not in item or 'quantity' not in item:

@@ -426,6 +426,11 @@ body {
   width: 100%;
 }
 
+.modal-container .search-input-wrapper {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
 .search-input-wrapper input {
   width: 100%;
   padding: 10px 40px 10px 36px;
@@ -621,7 +626,7 @@ body {
   background-color: #f8f8f8;
   border-radius: 1rem; /* Скруглённые углы */
   padding: 1.5rem;
-  width: 20rem; /* Ширина модального окна */
+  width: 21.25rem; /* Ширина модального окна */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 3rem; /* Отступ снизу */
   overflow-x: hidden;
@@ -1385,7 +1390,33 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   gap: 10px;
 }
 
+.edit-cart-item span {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
 .edit-icon {
   width: 16px;
   height: 16px;
+  color: #333; /* Цвет иконок */
+  border: none; /* Убираем обводку */
+  background: transparent; /* Без фона */
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Эффект при наведении на иконку */
+.edit-icon:hover {
+  background-color: #e7e7e7; /* Серый фон при наведении */
+}
+
+.close-icon {
+  color: #333;
+  font-size: 18px;
 }
