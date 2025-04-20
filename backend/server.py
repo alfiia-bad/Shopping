@@ -177,8 +177,8 @@ def update_cart_incrementally():
             # Проверка обязательных полей
             if 'id' not in item or 'quantity' not in item:
                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
-            if not isinstance(item['quantity'], int) or item['quantity'] < 1:
-                return jsonify({"success": False, "message": "Количество должно быть целым числом и больше 0"}), 400
+            if not isinstance(item['quantity'], int):
+                return jsonify({"success": False, "message": "Количество должно быть целым числом"}), 400
 
             # Получаем текущую запись товара
             current_item = conn.execute('SELECT * FROM cart WHERE id = ?', (item['id'],)).fetchone()

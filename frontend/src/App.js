@@ -72,6 +72,8 @@ const App = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -1294,14 +1296,17 @@ const App = () => {
                           <span>{item.name}</span>
                           <div className="edit-cart-item-header">
                             <button
-                              className="edit-icon"
+                              className="edit-icon-product"
                               onClick={() => startEdit(item.id, item.name)}
                             >
                               <FaPencilAlt />
                             </button>
                             <button
-                              className="edit-icon"
-                              onClick={() => handleDeleteProduct(item.id)}
+                              className="edit-icon-product"
+                              onClick={() => {
+                                setProductToDelete(item.id); // Устанавливаем товар для удаления
+                                setIsDeleteModalOpen(true); // Открываем модалку
+                              }}
                             >
                               <MdOutlineDelete />
                             </button>
@@ -1314,6 +1319,37 @@ const App = () => {
             ) : (
               <p className="cart-empty">Список пуст</p>
             )}
+          </div>
+        </div>
+      )}
+
+      {isDeleteModalOpen && (  // Модальное окно подтверждения удаления
+        <div
+          className="modal-overlay"
+          onClick={() => setIsDeleteModalOpen(false)}  // Клик по фону — закрыть модалку
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}  // Клик внутри модалки — не закрывать
+          >
+            <p>Действие безвозвратно. Удалить товар из базы данных?</p>
+            <div className="modal-actions">
+              <button
+                onClick={() => {
+                  handleDeleteProduct(productToDelete);  // Функция удаления товара
+                  setIsDeleteModalOpen(false);  // Закрытие модалки
+                }}
+                className="modal-confirm"
+              >
+                Удалить
+              </button>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}  // Закрыть модалку
+                className="modal-cancel"
+              >
+                Отмена
+              </button>
+            </div>
           </div>
         </div>
       )}

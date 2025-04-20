@@ -626,7 +626,7 @@ body {
   background-color: #f8f8f8;
   border-radius: 1rem; /* Скруглённые углы */
   padding: 1.5rem;
-  width: 21.25rem; /* Ширина модального окна */
+  width: 23rem; /* Ширина модального окна */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 3rem; /* Отступ снизу */
   overflow-x: hidden;
@@ -1398,7 +1398,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   margin-right: 10px;
 }
 
-.edit-icon {
+.edit-icon-product {
   width: 16px;
   height: 16px;
   color: #333; /* Цвет иконок */
@@ -1412,7 +1412,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 /* Эффект при наведении на иконку */
-.edit-icon:hover {
+.edit-icon-product:hover {
   background-color: #e7e7e7; /* Серый фон при наведении */
 }
 
