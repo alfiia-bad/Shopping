@@ -124,6 +124,24 @@ def get_products():
     conn.close()
     return jsonify(products)
 
+@app.route('/products/<product_id>', methods=['PATCH'])
+def update_product(product_id):
+    data = request.get_json()
+    new_name = data.get('name', '').strip()
+
+    if not new_name:
+        return jsonify({"success": False, "message": "Имя товара не может быть пустым"}), 400
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE products SET name = ? WHERE id = ?', (new_name, product_id))
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({"success": False, "message": "Товар с таким id не найден"}), 404
+
+    return jsonify({"success": True, "message": "Товар обновлён"}), 200
+
 @app.route('/products/<product_id>', methods=['DELETE'])
 def delete_product(product_id):
     with sqlite3.connect(DB_PATH) as conn:

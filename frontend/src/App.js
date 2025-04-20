@@ -443,7 +443,7 @@ const App = () => {
     setEditedName(name);
   };
   
-  const saveEdit = async () => {
+  const saveEdit = async () => { // Сохраняем изменения в товаре
     if (editingId === null) return;
     const trimmed = editedName.trim();
     if (!trimmed) return;
@@ -760,14 +760,21 @@ const App = () => {
   function showToast(message, type = "success") {  // Создаём кастомный тост
     const toast = document.createElement("div");
     toast.className = `custom-toast ${type}`;
-    toast.innerText = message;
+    toast.innerHTML = `
+      <span>${message}</span>
+      <button class="close-toast">&times;</button>
+    `;
     document.body.appendChild(toast);
   
-    setTimeout(() => {
-      toast.remove();
-    }, 5000);
+    const removeToast = () => {
+      toast.classList.add("fade-out");
+      setTimeout(() => toast.remove(), 300); // Плавное исчезновение
+    };
   
-    toast.addEventListener("click", () => toast.remove());
+    const closeBtn = toast.querySelector(".close-toast");
+    closeBtn.addEventListener("click", removeToast);
+  
+    setTimeout(removeToast, 5000);
   }
 
   
@@ -936,7 +943,7 @@ const App = () => {
 
       <main className="main-content">
         {!viewCart && !viewNotifications && !viewFavorites ? (
-          <div {...handlers}>
+          <div {...handlers} className="swipe-container">
             <div className="search-bar">
               <div className="search-input-wrapper">
                 <FiSearch className="search-icon" />
@@ -1019,7 +1026,7 @@ const App = () => {
             </div>
           </div>
         ) : viewFavorites ? (
-          <div {...handlers}>
+          <div {...handlers} className="swipe-container">
             <div className="favorites-view">
               {favorites.length > 0 ? (
                 favorites.map((productId) => {
@@ -1202,48 +1209,6 @@ const App = () => {
         </div>
       )}
 
-      {/* {isAddModalOpen && ( // Модальное окно для добавления товара
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <h2 className="modal-header">Добавить товар</h2>
-
-            <input
-              type="text"
-              placeholder="Название товара"
-              value={newProductName}
-              onChange={(e) => setNewProductName(e.target.value)}
-              className={`input-field ${newProductNameError ? 'input-error' : ''}`}
-            />
-            {newProductNameError && (
-              <p className="input-error-text">* обязательное поле</p>
-            )}
-
-            <input
-              type="text"
-              placeholder="Banana.png..."
-              value={newProductImage}
-              onChange={(e) => setNewProductImage(e.target.value)}
-              className="input-field"
-            />
-
-            <div className="modal-actions">
-              <button
-                onClick={handleAddProduct}
-                className="modal-confirm"
-              >
-                Добавить
-              </button>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="modal-cancel"
-              >
-                Отмена
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
-
       {isEditModalOpen && (
         <div
           className="modal-overlay"
@@ -1279,7 +1244,7 @@ const App = () => {
                 {products
                   .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                   .map((item) => (
-                    <div key={item.id} className="cart-item">
+                    <div key={item.id} className="edit-cart-item">
                       {editingId === item.id ? (
                         <input
                           autoFocus
@@ -1291,15 +1256,15 @@ const App = () => {
                       ) : (
                         <>
                           <span>{item.name}</span>
-                          <div className="cart-item-header">
+                          <div className="edit-cart-item-header">
                             <button
-                              className="icon-button"
+                              className="edit-icon"
                               onClick={() => startEdit(item.id, item.name)}
                             >
                               <FaPencilAlt />
                             </button>
                             <button
-                              className="delete-icon-button"
+                              className="edit-icon"
                               onClick={() => handleDeleteProduct(item.id)}
                             >
                               <MdOutlineDelete />
