@@ -337,9 +337,8 @@ const App = () => {
       if (product.quantity > 1) {
         incrementCart(productId, product.name, -1);
       } else {
-        deleteProductFromCart(productId);  // Функция для удаления товара
+        incrementCart(productId, product.name, -1); // удаление, если 1
       }
-    }
   
     // Проверяем, останутся ли товары после удаления
     const newCart = cart
@@ -371,6 +370,7 @@ const App = () => {
     }
 
     updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
+    }
   };
 
   const clearCart = async () => {
