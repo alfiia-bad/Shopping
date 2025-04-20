@@ -995,7 +995,7 @@ const App = () => {
                   onChange={handleSearchChange}
                 />
                 {searchTermProducts && (
-                  <button className="clear-search-button" onClick={() => setSearchTermProducts('')}>
+                  <button className="clear-search-button" onClick={handleClearSearch}>
                     <MdClose className="icon" />
                   </button>
                 )}
