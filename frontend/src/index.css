@@ -1399,16 +1399,21 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 .edit-icon-product {
-  width: 16px;
-  height: 16px;
-  color: #333; /* Цвет иконок */
-  border: none; /* Убираем обводку */
-  background: transparent; /* Без фона */
+  width: 32px;           /* Размер кнопки, чтобы иконке было просторно */
+  height: 32px;
+  padding: 0;
+  color: #333;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  transition: background-color 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.edit-icon-product svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Эффект при наведении на иконку */

@@ -117,7 +117,7 @@ const App = () => {
     trackMouse: true
   });
 
-  useEffect(() => { // Загрузка корзины и избранного при первом рендере
+  useEffect(() => { // Загрузка корзины при первом рендере
     const fetchCart = async () => {
       try {
         const res = await fetch(`${API_URL}/cart`);
@@ -128,6 +128,8 @@ const App = () => {
       }
     };
     fetchCart();
+    const interval = setInterval(fetchCart, 5000); // Обновляем корзину каждые 5 секунд
+    return () => clearInterval(interval); // Очистка интервала при размонтировании
   }, []);
 
   useEffect(() => {   // Загрузка избранного при первом рендере
@@ -196,7 +198,7 @@ const App = () => {
     setTab(tabFromUrl);
   }, [productsLoaded, products, setTab]);
 
-  useEffect(() => {
+  useEffect(() => { // Прокрутка страницы вверх при переключении между вкладками
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeTab]);
 
@@ -204,25 +206,37 @@ const App = () => {
   const viewFavorites = activeTab === "favorites";
   const viewNotifications = activeTab === "notifications";
 
-  useEffect(() => {      // Корзина ТУТ ПЕРЕПИСАН КУСОК КОДА ///////////
-    const fetchCart = async () => {
-      try {
-        const response = await fetch(`${API_URL}/cart`);
-        const data = await response.json();
-        setCart(data); // Устанавливаем корзину из базы данных
-      } catch (error) {
-        console.error("Ошибка загрузки корзины:", error);
-      }
-    };
+  // useEffect(() => {      // Загрузка корзины при первом рендере
+  //   const fetchCart = async () => {
+  //     try {
+  //       const response = await fetch(`${API_URL}/cart`);
+  //       const data = await response.json();
+  //       setCart(data); // Устанавливаем корзину из базы данных
+  //     } catch (error) {
+  //       console.error("Ошибка загрузки корзины:", error);
+  //     }
+  //   };
 
-    fetchCart();
-  }, []);
+  //   fetchCart();
+  // }, []);
 
-  useEffect(() => {
+  useEffect(() => { // Прокрутка страницы вверх при переключении между вкладками
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [viewCart, viewFavorites, viewNotifications]);
+
+  useEffect(() => { // Прокрутка страницы вверх при открытии модального окна
+    if (isEditModalOpen) {
+      document.body.style.overflow = 'hidden'; // запретить скролл фона
+    } else {
+      document.body.style.overflow = 'auto'; // включить обратно
+    }
   
-  useEffect(() => {   // ИЗБРАННОЕ ТУТ ПЕРЕПИСАН КУСОК КОДА
+    return () => {
+      document.body.style.overflow = 'auto'; // на всякий случай при размонтировании
+    };
+  }, [isEditModalOpen]);
+  
+  useEffect(() => {   // Инициализация избранного при первом рендере
     const fetchFavorites = async () => {
       try {
         const res = await fetch(`${API_URL}/favorites`);
@@ -236,7 +250,7 @@ const App = () => {
     fetchFavorites(); // Первая загрузка
   }, []);
 
-  useEffect(() => {  // ОБЩИЙ КОММЕНТАРИЙ ТУТ ПЕРЕПИСАН КУСОК КОДА
+  useEffect(() => {  // Загрузка общего комментария из базы данных
     if (hasGeneralCommentFromUrl.current) return; // 💥 Не загружаем повторно, если уже был из URL
 
     const fetchGeneralComment = async () => {
@@ -256,19 +270,19 @@ const App = () => {
     fetchGeneralComment();
   }, []);
 
-  useEffect(() => {      // КОРЗИНА ТУТ ПЕРЕПИСАН КУСОК КОДА ///////////
-    const fetchCart = async () => {
-      try {
-        const response = await fetch(`${API_URL}/cart`);
-        const data = await response.json();
-        setCart(data); // Устанавливаем корзину из базы данных
-      } catch (error) {
-        console.error("Ошибка загрузки корзины:", error);
-      }
-    };
+  // useEffect(() => {      
+  //   const fetchCart = async () => {
+  //     try {
+  //       const response = await fetch(`${API_URL}/cart`);
+  //       const data = await response.json();
+  //       setCart(data); // Устанавливаем корзину из базы данных
+  //     } catch (error) {
+  //       console.error("Ошибка загрузки корзины:", error);
+  //     }
+  //   };
 
-    fetchCart();
-  }, []);
+  //   fetchCart();
+  // }, []);
 
   const getQuantity = (id) => { // Получаем количество товара в корзине
     const item = cart.find((item) => item.id === id);
