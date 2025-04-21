@@ -1346,7 +1346,7 @@ useEffect(() => {   // Обработка свайпов для переключ
 
             {/* 📤 Кнопка отправки в Telegram */}
             <div className="send-to-telegram-wrapper">
-              <button className="send-to-telegram-button" onClick={handleSendAllProductsToTelegram}>
+              <button className="send-to-telegram-button full-width" onClick={handleSendAllProductsToTelegram}>
                 <RiTelegram2Fill className="icon" />
                 Отправить в Telegram
               </button>

@@ -4,6 +4,7 @@ import os
 import logging
 from flask_cors import CORS
 import sqlite3
+import threading
 
 # Настройка логирования
 logging.basicConfig(level=logging.DEBUG)
@@ -23,6 +24,8 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+
+cart_lock = threading.Lock() # Блокировка для защиты от одновременного доступа к базе данных
 
 DB_PATH = 'cart.db'
 
@@ -165,37 +168,78 @@ def get_cart():
         ]
     return jsonify(items)  # Flask автоматически использует UTF-8
 
+# @app.route('/cart/update', methods=['POST'])
+# def update_cart_incrementally():
+#     data = request.json
+#     if not isinstance(data, list):
+#         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
+
+#     with sqlite3.connect(DB_PATH) as conn:
+#         conn.row_factory = sqlite3.Row
+#         for item in data:
+#             # Проверка обязательных полей
+#             if 'id' not in item or 'quantity' not in item:
+#                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
+#             if not isinstance(item['quantity'], int):
+#                 return jsonify({"success": False, "message": "Количество должно быть целым числом"}), 400
+
+#             # Получаем текущую запись товара
+#             current_item = conn.execute('SELECT * FROM cart WHERE id = ?', (item['id'],)).fetchone()
+#             if current_item:
+#                 new_quantity = current_item['quantity'] + item['quantity']
+#                 if new_quantity <= 0:
+#                     conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
+#                 else:
+#                     conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (new_quantity, item['id']))
+#             else:
+#                 # Проверка: не добавлять товар с отрицательным или нулевым количеством
+#                 if item['quantity'] > 0:
+#                     conn.execute(
+#                         'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
+#                         (item['id'], item['name'], item['quantity'], item.get('comment', ""))
+#                     )
+#         conn.commit()
+
+#     return jsonify({"success": True}), 200
+
 @app.route('/cart/update', methods=['POST'])
 def update_cart_incrementally():
     data = request.json
+    logging.debug(f"[update_cart_incrementally] Входящие данные: {data}")
+
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
 
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        for item in data:
-            # Проверка обязательных полей
-            if 'id' not in item or 'quantity' not in item:
-                return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
-            if not isinstance(item['quantity'], int):
-                return jsonify({"success": False, "message": "Количество должно быть целым числом"}), 400
+    with cart_lock:  # Блокировка для защиты от одновременного доступа
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row
 
-            # Получаем текущую запись товара
-            current_item = conn.execute('SELECT * FROM cart WHERE id = ?', (item['id'],)).fetchone()
-            if current_item:
-                new_quantity = current_item['quantity'] + item['quantity']
-                if new_quantity <= 0:
-                    conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
+            # Лог текущего состояния корзины до обновления
+            current_cart = conn.execute('SELECT * FROM cart').fetchall()
+            cart_snapshot = [dict(row) for row in current_cart]
+            logging.debug(f"[update_cart_incrementally] Текущее состояние корзины до обновления: {cart_snapshot}")
+
+            for item in data:
+                if 'id' not in item or 'quantity' not in item:
+                    return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
+                if not isinstance(item['quantity'], int):
+                    return jsonify({"success": False, "message": "Количество должно быть целым числом"}), 400
+
+                current_item = conn.execute('SELECT * FROM cart WHERE id = ?', (item['id'],)).fetchone()
+                if current_item:
+                    new_quantity = current_item['quantity'] + item['quantity']
+                    if new_quantity <= 0:
+                        conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
+                    else:
+                        conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (new_quantity, item['id']))
                 else:
-                    conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (new_quantity, item['id']))
-            else:
-                # Проверка: не добавлять товар с отрицательным или нулевым количеством
-                if item['quantity'] > 0:
-                    conn.execute(
-                        'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
-                        (item['id'], item['name'], item['quantity'], item.get('comment', ""))
-                    )
-        conn.commit()
+                    if item['quantity'] > 0:
+                        conn.execute(
+                            'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
+                            (item['id'], item['name'], item['quantity'], item.get('comment', ""))
+                        )
+
+            conn.commit()
 
     return jsonify({"success": True}), 200
 
@@ -248,7 +292,7 @@ def clear_cart():
         conn.commit()
     return jsonify({"success": True, "message": "Корзина и общий комментарий очищены"}), 200
 
-@app.route('/cart/general-comment', methods=['POST', 'GET', 'DELETE'])  # Добавляем DELETE метод
+@app.route('/cart/general-comment', methods=['POST', 'GET', 'DELETE'])  
 def handle_general_comment():
     if request.method == 'POST':  # Для сохранения общего комментария
         data = request.json
@@ -270,7 +314,7 @@ def handle_general_comment():
             conn.commit()
         return jsonify({"success": True, "message": "Общий комментарий удалён"})
 
-@app.route('/send-to-telegram', methods=['POST'])
+@app.route('/send-to-telegram', methods=['POST']) # Изменяем маршрут на send-to-telegram
 def send_to_telegram():
     data = request.json
     message = data.get('cart', '')
@@ -292,6 +336,27 @@ def send_to_telegram():
             return jsonify({"success": False, "message": "Ошибка при отправке сообщения"}), 500
     except requests.exceptions.RequestException:
         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
+
+@app.route('/send-all-products', methods=['POST'])  # Новый маршрут для отправки всех товаров
+def send_all_products_to_telegram():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute('SELECT name FROM products')
+        product_names = [row[0] for row in cursor.fetchall()]
+
+    if not product_names:
+        return jsonify({"success": False, "message": "Нет товаров для отправки"}), 400
+
+    message = "🛒 Список всех товаров:\n" + "\n".join(f"• {name}" for name in product_names)
+
+    response = requests.post(
+        f'https://api.telegram.org/bot{TOKEN}/sendMessage',
+        data={'chat_id': CHAT_ID, 'text': message}
+    )
+
+    if response.status_code == 200:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "Ошибка при отправке в Telegram"}), 500
 
 @app.route("/favorites", methods=["GET"])
 def get_favorites():

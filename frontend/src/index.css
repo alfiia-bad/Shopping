@@ -627,6 +627,7 @@ body {
   border-radius: 1rem; /* Скруглённые углы */
   padding: 1.5rem;
   width: 23rem; /* Ширина модального окна */
+  min-height: calc(100% + 20px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 3rem; /* Отступ снизу */
   overflow-x: hidden;
@@ -1440,4 +1441,45 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 .close-icon {
   color: #333;
   font-size: 24px;
+}
+
+/* Кнопка отправки ВСЕХ товаров в телеграм в модалке */
+.send-to-telegram-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  gap: 6px;
+  padding: 12px 16px;
+  font-size: 16px;
+  background-color: #A56AB4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.send-to-telegram-button:hover {
+  background-color: #934fb1;
+}
+
+.send-to-telegram-button.full-width {
+  width: 100%; /* Растягиваем кнопку на всю ширину */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; /* Интервал между иконкой и текстом */
+  padding: 12px 16px;
+  font-size: 16px;
+  background-color: #A56AB4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.send-to-telegram-button.full-width:hover {
+  background-color: #934fb1; /* Цвет при наведении */
 }
