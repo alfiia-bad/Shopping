@@ -73,9 +73,6 @@ const App = () => {
   const [editedName, setEditedName] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [productToDelete, setProductToDelete] = useState(null);
-  // const [touchStartX, setTouchStartX] = useState(null);
-  // const [touchEndX, setTouchEndX] = useState(null);
-  const [expandedItems, setExpandedItems] = useState([]);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -215,50 +212,46 @@ const App = () => {
     );
   };
 
-  useEffect(() => {   // Обработка свайпов для переключения между вкладками
-    const minSwipeDistance = 50;
-    let touchStartX = null;
-    let touchEndX = null;
-  
-    const handleTouchStart = (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchEndX = null;
-    };
-  
-    const handleTouchMove = (e) => {
-      touchEndX = e.touches[0].clientX;
-    };
-  
-    const handleTouchEnd = () => {
-      if (touchStartX === null || touchEndX === null) return;
-      const distance = touchStartX - touchEndX;
-      if (Math.abs(distance) < minSwipeDistance) return;
-  
-      if (activeTab === "favorites" && distance < 0) {
-        setTab("products"); // Свайп вправо от Избранного → Товары
-      } else if (activeTab === "notifications" && distance > 0) {
-        setTab("products"); // Свайп влево от Уведомлений → Товары
-      } else if (activeTab === "cart" && distance > 0) {
-        setTab("products"); // Свайп влево от Корзины → Товары
-      } else if (activeTab === "products") {
-        if (distance > 0) {
-          setTab("favorites"); // Свайп влево от Товаров → Избранное
-        } else {
-          setTab("notifications"); // Свайп вправо от Товаров → Уведомления
-        }
-      }
-    };
-  
-    document.addEventListener("touchstart", handleTouchStart);
-    document.addEventListener("touchmove", handleTouchMove);
-    document.addEventListener("touchend", handleTouchEnd);
-  
-    return () => {
-      document.removeEventListener("touchstart", handleTouchStart);
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [activeTab, setTab]);
+useEffect(() => {   // Обработка свайпов для переключения между вкладками
+  const minSwipeDistance = 50;
+  let touchStartX = null;
+  let touchEndX = null;
+
+  const tabOrder = ["notifications", "products", "favorites", "cart"];
+
+  const handleTouchStart = (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchEndX = null;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    const distance = touchStartX - touchEndX;
+    if (Math.abs(distance) < minSwipeDistance) return;
+
+    const currentIndex = tabOrder.indexOf(activeTab);
+
+    if (distance > 0 && currentIndex < tabOrder.length - 1) {
+      setTab(tabOrder[currentIndex + 1]); // свайп влево
+    } else if (distance < 0 && currentIndex > 0) {
+      setTab(tabOrder[currentIndex - 1]); // свайп вправо
+    }
+  };
+
+  document.addEventListener("touchstart", handleTouchStart);
+  document.addEventListener("touchmove", handleTouchMove);
+  document.addEventListener("touchend", handleTouchEnd);
+
+  return () => {
+    document.removeEventListener("touchstart", handleTouchStart);
+    document.removeEventListener("touchmove", handleTouchMove);
+    document.removeEventListener("touchend", handleTouchEnd);
+  };
+}, [activeTab, setTab]);
 
   useEffect(() => {   // Инициализация избранного при первом рендере
     const fetchFavorites = async () => {
@@ -400,7 +393,7 @@ const App = () => {
     }
   };
 
-  const clearCart = async () => {
+  const clearCart = async () => { // Очищаем корзину
     try {
       const response = await fetch(`${API_URL}/cart`, {
         method: 'DELETE',
@@ -490,7 +483,20 @@ const App = () => {
     }
   };
 
-  const handleCloseNotification = () => {
+  const handleSendAllProductsToTelegram = async () => { // Отправляем все товары в Telegram
+    try {
+      const response = await fetch('/send-all-products', { method: 'POST' });
+      if (response.ok) {
+        setShowNotification(true);
+      } else {
+        alert('Ошибка при отправке в Telegram');
+      }
+    } catch (error) {
+      alert('Ошибка сети');
+    }
+  };
+  
+  const handleCloseNotification = () => { // Закрываем уведомление
     setShowNotification(false);
     if (notificationTimeout) {
       clearTimeout(notificationTimeout);
@@ -929,13 +935,16 @@ const App = () => {
             <div className="header-right">
               {viewFavorites && (
                 <>
-                  <button
-                    className={`icon-button ${favorites.length === 0 ? "disabled" : "purple"}`}
-                    onClick={favorites.length > 0 ? handleOpenExportModal : null}
-                    disabled={favorites.length === 0} // Делаем кнопку неактивной, если нет избранных товаров
-                  >
-                    <RiTelegram2Fill className="icon" />
-                  </button>
+                  <div className="tooltip-wrapper tooltip-left">
+                    <button
+                      className={`icon-button ${favorites.length === 0 ? "disabled" : "purple"}`}
+                      onClick={favorites.length > 0 ? handleOpenExportModal : null}
+                      disabled={favorites.length === 0} // Делаем кнопку неактивной, если нет избранных товаров
+                    >
+                      <RiTelegram2Fill className="icon" />
+                    </button>
+                    <span className="tooltip">отправить в Telegram</span>
+                  </div>
 {/* Условие для скрытия кнопки */}
                   {false && (
                   <button
@@ -949,12 +958,15 @@ const App = () => {
                 </>
               )}
               {viewCart && (
-                <button
-                  className="icon-button"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <MdOutlineDelete className="icon" />
-                </button>
+                <div className="tooltip-wrapper tooltip-left">
+                  <button
+                    className="icon-button"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    <MdOutlineDelete className="icon" />
+                  </button>
+                  <span className="tooltip">очистить корзину</span>
+                </div>
               )}
               {viewCart && totalItems > 0 && (
                 <div className="item-count-badge">{totalItems}</div>
@@ -1311,12 +1323,7 @@ const App = () => {
                         />
                       ) : (
                         <>
-                          <span
-                            className={`item-name ${expandedItems.includes(item.id) ? 'expanded' : ''}`}
-                            onClick={() => toggleItemName(item.id)}
-                          >
-                            {item.name}
-                          </span>
+                          <ProductNameWithHint name={item.name} align="left" />
                           <div className="edit-cart-item-header">
                             <button
                               className="edit-icon-product"
@@ -1341,6 +1348,31 @@ const App = () => {
               </div>
             ) : (
               <p className="cart-empty">Список пуст</p>
+            )}
+
+            {/* 📤 Кнопка отправки в Telegram */}
+            <div className="send-to-telegram-wrapper">
+              <button className="send-to-telegram-button" onClick={handleSendAllProductsToTelegram}>
+                <RiTelegram2Fill className="icon" />
+                Отправить в Telegram
+              </button>
+            </div>
+
+            {/* ✅ Нотификация */}
+            {showNotification && (
+              <div className="telegram-notification">
+                <a
+                  href="https://t.me/+IV3rD9KvL5UxYWRi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="notification-link"
+                >
+                  Отправлено в Telegram!
+                </a>
+                <button className="close-notification" onClick={handleCloseNotification}>
+                  <MdClose className="icon" />
+                </button>
+              </div>
             )}
           </div>
         </div>

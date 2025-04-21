@@ -1305,6 +1305,13 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   display: inline-block;
 }
 
+.tooltip-left .tooltip {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 8px;
+}
+
 /* Текст тултипа */
 .tooltip {
   visibility: hidden;
