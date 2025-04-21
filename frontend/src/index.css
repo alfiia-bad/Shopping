@@ -1410,7 +1410,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   width: 32px;           /* Размер кнопки, чтобы иконке было просторно */
   height: 32px;
   padding: 0;
-  color: #333;
+  color: #934fb1;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1431,6 +1431,6 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 .close-icon {
-  color: #934fb1;
+  color: #333;
   font-size: 24px;
 }

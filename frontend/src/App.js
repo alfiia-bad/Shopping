@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
-import { FaHeart, FaPencilAlt } from "react-icons/fa"; 
+import { FaHeart } from "react-icons/fa"; 
 import { MdArrowBackIos, MdClose, MdOutlineHideImage } from "react-icons/md";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart, LuPencil } from "react-icons/lu";
@@ -73,8 +73,9 @@ const App = () => {
   const [editedName, setEditedName] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [productToDelete, setProductToDelete] = useState(null);
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [touchEndX, setTouchEndX] = useState(null);
+  // const [touchStartX, setTouchStartX] = useState(null);
+  // const [touchEndX, setTouchEndX] = useState(null);
+  const [expandedItems, setExpandedItems] = useState([]);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -208,38 +209,57 @@ const App = () => {
     };
   }, [isEditModalOpen]);
 
-  const minSwipeDistance = 50; // Минимальная дистанция для свайпа
-
-  const onTouchStart = (e) => { // Начало свайпа
-    setTouchEndX(null); // Сброс перед новым свайпом
-    setTouchStartX(e.targetTouches[0].clientX);
+  const toggleItemName = (id) => {    // Переключаем видимость имени товара в модалке Редактирования товара
+    setExpandedItems((prev) =>
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+    );
   };
 
-  const onTouchMove = (e) => { // Движение пальца по экрану
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => { // Конец свайпа
-    if (!touchStartX || !touchEndX) return;
+  useEffect(() => {   // Обработка свайпов для переключения между вкладками
+    const minSwipeDistance = 50;
+    let touchStartX = null;
+    let touchEndX = null;
   
-    const distance = touchStartX - touchEndX;
-    if (Math.abs(distance) < minSwipeDistance) return;
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchEndX = null;
+    };
   
-    if (distance > 0) {
-      // Swipe left
-      if (viewCart || viewNotifications) {
-        setTab("products"); // Возврат на Товары
-      } else if (!viewFavorites) {
-        setTab("favorites"); // Из Товаров в Избранное
+    const handleTouchMove = (e) => {
+      touchEndX = e.touches[0].clientX;
+    };
+  
+    const handleTouchEnd = () => {
+      if (touchStartX === null || touchEndX === null) return;
+      const distance = touchStartX - touchEndX;
+      if (Math.abs(distance) < minSwipeDistance) return;
+  
+      if (activeTab === "favorites" && distance < 0) {
+        setTab("products"); // Свайп вправо от Избранного → Товары
+      } else if (activeTab === "notifications" && distance > 0) {
+        setTab("products"); // Свайп влево от Уведомлений → Товары
+      } else if (activeTab === "cart" && distance > 0) {
+        setTab("products"); // Свайп влево от Корзины → Товары
+      } else if (activeTab === "products") {
+        if (distance > 0) {
+          setTab("favorites"); // Свайп влево от Товаров → Избранное
+        } else {
+          setTab("notifications"); // Свайп вправо от Товаров → Уведомления
+        }
       }
-    } else {
-      // Swipe right
-      if (viewFavorites) {
-        setTab("products"); // Возврат на Товары
-      }
-    }
-  };
+    };
   
+    document.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("touchmove", handleTouchMove);
+    document.addEventListener("touchend", handleTouchEnd);
+  
+    return () => {
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [activeTab, setTab]);
+
   useEffect(() => {   // Инициализация избранного при первом рендере
     const fetchFavorites = async () => {
       try {
@@ -945,15 +965,17 @@ const App = () => {
           <>
             <h2 className="header-title">Список товаров</h2> 
             <div className="header-actions">
-              <button
-                className="add-button custom-add-button"
-                onClick={() => {
-                  setIsEditModalOpen(true);
-                }}
-              >
-                <LuPencil className="icon black-icon" />
-              </button>
-              <span className="tooltip">редактировать товары</span>
+              <div className="tooltip-wrapper">
+                <button
+                  className="add-button custom-add-button"
+                  onClick={() => {
+                    setIsEditModalOpen(true);
+                  }}
+                >
+                  <LuPencil className="icon black-icon" />
+                </button>
+                <span className="tooltip">редактировать товары</span>
+              </div> 
               <div className="tooltip-wrapper">
                 <button    // Добавляем кнопку для добавления товара
                   className="add-button custom-add-button"
@@ -982,12 +1004,7 @@ const App = () => {
 
       <main className="main-content">
         {!viewCart && !viewNotifications && !viewFavorites ? (
-          <div
-            className="swipe-container"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-          >
+          <div className="swipe-container" >
             <div className="search-bar">
               <div className="search-input-wrapper">
                 <FiSearch className="search-icon" />
@@ -1064,12 +1081,7 @@ const App = () => {
             </div>
           </div>
         ) : viewFavorites ? (
-          <div
-            className="swipe-container"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-          >
+          <div className="swipe-container" >
             <div className="favorites-view">
               {favorites.length > 0 ? (
                 favorites.map((productId) => {
@@ -1097,21 +1109,23 @@ const App = () => {
                         )}
                       </div>
                       <ProductNameWithHint name={product.name} />
-                      <div className="quantity-controls">
-                        <button
-                          onClick={() => removeFromCart(product.id)}
-                          disabled={quantity === 0}
-                          className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
-                        >
-                          -
-                        </button>
-                        <span className="quantity">{quantity}</span>
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="qty-button plus"
-                        >
-                          +
-                        </button>
+                      <div className="quantity-controls-wrapper">
+                        <div className="quantity-controls">
+                          <button
+                            onClick={() => removeFromCart(product.id)}
+                            disabled={quantity === 0}
+                            className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
+                          >
+                            -
+                          </button>
+                          <span className="quantity">{quantity}</span>
+                          <button
+                            onClick={() => addToCart(product)}
+                            className="qty-button plus"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -1122,12 +1136,7 @@ const App = () => {
             </div>
           </div>
         ) : viewNotifications ? (
-          <div
-            className="swipe-container"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-          >
+          <div className="swipe-container" >
             <div className="notifications-view">
               <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
                 Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
@@ -1139,12 +1148,7 @@ const App = () => {
             </div>
           </div>
         ) : viewCart ? (
-          <div
-            className="swipe-container"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-          >
+          <div className="swipe-container" >
             <div className="cart-list">
               {cart.length === 0 ? (
                 <p className="cart-empty">Корзина пуста</p>
@@ -1152,7 +1156,7 @@ const App = () => {
                 cart.map((item) => (
                   <div className="cart-item" key={item.id}>
                     <div className="cart-item-header">
-                      <FaPencilAlt
+                      <LuPencil
                         className="edit-icon"
                         onClick={() => handleOpenCommentModal(item.id)}
                       />
@@ -1307,7 +1311,12 @@ const App = () => {
                         />
                       ) : (
                         <>
-                          <span>{item.name}</span>
+                          <span
+                            className={`item-name ${expandedItems.includes(item.id) ? 'expanded' : ''}`}
+                            onClick={() => toggleItemName(item.id)}
+                          >
+                            {item.name}
+                          </span>
                           <div className="edit-cart-item-header">
                             <button
                               className="edit-icon-product"
