@@ -206,12 +206,6 @@ const App = () => {
     };
   }, [isEditModalOpen]);
 
-  const toggleItemName = (id) => {    // Переключаем видимость имени товара в модалке Редактирования товара
-    setExpandedItems((prev) =>
-      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
-    );
-  };
-
 useEffect(() => {   // Обработка свайпов для переключения между вкладками
   const minSwipeDistance = 50;
   let touchStartX = null;
