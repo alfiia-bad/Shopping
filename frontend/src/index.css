@@ -627,7 +627,7 @@ body {
   border-radius: 1rem; /* Скруглённые углы */
   padding: 1.5rem;
   width: 23rem; /* Ширина модального окна */
-  min-height: calc(100% + 20px);
+  max-height: 90vh;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 3rem; /* Отступ снизу */
   overflow-x: hidden;
@@ -1308,6 +1308,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 
 .tooltip-left .tooltip {
   right: 100%;
+  left: auto;
   top: 50%;
   transform: translateY(-50%);
   margin-right: 8px;
@@ -1329,6 +1330,12 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
+}
+
+.tooltip-wrapper.right-edge .tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
 }
 
 /* Специально для корзины — прижимаем тултип к правому краю */

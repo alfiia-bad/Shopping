@@ -155,57 +155,25 @@ def delete_product(product_id):
 
 @app.route('/cart', methods=['GET'])
 def get_cart():
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT id, name, quantity, comment FROM cart WHERE id != "general"')
-        items = [
-            {
-                "id": row[0],
-                "name": row[1],
-                "quantity": row[2],
-                "comment": row[3]
-            }
-            for row in cursor.fetchall()
-        ]
-    return jsonify(items)  # Flask автоматически использует UTF-8
-
-# @app.route('/cart/update', methods=['POST'])
-# def update_cart_incrementally():
-#     data = request.json
-#     if not isinstance(data, list):
-#         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
-
-#     with sqlite3.connect(DB_PATH) as conn:
-#         conn.row_factory = sqlite3.Row
-#         for item in data:
-#             # Проверка обязательных полей
-#             if 'id' not in item or 'quantity' not in item:
-#                 return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
-#             if not isinstance(item['quantity'], int):
-#                 return jsonify({"success": False, "message": "Количество должно быть целым числом"}), 400
-
-#             # Получаем текущую запись товара
-#             current_item = conn.execute('SELECT * FROM cart WHERE id = ?', (item['id'],)).fetchone()
-#             if current_item:
-#                 new_quantity = current_item['quantity'] + item['quantity']
-#                 if new_quantity <= 0:
-#                     conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
-#                 else:
-#                     conn.execute('UPDATE cart SET quantity = ? WHERE id = ?', (new_quantity, item['id']))
-#             else:
-#                 # Проверка: не добавлять товар с отрицательным или нулевым количеством
-#                 if item['quantity'] > 0:
-#                     conn.execute(
-#                         'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
-#                         (item['id'], item['name'], item['quantity'], item.get('comment', ""))
-#                     )
-#         conn.commit()
-
-#     return jsonify({"success": True}), 200
+    with cart_lock:  # Блокировка для защиты от одновременного доступа
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.execute('SELECT id, name, quantity, comment FROM cart WHERE id != "general"')
+            items = [
+                {
+                    "id": row[0],
+                    "name": row[1],
+                    "quantity": row[2],
+                    "comment": row[3]
+                }
+                for row in cursor.fetchall()
+            ]
+        return jsonify(items)  # Flask автоматически использует UTF-8
 
 @app.route('/cart/update', methods=['POST'])
 def update_cart_incrementally():
+    logging.debug("[/cart/update POST][update_cart_incrementally] Начало обновления корзины")
     data = request.json
-    logging.debug(f"[update_cart_incrementally] Входящие данные: {data}")
+    logging.debug(f"[update_cart_incrementally] Входящие данные: [{data['name']}: {data['quantity']}]")
 
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
@@ -216,7 +184,7 @@ def update_cart_incrementally():
 
             # Лог текущего состояния корзины до обновления
             current_cart = conn.execute('SELECT * FROM cart').fetchall()
-            cart_snapshot = [dict(row) for row in current_cart]
+            cart_snapshot = {row["name"]: row["quantity"] for row in current_cart}
             logging.debug(f"[update_cart_incrementally] Текущее состояние корзины до обновления: {cart_snapshot}")
 
             for item in data:
@@ -245,74 +213,79 @@ def update_cart_incrementally():
 
 @app.route('/cart', methods=['POST'])
 def merge_cart():
+    logging.debug("[/cart POST][merge_cart] Начало слияния корзины")
     data = request.json
+    logging.debug(f"[update_cart_incrementally] Входящие данные: [{data['name']}: {data['quantity']}]")
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
 
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        existing_items = {
-            row["id"]: row for row in conn.execute('SELECT * FROM cart WHERE id != "general"').fetchall()
-        }
+    with cart_lock:  # Блокировка для защиты от одновременного доступа
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row
+            existing_items = {
+                row["id"]: row for row in conn.execute('SELECT * FROM cart WHERE id != "general"').fetchall()
+            }
 
-        for item in data:
-            if 'id' not in item or 'name' not in item or 'quantity' not in item:
-                return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
+            for item in data:
+                if 'id' not in item or 'name' not in item or 'quantity' not in item:
+                    return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
 
-            if item['id'] == "general":
-                general_comment = item.get("comment", "").strip()
-                conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (general_comment,))
-                continue
+                if item['id'] == "general":
+                    general_comment = item.get("comment", "").strip()
+                    conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (general_comment,))
+                    continue
 
-            if item['quantity'] <= 0:
-                conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
-                continue
+                if item['quantity'] <= 0:
+                    conn.execute('DELETE FROM cart WHERE id = ?', (item['id'],))
+                    continue
 
-            current = existing_items.get(item['id'])
-            if current:
-                conn.execute(
-                    'UPDATE cart SET quantity = ?, comment = ? WHERE id = ?',
-                    (item['quantity'], item.get("comment", current['comment']), item['id'])
-                )
-            else:
-                conn.execute(
-                    'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
-                    (item['id'], item['name'], item['quantity'], item.get("comment", ""))
-                )
+                current = existing_items.get(item['id'])
+                if current:
+                    conn.execute(
+                        'UPDATE cart SET quantity = ?, comment = ? WHERE id = ?',
+                        (item['quantity'], item.get("comment", current['comment']), item['id'])
+                    )
+                else:
+                    conn.execute(
+                        'INSERT INTO cart (id, name, quantity, comment) VALUES (?, ?, ?, ?)',
+                        (item['id'], item['name'], item['quantity'], item.get("comment", ""))
+                    )
 
-        conn.commit()
+            conn.commit()
 
-    return jsonify({"success": True}), 200
+        return jsonify({"success": True}), 200
 
 @app.route('/cart', methods=['DELETE'])
 def clear_cart():
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM cart')  # Удаляем все товары из корзины
-        conn.execute('UPDATE general_comment SET "general-comment" = "" WHERE id = 1') # Очищаем общий комментарий
-        conn.commit()
-    return jsonify({"success": True, "message": "Корзина и общий комментарий очищены"}), 200
+    with cart_lock:  # Блокировка для защиты от одновременного доступа
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute('DELETE FROM cart')  # Удаляем все товары из корзины
+            conn.execute('UPDATE general_comment SET "general-comment" = "" WHERE id = 1') # Очищаем общий комментарий
+            conn.commit()
+        return jsonify({"success": True, "message": "Корзина и общий комментарий очищены"}), 200
 
 @app.route('/cart/general-comment', methods=['POST', 'GET', 'DELETE'])  
 def handle_general_comment():
-    if request.method == 'POST':  # Для сохранения общего комментария
-        data = request.json
-        comment = data.get('comment', '').strip()
-        with sqlite3.connect(DB_PATH) as conn:
-            conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (comment,))
-            conn.commit()
-        return jsonify({"success": True, "message": "Общий комментарий сохранён"})
+    with cart_lock:  # Блокировка для защиты от одновременного доступа
+        if request.method == 'POST':  # Для сохранения общего комментария
+            data = request.json
+            comment = data.get('comment', '').strip()
+            with sqlite3.connect(DB_PATH) as conn:
+                conn.execute('UPDATE general_comment SET "general-comment" = ? WHERE id = 1', (comment,))
+                conn.commit()
+            return jsonify({"success": True, "message": "Общий комментарий сохранён"})
 
-    elif request.method == 'GET':  # Для получения общего комментария
-        with sqlite3.connect(DB_PATH) as conn:
-            cursor = conn.execute('SELECT "general-comment" FROM general_comment WHERE id = 1')
-            result = cursor.fetchone()
-            return jsonify({"comment": result[0] if result else ""})
-    
-    elif request.method == 'DELETE':  # Для удаления общего комментария
-        with sqlite3.connect(DB_PATH) as conn:
-            conn.execute('UPDATE general_comment SET "general-comment" = "" WHERE id = 1')  # Устанавливаем пустой комментарий
-            conn.commit()
-        return jsonify({"success": True, "message": "Общий комментарий удалён"})
+        elif request.method == 'GET':  # Для получения общего комментария
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.execute('SELECT "general-comment" FROM general_comment WHERE id = 1')
+                result = cursor.fetchone()
+                return jsonify({"comment": result[0] if result else ""})
+        
+        elif request.method == 'DELETE':  # Для удаления общего комментария
+            with sqlite3.connect(DB_PATH) as conn:
+                conn.execute('UPDATE general_comment SET "general-comment" = "" WHERE id = 1')  # Устанавливаем пустой комментарий
+                conn.commit()
+            return jsonify({"success": True, "message": "Общий комментарий удалён"})
 
 @app.route('/send-to-telegram', methods=['POST']) # Изменяем маршрут на send-to-telegram
 def send_to_telegram():

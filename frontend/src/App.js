@@ -477,16 +477,31 @@ useEffect(() => {   // Обработка свайпов для переключ
     }
   };
 
-  const handleSendAllProductsToTelegram = async () => { // Отправляем все товары в Telegram
+  const handleSendAllProductsToTelegram = async () => {
+    const formattedMessage =
+      '🖥🐍 Список всех товаров:\n\n' +
+      products
+        .map((item, index) => `("${item.id || index + 1}", "${item.name}", "${item.image || ''}")`)
+        .join(',\n');
+  
     try {
-      const response = await fetch('/send-all-products', { method: 'POST' });
+      const response = await fetch('/send-to-telegram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: formattedMessage }),
+      });
+  
       if (response.ok) {
         setShowNotification(true);
+        const timeout = setTimeout(() => setShowNotification(false), 5000);
+        setNotificationTimeout(timeout);
       } else {
-        alert('Ошибка при отправке в Telegram');
+        console.error('Ошибка при отправке в Telegram');
       }
     } catch (error) {
-      alert('Ошибка сети');
+      console.error('Ошибка при отправке:', error);
     }
   };
   
