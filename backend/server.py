@@ -177,7 +177,7 @@ def update_cart_incrementally():
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
 
-    logging.debug(f"[update_cart_incrementally] Обрабатываем: {item['name']} — {item['quantity']}")
+    
 
     with cart_lock:  # Блокировка для защиты от одновременного доступа
         with sqlite3.connect(DB_PATH) as conn:
@@ -189,6 +189,8 @@ def update_cart_incrementally():
             logging.debug(f"[update_cart_incrementally] Текущее состояние корзины до обновления: {cart_snapshot}")
 
             for item in data:
+                logging.debug(f"[update_cart_incrementally] Обрабатываем: {item['name']} — {item['quantity']}")
+
                 if 'id' not in item or 'quantity' not in item:
                     return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
                 if not isinstance(item['quantity'], int):

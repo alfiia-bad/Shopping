@@ -1330,6 +1330,8 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
+  max-height: 20px;
+  overflow: hidden;
 }
 
 .tooltip-wrapper.right-edge .tooltip {
