@@ -1323,7 +1323,7 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 4px;
-
+  line-height: 1;
   position: absolute;
   z-index: 1;
   bottom: -28px;

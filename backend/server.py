@@ -173,10 +173,11 @@ def get_cart():
 def update_cart_incrementally():
     logging.debug("[/cart/update POST][update_cart_incrementally] Начало обновления корзины")
     data = request.json
-    logging.debug(f"[update_cart_incrementally] Входящие данные: [{data['name']}: {data['quantity']}]")
-
+    
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
+
+    logging.debug(f"[update_cart_incrementally] Обрабатываем: {item['name']} — {item['quantity']}")
 
     with cart_lock:  # Блокировка для защиты от одновременного доступа
         with sqlite3.connect(DB_PATH) as conn:
@@ -290,7 +291,7 @@ def handle_general_comment():
 @app.route('/send-to-telegram', methods=['POST']) # Изменяем маршрут на send-to-telegram
 def send_to_telegram():
     data = request.json
-    message = data.get('cart', '')
+    message = data.get('message') or data.get('cart')
 
     if not message:
         return jsonify({"success": False, "message": "Сообщение пустое"}), 400
@@ -310,26 +311,26 @@ def send_to_telegram():
     except requests.exceptions.RequestException:
         return jsonify({"success": False, "message": "Ошибка при соединении с Telegram"}), 500
 
-@app.route('/send-all-products', methods=['POST'])  # Новый маршрут для отправки всех товаров
-def send_all_products_to_telegram():
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute('SELECT name FROM products')
-        product_names = [row[0] for row in cursor.fetchall()]
+# @app.route('/send-all-products', methods=['POST'])  # Новый маршрут для отправки всех товаров
+# def send_all_products_to_telegram():
+#     with sqlite3.connect(DB_PATH) as conn:
+#         cursor = conn.execute('SELECT name FROM products')
+#         product_names = [row[0] for row in cursor.fetchall()]
 
-    if not product_names:
-        return jsonify({"success": False, "message": "Нет товаров для отправки"}), 400
+#     if not product_names:
+#         return jsonify({"success": False, "message": "Нет товаров для отправки"}), 400
 
-    message = "🛒 Список всех товаров:\n" + "\n".join(f"• {name}" for name in product_names)
+#     message = "🛒 Список всех товаров:\n" + "\n".join(f"• {name}" for name in product_names)
 
-    response = requests.post(
-        f'https://api.telegram.org/bot{TOKEN}/sendMessage',
-        data={'chat_id': CHAT_ID, 'text': message}
-    )
+#     response = requests.post(
+#         f'https://api.telegram.org/bot{TOKEN}/sendMessage',
+#         data={'chat_id': CHAT_ID, 'text': message}
+#     )
 
-    if response.status_code == 200:
-        return jsonify({"success": True})
-    else:
-        return jsonify({"success": False, "message": "Ошибка при отправке в Telegram"}), 500
+#     if response.status_code == 200:
+#         return jsonify({"success": True})
+#     else:
+#         return jsonify({"success": False, "message": "Ошибка при отправке в Telegram"}), 500
 
 @app.route("/favorites", methods=["GET"])
 def get_favorites():

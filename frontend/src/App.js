@@ -477,7 +477,7 @@ useEffect(() => {   // Обработка свайпов для переключ
     }
   };
 
-  const handleSendAllProductsToTelegram = async () => {
+  const handleSendAllProductsToTelegram = async () => { // Отправляем все товары в Telegram
     const formattedMessage =
       '🖥🐍 Список всех товаров:\n\n' +
       products
@@ -547,7 +547,7 @@ useEffect(() => {   // Обработка свайпов для переключ
     }
   };
 
-  const sendToTelegram = async () => {
+  const sendToTelegram = async () => { // Отправляем список покупок в Telegram
     if (cart.length === 0) return;
 
     // Формируем сообщение для каждого товара
@@ -603,7 +603,7 @@ useEffect(() => {   // Обработка свайпов для переключ
     }
   };
 
-  const sendUpdateRequest = async () => {
+  const sendUpdateRequest = async () => { // Отправляем запрос на обновление списка покупок в Telegram
     try {
       const siteUrl = `${window.location.origin}`; // Ссылка на главную страницу (вкладка Товары)
       const message = `🚨 Обнови список покупок 🚨\n\n<a href="${siteUrl}">Перейти в приложение</a>`;
@@ -631,7 +631,7 @@ useEffect(() => {   // Обработка свайпов для переключ
     }
   };
 
-  const sendFavoritesToTelegram = async () => {
+  const sendFavoritesToTelegram = async () => { // Отправляем избранное в Telegram
     if (favorites.length === 0) return;
 
     // Формируем список товаров с названиями
@@ -952,7 +952,7 @@ useEffect(() => {   // Обработка свайпов для переключ
                     >
                       <RiTelegram2Fill className="icon" />
                     </button>
-                    <span className="tooltip">отправить в Telegram</span>
+                    <span className="tooltip">отправить избранное</span>
                   </div>
 {/* Условие для скрытия кнопки */}
                   {false && (
