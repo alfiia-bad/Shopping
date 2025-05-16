@@ -304,10 +304,10 @@ useEffect(() => {   // Обработка свайпов для переключ
 
   // НОВЫЙ КУУУУСООООООООООКК
 
-  const updateQueue = useRef([]);
-  const isProcessing = useRef(false);
+const updateQueue = useRef([]);
+const isProcessing = useRef(false);
 
-  // Функция для обработки очереди обновлений
+// Обработка очереди обновлений
 const processQueue = async () => {
   if (isProcessing.current || updateQueue.current.length === 0) return;
 
@@ -328,33 +328,37 @@ const processQueue = async () => {
       body: JSON.stringify([updatedItem]),
     });
 
-    if (response.ok) {
-      const updatedCart = [...cart];
-      const index = updatedCart.findIndex((item) => item.id === productId);
-
-      if (index !== -1) {
-        updatedCart[index].quantity += delta;
-        if (updatedCart[index].quantity <= 0) {
-          updatedCart.splice(index, 1);
-        }
-      } else if (delta > 0) {
-        updatedCart.push({ id: productId, name, quantity: delta });
-      }
-
-      setCart(updatedCart);
-    } else {
+    if (!response.ok) {
       console.error("Ошибка при обновлении корзины");
     }
   } catch (err) {
     console.error("Ошибка сети при обновлении корзины", err);
   } finally {
     isProcessing.current = false;
-    // Продолжаем обработку следующего
-    processQueue();
+    processQueue(); // Обработка следующего элемента
   }
 };
 
+// Обновление UI и постановка в очередь для бэкенда
 const incrementCart = (productId, name, delta) => {
+  // 1. Обновляем UI немедленно
+  setCart((prevCart) => {
+    const updatedCart = [...prevCart];
+    const index = updatedCart.findIndex((item) => item.id === productId);
+
+    if (index !== -1) {
+      updatedCart[index].quantity += delta;
+      if (updatedCart[index].quantity <= 0) {
+        updatedCart.splice(index, 1);
+      }
+    } else if (delta > 0) {
+      updatedCart.push({ id: productId, name, quantity: delta });
+    }
+
+    return updatedCart;
+  });
+
+  // 2. Кладем запрос в очередь
   updateQueue.current.push({ productId, name, delta });
   processQueue();
 };
