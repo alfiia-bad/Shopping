@@ -215,19 +215,32 @@ def update_cart_incrementally():
                 if 'id' not in item or 'quantity' not in item:
                     return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
 
-                cursor.execute('SELECT * FROM cart WHERE id = %s', (item['id'],))
-                row = cursor.fetchone()
+                # Пробуем атомарно увеличить количество
+                cursor.execute("""
+                    UPDATE cart
+                    SET quantity = quantity + %s
+                    WHERE id = %s
+                    RETURNING quantity
+                """, (item['quantity'], item['id']))
+                
+                result = cursor.fetchone()
 
-                if row:
-                    new_qty = row['quantity'] + item['quantity']
-                    if new_qty <= 0:
-                        cursor.execute('DELETE FROM cart WHERE id = %s', (item['id'],))
-                    else:
-                        cursor.execute('UPDATE cart SET quantity = %s WHERE id = %s', (new_qty, item['id']))
+                if result:
+                    # Если новое количество стало <= 0 — удалим строку
+                    if result['quantity'] <= 0:
+                        cursor.execute("DELETE FROM cart WHERE id = %s", (item['id'],))
                 else:
+                    # Товара не было — вставим, если quantity > 0
                     if item['quantity'] > 0:
-                        cursor.execute('INSERT INTO cart (id, name, quantity, comment) VALUES (%s, %s, %s, %s)',
-                                       (item['id'], item['name'], item['quantity'], item.get("comment", "")))
+                        cursor.execute("""
+                            INSERT INTO cart (id, name, quantity, comment)
+                            VALUES (%s, %s, %s, %s)
+                        """, (
+                            item['id'],
+                            item['name'],
+                            item['quantity'],
+                            item.get("comment", "")
+                        ))
 
             conn.commit()
 
