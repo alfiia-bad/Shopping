@@ -7,7 +7,7 @@ import { RiTelegram2Fill } from "react-icons/ri";
 import { LuShoppingCart, LuPencil } from "react-icons/lu";
 import { MdOutlineDelete, MdInfo } from "react-icons/md";
 
-const API_URL = "https://alfa-shopping.onrender.com";  // URL вашего бэкенда
+const API_URL = process.env.REACT_APP_API_URL;  // URL вашего бэкенда
 
 const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
   const nameRef = useRef(null);
