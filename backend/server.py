@@ -171,27 +171,32 @@ def merge_cart():
 
     with cart_lock, get_db_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute('SELECT * FROM cart WHERE id != %s', ("general",))
-            existing = {row["id"]: row for row in cursor.fetchall()}
-
             for item in data:
                 if 'id' not in item or 'name' not in item or 'quantity' not in item:
                     return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
 
                 if item['id'] == "general":
-                    cursor.execute('UPDATE general_comment SET "general-comment" = %s WHERE id = 1', (item.get("comment", ""),))
+                    cursor.execute(
+                        'UPDATE general_comment SET "general-comment" = %s WHERE id = 1',
+                        (item.get("comment", ""),)
+                    )
                     continue
 
                 if item['quantity'] <= 0:
                     cursor.execute('DELETE FROM cart WHERE id = %s', (item['id'],))
                     continue
 
-                if item['id'] in existing:
-                    cursor.execute('UPDATE cart SET quantity = %s, comment = %s WHERE id = %s',
-                                   (item['quantity'], item.get("comment", ""), item['id']))
-                else:
-                    cursor.execute('INSERT INTO cart (id, name, quantity, comment) VALUES (%s, %s, %s, %s)',
-                                   (item['id'], item['name'], item['quantity'], item.get("comment", "")))
+                cursor.execute(
+                    '''
+                    INSERT INTO cart (id, name, quantity, comment)
+                    VALUES (%s, %s, %s, %s)
+                    ON CONFLICT (id) DO UPDATE
+                    SET quantity = cart.quantity + EXCLUDED.quantity,
+                        comment = EXCLUDED.comment,
+                        name = EXCLUDED.name
+                    ''',
+                    (item['id'], item['name'], item['quantity'], item.get("comment", ""))
+                )
 
             conn.commit()
 

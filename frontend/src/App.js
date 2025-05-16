@@ -1169,12 +1169,12 @@ useEffect(() => {   // Обработка свайпов для переключ
             </div>
           </div>
         ) : viewCart ? (
-          <div className="swipe-container" >
-            <div className="cart-list">
-              {cart.length === 0 ? (
-                <p className="cart-empty">Корзина пуста</p>
-              ) : (
-                cart.map((item) => (
+          <div className="swipe-container">
+            {cart.length === 0 ? (
+              <p className="cart-empty">Корзина пуста</p>
+            ) : (
+              <div className="cart-list">
+                {cart.map((item) => (
                   <div className="cart-item" key={item.id}>
                     <div className="cart-item-header">
                       <LuPencil
@@ -1204,28 +1204,28 @@ useEffect(() => {   // Обработка свайпов для переключ
                       </button>
                     </div>
                   </div>
-                ))
-              )}
+                ))}
 
-              <div className="cart-comment-wrapper">
-                <textarea
-                  className={`cart-comment-input ${cartComment.length >= 200 ? "input-error" : ""}`}
-                  placeholder="Добавьте комментарий к корзине..."
-                  value={cartComment}
-                  maxLength={200}
-                  onChange={(e) => setCartComment(e.target.value)}
-                  onBlur={saveGeneralComment}
-                />
-                <div className={`char-counter ${cartComment.length >= 200 ? "limit-reached" : ""}`}>
-                  {cartComment.length}/200
+                <div className="cart-comment-wrapper">
+                  <textarea
+                    className={`cart-comment-input ${cartComment.length >= 200 ? "input-error" : ""}`}
+                    placeholder="Добавьте комментарий к корзине..."
+                    value={cartComment}
+                    maxLength={200}
+                    onChange={(e) => setCartComment(e.target.value)}
+                    onBlur={saveGeneralComment}
+                  />
+                  <div className={`char-counter ${cartComment.length >= 200 ? "limit-reached" : ""}`}>
+                    {cartComment.length}/200
+                  </div>
                 </div>
-              </div>
 
-              <button className="send-button" onClick={sendToTelegram}>
-                <RiTelegram2Fill className="telegram-icon" />
-                Отправить в Telegram
-              </button>
-            </div>
+                <button className="send-button" onClick={sendToTelegram}>
+                  <RiTelegram2Fill className="telegram-icon" />
+                  Отправить в Telegram
+                </button>
+              </div>
+            )}
           </div>
         ) : null}
       </main>
