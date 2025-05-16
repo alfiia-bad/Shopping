@@ -313,7 +313,13 @@ const processQueue = async () => {
 
   isProcessing.current = true;
 
-  const { productId, name, delta } = updateQueue.current.shift();
+  const nextUpdate = updateQueue.current.shift();
+  if (!nextUpdate) {
+    isProcessing.current = false;
+    return;
+  }
+
+  const { productId, name, delta } = nextUpdate;
 
   const updatedItem = {
     id: productId,
