@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import "./index.css";
 import { FiShoppingBag, FiHeart, FiBell, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa"; 
@@ -302,43 +302,100 @@ useEffect(() => {   // Обработка свайпов для переключ
     }
   };
 
-  const incrementCart = async (productId, name, delta) => { // Увеличиваем количество товара в корзине
-    const updatedItem = {
-      id: productId,
-      name,
-      quantity: delta, // например, +1 или -1
-    };
-  
-    try {
-      const response = await fetch(`${API_URL}/cart/update`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify([updatedItem]),
-      });
-  
-      if (response.ok) {
-        // Обновляем локальное состояние
-        const updatedCart = [...cart];
-        const existingItemIndex = updatedCart.findIndex((item) => item.id === productId);
-  
-        if (existingItemIndex !== -1) {
-          // Обновляем количество
-          updatedCart[existingItemIndex].quantity += delta;
-          if (updatedCart[existingItemIndex].quantity <= 0) {
-            updatedCart.splice(existingItemIndex, 1); // удаляем если 0 или меньше
-          }
-        } else if (delta > 0) {
-          updatedCart.push({ id: productId, name, quantity: delta });
-        }
-  
-        setCart(updatedCart);
-      } else {
-        console.error("Ошибка при обновлении корзины");
-      }
-    } catch (err) {
-      console.error("Ошибка сети при обновлении корзины", err);
-    }
+  // НОВЫЙ КУУУУСООООООООООКК
+
+  const updateQueue = useRef([]);
+  const isProcessing = useRef(false);
+
+  // Функция для обработки очереди обновлений
+const processQueue = async () => {
+  if (isProcessing.current || updateQueue.current.length === 0) return;
+
+  isProcessing.current = true;
+
+  const { productId, name, delta } = updateQueue.current.shift();
+
+  const updatedItem = {
+    id: productId,
+    name,
+    quantity: delta,
   };
+
+  try {
+    const response = await fetch(`${API_URL}/cart/update`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([updatedItem]),
+    });
+
+    if (response.ok) {
+      const updatedCart = [...cart];
+      const index = updatedCart.findIndex((item) => item.id === productId);
+
+      if (index !== -1) {
+        updatedCart[index].quantity += delta;
+        if (updatedCart[index].quantity <= 0) {
+          updatedCart.splice(index, 1);
+        }
+      } else if (delta > 0) {
+        updatedCart.push({ id: productId, name, quantity: delta });
+      }
+
+      setCart(updatedCart);
+    } else {
+      console.error("Ошибка при обновлении корзины");
+    }
+  } catch (err) {
+    console.error("Ошибка сети при обновлении корзины", err);
+  } finally {
+    isProcessing.current = false;
+    // Продолжаем обработку следующего
+    processQueue();
+  }
+};
+
+const incrementCart = (productId, name, delta) => {
+  updateQueue.current.push({ productId, name, delta });
+  processQueue();
+};
+
+  // const incrementCart = async (productId, name, delta) => { // Увеличиваем количество товара в корзине
+  //   const updatedItem = {
+  //     id: productId,
+  //     name,
+  //     quantity: delta, // например, +1 или -1
+  //   };
+  
+  //   try {
+  //     const response = await fetch(`${API_URL}/cart/update`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify([updatedItem]),
+  //     });
+  
+  //     if (response.ok) {
+  //       // Обновляем локальное состояние
+  //       const updatedCart = [...cart];
+  //       const existingItemIndex = updatedCart.findIndex((item) => item.id === productId);
+  
+  //       if (existingItemIndex !== -1) {
+  //         // Обновляем количество
+  //         updatedCart[existingItemIndex].quantity += delta;
+  //         if (updatedCart[existingItemIndex].quantity <= 0) {
+  //           updatedCart.splice(existingItemIndex, 1); // удаляем если 0 или меньше
+  //         }
+  //       } else if (delta > 0) {
+  //         updatedCart.push({ id: productId, name, quantity: delta });
+  //       }
+  
+  //       setCart(updatedCart);
+  //     } else {
+  //       console.error("Ошибка при обновлении корзины");
+  //     }
+  //   } catch (err) {
+  //     console.error("Ошибка сети при обновлении корзины", err);
+  //   }
+  // };
 
   const addToCart = (product) => { // Добавляем товар в корзину
     incrementCart(product.id, product.name, +1);
@@ -1123,8 +1180,8 @@ useEffect(() => {   // Обработка свайпов для переключ
                         <FaHeart className="icon active" />
                       </button>
                       <div className="image-container">
-                        {product.image ? (
-                          <img src={product.image} alt="" />
+                        {product.image_url ? (
+                          <img src={product.image_url} alt="" />
                         ) : (
                           <MdOutlineHideImage className="no-image-icon" />
                         )}
