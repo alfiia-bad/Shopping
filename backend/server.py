@@ -77,7 +77,7 @@ def init_db():
             conn.commit()
 
 
-# ==== СТАТИКА ====
+# ==== СТАТИКА Картинки ====
 
 @app.route('/images/<path:filename>')
 def serve_image(filename):
@@ -95,7 +95,7 @@ def serve_frontend(path):
 
 # ==== ПРОДУКТЫ ====
 
-@app.route('/products', methods=['GET'])
+@app.route('/products', methods=['GET'])  
 def get_products():
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
@@ -256,6 +256,7 @@ def clear_cart():
             conn.commit()
     return jsonify({"success": True})
 
+# ==== ОБЩИЙ КОММЕНТАРИЙ В КОРЗИНЕ ====
 
 @app.route('/cart/general-comment', methods=['GET', 'POST', 'DELETE'])
 def general_comment():

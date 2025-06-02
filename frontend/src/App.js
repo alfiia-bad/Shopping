@@ -369,44 +369,6 @@ const incrementCart = (productId, name, delta) => {
   processQueue();
 };
 
-  // const incrementCart = async (productId, name, delta) => { // Увеличиваем количество товара в корзине
-  //   const updatedItem = {
-  //     id: productId,
-  //     name,
-  //     quantity: delta, // например, +1 или -1
-  //   };
-  
-  //   try {
-  //     const response = await fetch(`${API_URL}/cart/update`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify([updatedItem]),
-  //     });
-  
-  //     if (response.ok) {
-  //       // Обновляем локальное состояние
-  //       const updatedCart = [...cart];
-  //       const existingItemIndex = updatedCart.findIndex((item) => item.id === productId);
-  
-  //       if (existingItemIndex !== -1) {
-  //         // Обновляем количество
-  //         updatedCart[existingItemIndex].quantity += delta;
-  //         if (updatedCart[existingItemIndex].quantity <= 0) {
-  //           updatedCart.splice(existingItemIndex, 1); // удаляем если 0 или меньше
-  //         }
-  //       } else if (delta > 0) {
-  //         updatedCart.push({ id: productId, name, quantity: delta });
-  //       }
-  
-  //       setCart(updatedCart);
-  //     } else {
-  //       console.error("Ошибка при обновлении корзины");
-  //     }
-  //   } catch (err) {
-  //     console.error("Ошибка сети при обновлении корзины", err);
-  //   }
-  // };
-
   const addToCart = (product) => { // Добавляем товар в корзину
     incrementCart(product.id, product.name, +1);
   };
@@ -421,36 +383,36 @@ const incrementCart = (productId, name, delta) => {
         incrementCart(productId, product.name, -1); // удаление, если 1
       }
   
-    // Проверяем, останутся ли товары после удаления
-    const newCart = cart
-      .map((item) =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-      .filter((item) => item.quantity > 0 && item.id !== "general");
-  
-    const hasProducts = newCart.length > 0;
-  
-    if (!hasProducts) {
-      setCartComment("");
-      generalCommentFromUrl.current = "";
-  
-      // 🔥 Удаляем общий комментарий с сервера
-      fetch(`${API_URL}/cart/general-comment`, {
-        method: "DELETE",
-      })
-        .then((res) => {
-          if (!res.ok) {
-            console.error("Ошибка при удалении общего комментария:", res.statusText);
-          } else {
-            console.log("Общий комментарий успешно удалён");
-          }
+      // Проверяем, останутся ли товары после удаления
+      const newCart = cart
+        .map((item) =>
+          item.id === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0 && item.id !== "general");
+    
+      const hasProducts = newCart.length > 0;
+    
+      if (!hasProducts) {
+        setCartComment("");
+        generalCommentFromUrl.current = "";
+    
+        // 🔥 Удаляем общий комментарий с сервера
+        fetch(`${API_URL}/cart/general-comment`, {
+          method: "DELETE",
         })
-        .catch((err) => console.error("Ошибка при удалении комментария:", err));
-    }
+          .then((res) => {
+            if (!res.ok) {
+              console.error("Ошибка при удалении общего комментария:", res.statusText);
+            } else {
+              console.log("Общий комментарий успешно удалён");
+            }
+          })
+          .catch((err) => console.error("Ошибка при удалении комментария:", err));
+      }
 
-    updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
+      //updateCart(newCart.filter(item => item.id !== "general")); // Убираем из корзины элементы с id "general"
     }
   };
 
