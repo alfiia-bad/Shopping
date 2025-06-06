@@ -113,6 +113,18 @@ const App = () => {
     }
   };
 
+  const startPolling = () => {
+    if (pollingId.current) return;
+    pollingId.current = setInterval(fetchCart, 5000);
+  };
+
+  const stopPolling = () => {
+    if (pollingId.current) {
+      clearInterval(pollingId.current);
+      pollingId.current = null;
+    }
+  };
+
   useEffect(() => { // Загрузка корзины при первом рендере
     fetchCart();
     startPolling();
