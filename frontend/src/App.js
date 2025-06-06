@@ -986,7 +986,7 @@ const incrementCart = (productId, name, delta) => {
     setIsCommentModalOpen(false);
   };
 
-  // Группировка товаров по категориям
+  // Группировка и сортировка товаров по категориям
 const groupByCategory = (productsList) => {
   const map = {};
   productsList.forEach((product) => {
@@ -994,7 +994,16 @@ const groupByCategory = (productsList) => {
     if (!map[cat]) map[cat] = [];
     map[cat].push(product);
   });
-  return map;
+  // Сортируем категории по алфавиту
+  const sorted = {};
+  Object.keys(map)
+    .sort((a, b) => a.localeCompare(b, "ru"))
+    .forEach((cat) => {
+      // Сортируем товары внутри категории по имени
+      map[cat].sort((a, b) => a.name.localeCompare(b.name, "ru"));
+      sorted[cat] = map[cat];
+    });
+  return sorted;
 };
 
 const displayedProducts = searchTermProducts.trim() ? filteredProducts : products;

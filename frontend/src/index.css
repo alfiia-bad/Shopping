@@ -1497,8 +1497,12 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
   font-weight: bold;
   font-size: 1.1em;
   margin: 24px 0 8px 0;
-  color: #7a5fa4;
+  color: #A56AB4;
   letter-spacing: 0.5px;
+}
+
+.category-section {
+  margin-bottom: 24px;
 }
 
 .category-products {

@@ -69,11 +69,10 @@ def init_db():
 
             cursor.execute('SELECT COUNT(*) FROM products')
             if cursor.fetchone()[0] == 0:
-                # 2. Новый initial_products с категориями
                 initial_products = [
-                    ("1", "Бананы", "/images/banana.png", "Фрукты"),
-                    ("2", "Вода", "/images/water3.webp", "Напитки"),
-                    ("3", "Кофе", "/images/coffee.jpg", "Напитки"),
+                    ("1", "Бананы", "banana.png", "Фрукты"),
+                    ("2", "Вода", "water3.webp", "Напитки"),
+                    ("3", "Кофе", "coffee.jpg", "Напитки"),
                     ("4", "Авокадо", "avocado.webp", "Фрукты"),
                     ("5", "Черный перец", "black_paper.jpg", "Специи"),
                     ("6", "Черный рис", "black_rice.jpg", "Крупы"),
@@ -142,8 +141,18 @@ def init_db():
                     ("69", "Петрушка", "parsley.webp", "Зелень"),
                     ("70", "Клубника", "strawberry.webp", "Ягоды")
                 ]
-                # 3. Вставка с category
-                cursor.executemany('INSERT INTO products (id, name, image_url, category) VALUES (%s, %s, %s, %s)', initial_products)
+
+                # Гарантируем, что image_url содержит префикс /images/
+                for i in range(len(initial_products)):
+                    id_, name, image_url, category = initial_products[i]
+                    if not image_url.startswith("/images/"):
+                        image_url = f"/images/{image_url}"
+                    initial_products[i] = (id_, name, image_url, category)
+
+                cursor.executemany(
+                    'INSERT INTO products (id, name, image_url, category) VALUES (%s, %s, %s, %s)',
+                    initial_products
+                )
 
             conn.commit()
 
