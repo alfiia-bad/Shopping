@@ -108,6 +108,14 @@ const App = () => {
       const res = await fetch(`${API_URL}/cart`);
       const data = await res.json();
       setCart(data);
+
+      // --- ДОБАВЛЕНО: обновляем общий комментарий ---
+      const commentRes = await fetch(`${API_URL}/cart/general-comment`);
+      if (commentRes.ok) {
+        const commentData = await commentRes.json();
+        setCartComment(commentData.comment || "");
+      }
+      // --- КОНЕЦ ДОБАВЛЕНИЯ ---
     } catch (error) {
       console.error("Ошибка загрузки корзины:", error);
     }
