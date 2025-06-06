@@ -77,6 +77,8 @@ const App = () => {
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
 
+  const pollingId = useRef(null);
+
   const setTab = useCallback((tab) => {   // Устанавливаем активную вкладку
     setActiveTab(tab);
     localStorage.setItem("activeTab", tab);
@@ -101,19 +103,20 @@ const App = () => {
     fetchData();
   }, []);
 
+  const fetchCart = async () => {
+    try {
+      const res = await fetch(`${API_URL}/cart`);
+      const data = await res.json();
+      setCart(data);
+    } catch (error) {
+      console.error("Ошибка загрузки корзины:", error);
+    }
+  };
+
   useEffect(() => { // Загрузка корзины при первом рендере
-    const fetchCart = async () => {
-      try {
-        const res = await fetch(`${API_URL}/cart`);
-        const data = await res.json();
-        setCart(data);
-      } catch (error) {
-        console.error("Ошибка загрузки корзины:", error);
-      }
-    };
     fetchCart();
-    const interval = setInterval(fetchCart, 5000); // Обновляем корзину каждые 5 секунд
-    return () => clearInterval(interval); // Очистка интервала при размонтировании
+    startPolling();
+    return () => stopPolling();
   }, []);
 
   useEffect(() => {   // Загрузка избранного при первом рендере
@@ -309,33 +312,31 @@ const isProcessing = useRef(false);
 
 // Обработка очереди обновлений
 const processQueue = async () => {
-  if (isProcessing.current || updateQueue.current.length === 0) return;
-
+  stopPolling();
+  if (isProcessing.current || updateQueue.current.length === 0) {
+    startPolling();
+    return;
+  }
   isProcessing.current = true;
-
   const nextUpdate = updateQueue.current.shift();
   if (!nextUpdate) {
     isProcessing.current = false;
+    startPolling();
     return;
   }
-
-  // Теперь берём quantity, а не delta
   const { productId, name, quantity, comment } = nextUpdate;
-
   const updatedItem = {
     id: productId,
     name,
     quantity,
     comment: comment || ""
   };
-
   try {
     const response = await fetch(`${API_URL}/cart/update`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify([updatedItem]),
     });
-
     if (!response.ok) {
       console.error("Ошибка при обновлении корзины");
     }
@@ -343,7 +344,11 @@ const processQueue = async () => {
     console.error("Ошибка сети при обновлении корзины", err);
   } finally {
     isProcessing.current = false;
-    processQueue();
+    if (updateQueue.current.length > 0) {
+      processQueue();
+    } else {
+      startPolling();
+    }
   }
 };
 
