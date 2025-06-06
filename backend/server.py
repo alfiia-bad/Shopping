@@ -205,6 +205,12 @@ def merge_cart():
 
 @app.route('/cart/update', methods=['POST'])
 def update_cart_incrementally():
+    """
+    Теперь quantity — абсолютное значение.
+    Если quantity <= 0, удаляем запись.
+    Если запись есть — UPDATE quantity, name, comment.
+    Если нет — INSERT с переданными значениями.
+    """
     data = request.json
     if not isinstance(data, list):
         return jsonify({"success": False, "message": "Неверный формат данных"}), 400
@@ -215,32 +221,38 @@ def update_cart_incrementally():
                 if 'id' not in item or 'quantity' not in item:
                     return jsonify({"success": False, "message": "Отсутствуют обязательные поля"}), 400
 
-                # Пробуем атомарно увеличить количество
-                cursor.execute("""
-                    UPDATE cart
-                    SET quantity = quantity + %s
-                    WHERE id = %s
-                    RETURNING quantity
-                """, (item['quantity'], item['id']))
-                
-                result = cursor.fetchone()
+                item_id = item['id']
+                new_qty = item['quantity']
 
-                if result:
-                    # Если новое количество стало <= 0 — удалим строку
-                    if result['quantity'] <= 0:
-                        cursor.execute("DELETE FROM cart WHERE id = %s", (item['id'],))
+                # Если quantity <= 0, просто удаляем
+                if new_qty <= 0:
+                    cursor.execute("DELETE FROM cart WHERE id = %s", (item_id,))
+                    continue
+
+                # Проверим, существует ли такая запись в cart
+                cursor.execute("SELECT 1 FROM cart WHERE id = %s", (item_id,))
+                exists = cursor.fetchone()
+
+                if exists:
+                    # Просто обновляем точное значение quantity
+                    cursor.execute(
+                        "UPDATE cart SET quantity = %s, name = %s, comment = %s WHERE id = %s",
+                        (new_qty, item.get('name', ''), item.get('comment', ''), item_id)
+                    )
                 else:
-                    # Товара не было — вставим, если quantity > 0
-                    if item['quantity'] > 0:
-                        cursor.execute("""
-                            INSERT INTO cart (id, name, quantity, comment)
-                            VALUES (%s, %s, %s, %s)
-                        """, (
-                            item['id'],
-                            item['name'],
-                            item['quantity'],
-                            item.get("comment", "")
-                        ))
+                    # Вставляем с точно тем quantity, что пришло
+                    cursor.execute(
+                        """
+                        INSERT INTO cart (id, name, quantity, comment)
+                        VALUES (%s, %s, %s, %s)
+                        """,
+                        (
+                            item_id,
+                            item.get('name', ''),
+                            new_qty,
+                            item.get('comment', '')
+                        )
+                    )
 
             conn.commit()
 

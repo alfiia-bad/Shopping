@@ -319,12 +319,14 @@ const processQueue = async () => {
     return;
   }
 
-  const { productId, name, delta } = nextUpdate;
+  // Теперь берём quantity, а не delta
+  const { productId, name, quantity, comment } = nextUpdate;
 
   const updatedItem = {
     id: productId,
     name,
-    quantity: delta,
+    quantity,
+    comment: comment || ""
   };
 
   try {
@@ -341,32 +343,39 @@ const processQueue = async () => {
     console.error("Ошибка сети при обновлении корзины", err);
   } finally {
     isProcessing.current = false;
-    processQueue(); // Обработка следующего элемента
+    processQueue();
   }
 };
 
 // Обновление UI и постановка в очередь для бэкенда
 const incrementCart = (productId, name, delta) => {
-  // 1. Обновляем UI немедленно
   setCart((prevCart) => {
     const updatedCart = [...prevCart];
     const index = updatedCart.findIndex((item) => item.id === productId);
 
+    let newQty = delta;
     if (index !== -1) {
-      updatedCart[index].quantity += delta;
-      if (updatedCart[index].quantity <= 0) {
+      newQty = updatedCart[index].quantity + delta;
+      if (newQty > 0) {
+        updatedCart[index].quantity = newQty;
+      } else {
         updatedCart.splice(index, 1);
       }
     } else if (delta > 0) {
-      updatedCart.push({ id: productId, name, quantity: delta });
+      updatedCart.push({ id: productId, name, quantity: delta, comment: "" });
     }
+
+    // Кладём в очередь абсолютное значение quantity
+    updateQueue.current.push({
+      productId,
+      name,
+      quantity: newQty > 0 ? newQty : 0,
+      comment: ""
+    });
+    processQueue();
 
     return updatedCart;
   });
-
-  // 2. Кладем запрос в очередь
-  updateQueue.current.push({ productId, name, delta });
-  processQueue();
 };
 
   const addToCart = (product) => { // Добавляем товар в корзину
