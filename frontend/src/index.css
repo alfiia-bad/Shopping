@@ -217,10 +217,7 @@ body {
 
 /* Список товаров */
 .product-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 карточки в строке по умолчанию */
-  gap: 20px;
-  justify-items: stretch;
+  display: block; /* Убираем grid! */
   padding: 0 0px 80px;
   width: 100%;
 }
@@ -1496,13 +1493,13 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 .category-title {
   font-weight: bold;
   font-size: 1.1em;
-  margin: 24px 0 8px 0;
-  color: #A56AB4;
+  margin-bottom: 8px; /* Отступ после названия категории */
+  color: #7a5fa4;
   letter-spacing: 0.5px;
 }
 
 .category-section {
-  margin-bottom: 24px;
+  margin-bottom: 32px; /* Отступ между категориями */
 }
 
 .category-products {
