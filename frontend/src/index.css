@@ -1492,3 +1492,26 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 .send-to-telegram-button.full-width:hover {
   background-color: #934fb1; /* Цвет при наведении */
 }
+
+.category-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin: 24px 0 8px 0;
+  color: #7a5fa4;
+  letter-spacing: 0.5px;
+}
+
+.category-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.category-products.single-product {
+  flex-direction: column;
+}
+
+.product-card.full-width {
+  width: 100%;
+  max-width: 100%;
+}

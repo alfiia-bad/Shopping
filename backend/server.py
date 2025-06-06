@@ -32,6 +32,18 @@ def get_db_connection():
 def init_db():
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
+            # 1. Добавляем поле category в таблицу products
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS products (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    image_url TEXT,
+                    category TEXT
+                )
+            ''')
+            # 1b. Если таблица уже есть, добавляем колонку отдельно
+            cursor.execute("ALTER TABLE products ADD COLUMN IF NOT EXISTS category TEXT")
+
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS cart (
                     id TEXT PRIMARY KEY,
@@ -46,13 +58,6 @@ def init_db():
                 )
             ''')
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS products (
-                    id TEXT PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    image_url TEXT
-                )
-            ''')
-            cursor.execute('''
                 CREATE TABLE IF NOT EXISTS general_comment (
                     id INTEGER PRIMARY KEY CHECK (id = 1),
                     "general-comment" TEXT
@@ -64,79 +69,81 @@ def init_db():
 
             cursor.execute('SELECT COUNT(*) FROM products')
             if cursor.fetchone()[0] == 0:
+                # 2. Новый initial_products с категориями
                 initial_products = [
-                    ("1", "Бананы", "/images/banana.png"),
-                    ("2", "Вода", "/images/water3.webp"),
-                    ("3", "Кофе", "/images/coffee.jpg"),
-                    ("4", "Авокадо", "avocado.webp"),
-                    ("5", "Черный перец", "black_paper.jpg"),
-                    ("6", "Черный рис", "black_rice.jpg"),
-                    ("7", "Черный чай", "black_tea.webp"),
-                    ("8", "Голубика", "blueberry.jpg"),
-                    ("9", "Боржоми 1л.", "borjomi.jpg"),
-                    ("10", "Шоколад bounty", "bounty.jpg"),
-                    ("11", "Брокколи", "broccoli.jpg"),
-                    ("12", "Гречневая крупа", "buckwheat.jpg"),
-                    ("13", "Масло сливочное 200гр.", "butter.jpg"),
-                    ("14", "Морковь 500гр.", "carrot.png"),
-                    ("15", "Ромашковый чай", "chamomile_tea.jpg"),
-                    ("16", "Грибы шампиньоны", "champignons.jpg"),
-                    ("17", "Куриные ножки", "chicken_legs.jpg"),
-                    ("18", "Куриные крылья", "chicken_wings.jpg"),
-                    ("19", "Кукуруза вареная", "corn.webp"),
-                    ("20", "Ватные диски", "cotton_disk.jpg"),
-                    ("21", "Ватные палочки", "cotton_swabs.webp"),
-                    ("22", "Кускус крупа", "couscous.jpg"),
-                    ("23", "Огурцы 500гр.", "cucumber.jpg"),
-                    ("24", "Яйца 10шт.", "eggs.png"),
-                    ("25", "Яблоки 500гр.", "apples.jpg"),
-                    ("26", "Фольга 50м.", "folga.jpg"),
-                    ("27", "Замороженный овощи (смесь)", "frozen_vagetables.jpeg"),
-                    ("28", "Blauenstein сосиски", "blauenstein_sausages.webp"),
-                    ("29", "Blauenstein говядина", "blauenstein_beef.jpeg"),
-                    ("30", "Сосисочки мини", "galbani_mini.jpg"),
-                    ("31", "Пакет для мусора", "garbage_bag.jpg"),
-                    ("32", "Чеснок", "garlic.webp"),
-                    ("33", "Зеленый чай", "green_tea.jpg"),
-                    ("34", "Хамон", "hamon_galbani.webp"),
-                    ("35", "Мёд", "honey.jpg"),
-                    ("36", "Шоколадка KitKat", "kitkat.webp"),
-                    ("37", "Киви", "kiwi.jpeg"),
-                    ("38", "Молоко безлактозное 1л.", "lactose_free_milk.webp"),
-                    ("39", "Лимоны 200гр.", "lemon.webp"),
-                    ("40", "Лайм 200гр.", "lime.jpeg"),
-                    ("41", "Молоко обычное 1л.", "milk.png"),
-                    ("42", "Наггетсы", "naggets.jpg"),
-                    ("43", "Наггетсы попкорн", "naggets_popcorn.jpeg"),
-                    ("44", "Овсяная крупа", "oatmeal.jpg"),
-                    ("45", "Апельсины 500гр.", "orange.webp"),
-                    ("46", "Апельсиновый сок 1л.", "orange_juice.jpeg"),
-                    ("47", "Соленые огурчики маленькие 200гр.", "pickled_cucumber.webp"),
-                    ("48", "Гранатовый сок 1л.", "pomegranate_juice.webp"),
-                    ("49", "Картошка 1кг.", "potatoes.jpg"),
-                    ("50", "Красный лук 200гр.", "red_onion.jpg"),
-                    ("51", "Красный перец сладкий 200гр.", "red_peper.jpg"),
-                    ("52", "Красное вино 1бут.", "red_wine.jpg"),
-                    ("53", "Рис крупа", "rice.jpeg"),
-                    ("54", "Лосось слабосоленый 200гр.", "salmon.jpeg"),
-                    ("55", "Соль", "salt.jpg"),
-                    ("56", "Сосиски 500гр.", "sausages.jpg"),
-                    ("57", "Шоколака Snikers", "snikers.jpg"),
-                    ("58", "Бумажные полотенца", "table_napkins.webp"),
-                    ("59", "Туалетная бумага", "toilet_paper.jpg"),
-                    ("60", "Томаты черри 200гр.", "tomate_cherry.jpg"),
-                    ("61", "Шоколадка Twix", "twix.png"),
-                    ("62", "Вода 0.5л.", "water0,5.jpg"),
-                    ("63", "Репчатый лук 200гр.", "white_onion.jpg"),
-                    ("64", "Белое вино 1бут.", "white_wine.jpg"),
-                    ("65", "Влажная туалетная бумага", "zewa_paper.webp"),
-                    ("66", "Кинза", "coriander.webp"),
-                    ("67", "Укроп", "dill.webp"),
-                    ("68", "Зеленый лук", "green_onions.jpg"),
-                    ("69", "Петрушка", "parsley.webp"),
-                    ("70", "Клубника", "strawberry.webp")
+                    ("1", "Бананы", "/images/banana.png", "Фрукты"),
+                    ("2", "Вода", "/images/water3.webp", "Напитки"),
+                    ("3", "Кофе", "/images/coffee.jpg", "Напитки"),
+                    ("4", "Авокадо", "avocado.webp", "Фрукты"),
+                    ("5", "Черный перец", "black_paper.jpg", "Специи"),
+                    ("6", "Черный рис", "black_rice.jpg", "Крупы"),
+                    ("7", "Черный чай", "black_tea.webp", "Напитки"),
+                    ("8", "Голубика", "blueberry.jpg", "Ягоды"),
+                    ("9", "Боржоми 1л.", "borjomi.jpg", "Напитки"),
+                    ("10", "Шоколад bounty", "bounty.jpg", "Заморозки"),
+                    ("11", "Брокколи", "broccoli.jpg", "Овощи"),
+                    ("12", "Гречневая крупа", "buckwheat.jpg", "Крупы"),
+                    ("13", "Масло сливочное 200гр.", "butter.jpg", "Заморозки"),
+                    ("14", "Морковь 500гр.", "carrot.png", "Овощи"),
+                    ("15", "Ромашковый чай", "chamomile_tea.jpg", "Напитки"),
+                    ("16", "Грибы шампиньоны", "champignons.jpg", "Овощи"),
+                    ("17", "Куриные ножки", "chicken_legs.jpg", "Мясо"),
+                    ("18", "Куриные крылья", "chicken_wings.jpg", "Мясо"),
+                    ("19", "Кукуруза вареная", "corn.webp", "Овощи"),
+                    ("20", "Ватные диски", "cotton_disk.jpg", "Личная гигиена"),
+                    ("21", "Ватные палочки", "cotton_swabs.webp", "Личная гигиена"),
+                    ("22", "Кускус крупа", "couscous.jpg", "Крупы"),
+                    ("23", "Огурцы 500гр.", "cucumber.jpg", "Овощи"),
+                    ("24", "Яйца 10шт.", "eggs.png", "Заморозки"),
+                    ("25", "Яблоки 500гр.", "apples.jpg", "Фрукты"),
+                    ("26", "Фольга 50м.", "folga.jpg", "Личная гигиена"),
+                    ("27", "Замороженный овощи (смесь)", "frozen_vagetables.jpeg", "Заморозки"),
+                    ("28", "Blauenstein сосиски", "blauenstein_sausages.webp", "Мясо"),
+                    ("29", "Blauenstein говядина", "blauenstein_beef.jpeg", "Мясо"),
+                    ("30", "Сосисочки мини", "galbani_mini.jpg", "Мясо"),
+                    ("31", "Пакет для мусора", "garbage_bag.jpg", "Личная гигиена"),
+                    ("32", "Чеснок", "garlic.webp", "Овощи"),
+                    ("33", "Зеленый чай", "green_tea.jpg", "Напитки"),
+                    ("34", "Хамон", "hamon_galbani.webp", "Мясо"),
+                    ("35", "Мёд", "honey.jpg", "Специи"),
+                    ("36", "Шоколадка KitKat", "kitkat.webp", "Заморозки"),
+                    ("37", "Киви", "kiwi.jpeg", "Фрукты"),
+                    ("38", "Молоко безлактозное 1л.", "lactose_free_milk.webp", "Напитки"),
+                    ("39", "Лимоны 200гр.", "lemon.webp", "Фрукты"),
+                    ("40", "Лайм 200гр.", "lime.jpeg", "Фрукты"),
+                    ("41", "Молоко обычное 1л.", "milk.png", "Напитки"),
+                    ("42", "Наггетсы", "naggets.jpg", "Мясо"),
+                    ("43", "Наггетсы попкорн", "naggets_popcorn.jpeg", "Мясо"),
+                    ("44", "Овсяная крупа", "oatmeal.jpg", "Крупы"),
+                    ("45", "Апельсины 500гр.", "orange.webp", "Фрукты"),
+                    ("46", "Апельсиновый сок 1л.", "orange_juice.jpeg", "Напитки"),
+                    ("47", "Соленые огурчики маленькие 200гр.", "pickled_cucumber.webp", "Овощи"),
+                    ("48", "Гранатовый сок 1л.", "pomegranate_juice.webp", "Напитки"),
+                    ("49", "Картошка 1кг.", "potatoes.jpg", "Овощи"),
+                    ("50", "Красный лук 200гр.", "red_onion.jpg", "Овощи"),
+                    ("51", "Красный перец сладкий 200гр.", "red_peper.jpg", "Овощи"),
+                    ("52", "Красное вино 1бут.", "red_wine.jpg", "Напитки"),
+                    ("53", "Рис крупа", "rice.jpeg", "Крупы"),
+                    ("54", "Лосось слабосоленый 200гр.", "salmon.jpeg", "Мясо"),
+                    ("55", "Соль", "salt.jpg", "Специи"),
+                    ("56", "Сосиски 500гр.", "sausages.jpg", "Мясо"),
+                    ("57", "Шоколака Snikers", "snikers.jpg", "Заморозки"),
+                    ("58", "Бумажные полотенца", "table_napkins.webp", "Личная гигиена"),
+                    ("59", "Туалетная бумага", "toilet_paper.jpg", "Личная гигиена"),
+                    ("60", "Томаты черри 200гр.", "tomate_cherry.jpg", "Овощи"),
+                    ("61", "Шоколадка Twix", "twix.png", "Заморозки"),
+                    ("62", "Вода 0.5л.", "water0,5.jpg", "Напитки"),
+                    ("63", "Репчатый лук 200гр.", "white_onion.jpg", "Овощи"),
+                    ("64", "Белое вино 1бут.", "white_wine.jpg", "Напитки"),
+                    ("65", "Влажная туалетная бумага", "zewa_paper.webp", "Личная гигиена"),
+                    ("66", "Кинза", "coriander.webp", "Зелень"),
+                    ("67", "Укроп", "dill.webp", "Зелень"),
+                    ("68", "Зеленый лук", "green_onions.jpg", "Зелень"),
+                    ("69", "Петрушка", "parsley.webp", "Зелень"),
+                    ("70", "Клубника", "strawberry.webp", "Ягоды")
                 ]
-                cursor.executemany('INSERT INTO products (id, name, image_url) VALUES (%s, %s, %s)', initial_products)
+                # 3. Вставка с category
+                cursor.executemany('INSERT INTO products (id, name, image_url, category) VALUES (%s, %s, %s, %s)', initial_products)
 
             conn.commit()
 
@@ -163,7 +170,8 @@ def serve_frontend(path):
 def get_products():
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute('SELECT id, name, image_url FROM products')
+            # 4. Добавить category в SELECT
+            cursor.execute('SELECT id, name, image_url, category FROM products')
             products = [dict(row) for row in cursor.fetchall()]
     return jsonify(products)
 

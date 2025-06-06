@@ -986,7 +986,19 @@ const incrementCart = (productId, name, delta) => {
     setIsCommentModalOpen(false);
   };
 
-  const displayedProducts = searchTermProducts.trim() ? filteredProducts : products;
+  // Группировка товаров по категориям
+const groupByCategory = (productsList) => {
+  const map = {};
+  productsList.forEach((product) => {
+    const cat = product.category || "Без категории";
+    if (!map[cat]) map[cat] = [];
+    map[cat].push(product);
+  });
+  return map;
+};
+
+const displayedProducts = searchTermProducts.trim() ? filteredProducts : products;
+const productsByCategory = groupByCategory(displayedProducts);
 
   return (
     <div className="app-container">
@@ -1088,7 +1100,7 @@ const incrementCart = (productId, name, delta) => {
 
       <main className="main-content">
         {!viewCart && !viewNotifications && !viewFavorites ? (
-          <div className="swipe-container" >
+          <div className="swipe-container">
             <div className="search-bar">
               <div className="search-input-wrapper">
                 <FiSearch className="search-icon" />
@@ -1107,58 +1119,78 @@ const incrementCart = (productId, name, delta) => {
             </div>
 
             <div className="product-list">
-              {displayedProducts.length > 0 ? (
-                displayedProducts.map((product) => {
-                  const quantity = getQuantity(product.id);
-                  return (
-                    <div className="product-card" key={product.id}>
-                      <button
-                        className="favorite-button"
-                        onClick={() =>
-                          favorites.includes(product.id)
-                            ? removeFromFavorites(product.id)
-                            : addToFavorites(product.id)
-                        }
-                      >
-                        {favorites.includes(product.id) ? (
-                          <FaHeart className="icon active" />
-                        ) : (
-                          <FiHeart className="icon" />
-                        )}
-                      </button>
-
-                      <div className="product-content">
-                        <div className="image-container">
-                          {product.image_url ? (
-                            <img src={product.image_url} alt="" />
-                          ) : (
-                            <MdOutlineHideImage className="no-image-icon" />
-                          )}
-                        </div>
-                        <ProductNameWithHint name={product.name} />
-                      </div>
-
-                      <div className="quantity-controls-wrapper">
-                        <div className="quantity-controls">
-                          <button
-                            onClick={() => removeFromCart(product.id)}
-                            disabled={quantity === 0}
-                            className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
+              {Object.keys(productsByCategory).length > 0 ? (
+                Object.entries(productsByCategory).map(([category, items]) => (
+                  <div key={category} className="category-section">
+                    <div className="category-title">{category}</div>
+                    <div
+                      className={
+                        items.length === 1
+                          ? "category-products single-product"
+                          : "category-products"
+                      }
+                    >
+                      {items.map((product) => {
+                        const quantity = getQuantity(product.id);
+                        return (
+                          <div
+                            className={
+                              items.length === 1
+                                ? "product-card full-width"
+                                : "product-card"
+                            }
+                            key={product.id}
                           >
-                            -
-                          </button>
-                          <span className="quantity">{quantity}</span>
-                          <button
-                            onClick={() => addToCart(product)}
-                            className="qty-button plus"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
+                            <button
+                              className="favorite-button"
+                              onClick={() =>
+                                favorites.includes(product.id)
+                                  ? removeFromFavorites(product.id)
+                                  : addToFavorites(product.id)
+                              }
+                            >
+                              {favorites.includes(product.id) ? (
+                                <FaHeart className="icon active" />
+                              ) : (
+                                <FiHeart className="icon" />
+                              )}
+                            </button>
+
+                            <div className="product-content">
+                              <div className="image-container">
+                                {product.image_url ? (
+                                  <img src={product.image_url} alt="" />
+                                ) : (
+                                  <MdOutlineHideImage className="no-image-icon" />
+                                )}
+                              </div>
+                              <ProductNameWithHint name={product.name} />
+                            </div>
+
+                            <div className="quantity-controls-wrapper">
+                              <div className="quantity-controls">
+                                <button
+                                  onClick={() => removeFromCart(product.id)}
+                                  disabled={quantity === 0}
+                                  className={`qty-button minus ${quantity === 0 ? "disabled" : ""}`}
+                                >
+                                  -
+                                </button>
+                                <span className="quantity">{quantity}</span>
+                                <button
+                                  onClick={() => addToCart(product)}
+                                  className="qty-button plus"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })
+                  </div>
+                ))
               ) : (
                 <p className="no-results">Ничего не найдено</p>
               )}
