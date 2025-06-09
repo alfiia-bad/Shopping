@@ -229,47 +229,6 @@ const App = () => {
     };
   }, [isEditModalOpen]);
 
-useEffect(() => {   // Обработка свайпов для переключения между вкладками
-  const minSwipeDistance = 50;
-  let touchStartX = null;
-  let touchEndX = null;
-
-  const tabOrder = ["notifications", "products", "favorites", "cart"];
-
-  const handleTouchStart = (e) => {
-    touchStartX = e.touches[0].clientX;
-    touchEndX = null;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndX = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStartX === null || touchEndX === null) return;
-    const distance = touchStartX - touchEndX;
-    if (Math.abs(distance) < minSwipeDistance) return;
-
-    const currentIndex = tabOrder.indexOf(activeTab);
-
-    if (distance > 0 && currentIndex < tabOrder.length - 1) {
-      setTab(tabOrder[currentIndex + 1]); // свайп влево
-    } else if (distance < 0 && currentIndex > 0) {
-      setTab(tabOrder[currentIndex - 1]); // свайп вправо
-    }
-  };
-
-  document.addEventListener("touchstart", handleTouchStart);
-  document.addEventListener("touchmove", handleTouchMove);
-  document.addEventListener("touchend", handleTouchEnd);
-
-  return () => {
-    document.removeEventListener("touchstart", handleTouchStart);
-    document.removeEventListener("touchmove", handleTouchMove);
-    document.removeEventListener("touchend", handleTouchEnd);
-  };
-}, [activeTab, setTab]);
-
   useEffect(() => {   // Инициализация избранного при первом рендере
     const fetchFavorites = async () => {
       try {
@@ -1270,7 +1229,7 @@ const productsByCategory = groupByCategory(displayedProducts);
               <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
                 Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
               </p>
-              <button className="send-button" onClick={sendUpdateRequest}>
+              <button className="send-button full-width" onClick={sendUpdateRequest}>
                 <RiTelegram2Fill className="telegram-icon" />
                 Запросить обновление
               </button>

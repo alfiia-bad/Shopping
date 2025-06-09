@@ -372,7 +372,7 @@ body {
 
 .send-button.full-width {
   width: 100%; /* Растягиваем кнопку на всю ширину */
-  display: flex;
+  display: block;
   align-items: center;
   justify-content: center;
   gap: 6px; /* Интервал между иконкой и текстом */
@@ -384,6 +384,7 @@ body {
   border-radius: 8px;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 16px;
 }
 
 .send-button.full-width:hover {
