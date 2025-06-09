@@ -729,6 +729,10 @@ const incrementCart = (productId, name, delta) => {
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const allCategories = Array.from(
+    new Set(products.map((p) => p.category || "Без категории"))
+  );
+
   const handleSearchChange = (e) => {  // Поиск по товарам
     const input = e.target.value;
     setSearchTermProducts(input); 
