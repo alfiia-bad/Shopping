@@ -901,16 +901,17 @@ const incrementCart = (productId, name, delta) => {
   
     setNewProductNameError(false);
   
-    const product = {
-      name: newProductName,
-      image_url: newProductImage,
+    const newProduct = {
+      name: newProductName.trim(),
+      category: newProductCategory,
+      // image_url: newProductImage, // больше не нужен
     };
   
     try {
       const res = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
+        body: JSON.stringify(newProduct),
       });
   
       const data = await res.json();
@@ -1301,9 +1302,7 @@ const productsByCategory = groupByCategory(displayedProducts);
         <div
           className="modal-overlay"
           onClick={(e) => {
-            if (e.target.classList.contains("modal-overlay")) {
-              setIsAddModalOpen(false);  // Закрываем модалку при клике на фон
-            }
+            if (e.target.classList.contains("modal-overlay")) setIsAddModalOpen(false);
           }}
         >
           <div className="modal-container">
@@ -1320,13 +1319,19 @@ const productsByCategory = groupByCategory(displayedProducts);
               <p className="input-error-text">* обязательное поле</p>
             )}
 
-            <input
-              type="text"
-              placeholder="Banana.png..."
-              value={newProductImage}
-              onChange={(e) => setNewProductImage(e.target.value)}
+            {/* Дропдаун выбора категории */}
+            <select
               className="input-field"
-            />
+              value={newProductCategory}
+              onChange={(e) => setNewProductCategory(e.target.value)}
+            >
+              <option value="Без категории">Без категории</option>
+              {allCategories.map((cat) =>
+                cat !== "Без категории" ? (
+                  <option key={cat} value={cat}>{cat}</option>
+                ) : null
+              )}
+            </select>
 
             <div className="modal-actions">
               <button
