@@ -74,6 +74,7 @@ const App = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [productToDelete, setProductToDelete] = useState(null);
   const [newProductCategory, setNewProductCategory] = useState("Без категории");
+  const [isCartCommentFocused, setIsCartCommentFocused] = useState(false);
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
@@ -135,10 +136,14 @@ const App = () => {
   };
 
   useEffect(() => { // Загрузка корзины при первом рендере
-    fetchCart();
-    startPolling();
-    return () => stopPolling();
-  }, []);
+  if (isCartCommentFocused) {
+    stopPolling();
+    return;
+  }
+  fetchCart();
+  startPolling();
+  return () => stopPolling();
+}, [isCartCommentFocused]);
 
   useEffect(() => {   // Загрузка избранного при первом рендере
     const fetchFavorites = async () => {
@@ -1235,7 +1240,7 @@ const productsByCategory = groupByCategory(displayedProducts);
               <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
                 Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
               </p>
-              <button className="send-button full-width" onClick={sendUpdateRequest}>
+              <button className="send-button" onClick={sendUpdateRequest}>
                 <RiTelegram2Fill className="telegram-icon" />
                 Запросить обновление
               </button>
@@ -1286,7 +1291,11 @@ const productsByCategory = groupByCategory(displayedProducts);
                     value={cartComment}
                     maxLength={200}
                     onChange={(e) => setCartComment(e.target.value)}
-                    onBlur={saveGeneralComment}
+                    onBlur={(e) => {
+                      setIsCartCommentFocused(false);
+                      saveGeneralComment();
+                    }}
+                    onFocus={() => setIsCartCommentFocused(true)}
                   />
                   <div className={`char-counter ${cartComment.length >= 200 ? "limit-reached" : ""}`}>
                     {cartComment.length}/200
