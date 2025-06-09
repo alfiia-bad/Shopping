@@ -9,33 +9,51 @@ import { MdOutlineDelete, MdInfo } from "react-icons/md";
 
 const API_URL = process.env.REACT_APP_API_URL;  // URL вашего бэкенда
 
-const ProductNameWithHint = ({ name, commentHint = null, align = "center" }) => {   // Тут хинт для продуктов, которые не помещаются в одну строку
+const ProductNameWithHint = ({
+  name,
+  commentHint = null,
+  align = "center",
+  onInfoClick = null,
+  productId = null,
+}) => {
   const nameRef = useRef(null);
   const [showFullText, setShowFullText] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   return (
     <div
       className="product-name-wrapper"
-      onClick={() => setShowFullText((prev) => !prev)} // Переключение по тапу
-      style={{ textAlign: align }} // Это выравнивание всей обёртки
+      onClick={() => setShowFullText((prev) => !prev)}
+      style={{ textAlign: align }}
     >
       <p
         className="product-name"
         ref={nameRef}
         style={{
-          WebkitLineClamp: showFullText ? 'unset' : 2,
-          overflow: showFullText ? 'visible' : 'hidden',
-          display: '-webkit-box',
-          WebkitBoxOrient: 'vertical',
-          textAlign: align, // Вот оно! Центр или влево
+          WebkitLineClamp: showFullText ? "unset" : 2,
+          overflow: showFullText ? "visible" : "hidden",
+          display: "-webkit-box",
+          WebkitBoxOrient: "vertical",
+          textAlign: align,
         }}
       >
         {name}
       </p>
       {commentHint && (
-        <div className="info-icon-wrapper">
+        <div
+          className="info-icon-wrapper"
+          onMouseEnter={() => setShowHint(true)}
+          onMouseLeave={() => setShowHint(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onInfoClick && productId) onInfoClick(productId);
+          }}
+          style={{ cursor: "pointer", position: "relative" }}
+        >
           <MdInfo size={16} color="rgb(165, 106, 180)" />
-          <span className="info-hint">{commentHint}</span>
+          {showHint && (
+            <span className="info-hint info-hint-popup">{commentHint}</span>
+          )}
         </div>
       )}
     </div>
@@ -1271,8 +1289,10 @@ const productsByCategory = groupByCategory(displayedProducts);
                       />
                       <ProductNameWithHint
                         name={item.name}
-                        commentHint={item.comment?.trim() ? "Есть комментарий" : null}
+                        commentHint={item.comment?.trim() ? item.comment : null}
                         align="left"
+                        productId={item.id}
+                        onInfoClick={handleOpenCommentModal}
                       />
                     </div>
                     <div className="quantity-controls">
