@@ -578,14 +578,14 @@ const incrementCart = (productId, name, delta) => {
   const sendToTelegram = async () => { // Отправляем список покупок в Telegram
     if (cart.length === 0) return;
 
-    // Формируем сообщение для каждого товара
+    // Формируем сообщение для каждого товара с ЖИРНЫМ комментарием
     const messageBody = cart
       .map((item) => {
         const product = products.find((p) => p.id === item.id);
         if (!product) return `- Неизвестный товар x${item.quantity}`;
-        const comment = item.comment?.trim(); // Берём комментарий из item.comment
+        const comment = item.comment?.trim();
         return comment
-          ? `- ${product.name} x${item.quantity} [${comment}]`
+          ? `- ${product.name} x${item.quantity} <b>[${comment}]</b>`
           : `- ${product.name} x${item.quantity}`;
       })
       .join("\n");
@@ -602,9 +602,9 @@ const incrementCart = (productId, name, delta) => {
       cartComment.trim() ? `&general-comment=${encodedGeneralComment}` : ""
     }`;
 
-    // Добавляем общий комментарий к корзине
+    // Добавляем общий комментарий к корзине ЖИРНЫМ
     const generalComment = cartComment.trim()
-      ? `\n\nКомментарий к корзине: ${cartComment.trim()}`
+      ? `\n\nКомментарий к корзине: <b>${cartComment.trim()}</b>`
       : "";
 
     // Итоговое сообщение
