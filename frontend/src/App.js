@@ -62,6 +62,7 @@ const App = () => {
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [cartComment, setCartComment] = useState("");
   const [productsLoaded, setProductsLoaded] = useState(false);
+  const [newProductImage, setNewProductImage] = useState("");
   const [activeTab, setActiveTab] = useState("products");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newProductName, setNewProductName] = useState("");
