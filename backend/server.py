@@ -273,7 +273,7 @@ def merge_cart():
                     INSERT INTO cart (id, name, quantity, comment)
                     VALUES (%s, %s, %s, %s)
                     ON CONFLICT (id) DO UPDATE
-                    SET quantity = cart.quantity + EXCLUDED.quantity,
+                    SET quantity = EXCLUDED.quantity,
                         comment = EXCLUDED.comment,
                         name = EXCLUDED.name
                     ''',
