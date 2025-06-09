@@ -1503,16 +1503,27 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 }
 
 .category-products {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 в ряд на телефоне */
   gap: 12px;
 }
 
-.category-products.single-product {
-  flex-direction: column;
+@media (min-width: 600px) {
+  .category-products {
+    grid-template-columns: repeat(3, 1fr); /* 3 в ряд на планшете */
+  }
+}
+@media (min-width: 900px) {
+  .category-products {
+    grid-template-columns: repeat(4, 1fr); /* 4 в ряд на ПК */
+  }
+}
+
+.product-card {
+  width: 100%;
+  max-width: 100%;
 }
 
 .product-card.full-width {
-  width: 100%;
-  max-width: 100%;
+  grid-column: span 2; /* На случай если останется один товар — он займет всю строку */
 }

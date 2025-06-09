@@ -986,23 +986,34 @@ const incrementCart = (productId, name, delta) => {
     setIsCommentModalOpen(false);
   };
 
-  // Группировка и сортировка товаров по категориям
+  // Группировка и сортировка товаров по категориям с приоритетом
 const groupByCategory = (productsList) => {
+  const priority = ["Напитки", "Овощи", "Мясо"];
   const map = {};
   productsList.forEach((product) => {
     const cat = product.category || "Без категории";
     if (!map[cat]) map[cat] = [];
     map[cat].push(product);
   });
-  // Сортируем категории по алфавиту
+
+  // Сортируем товары внутри каждой категории по имени
+  Object.values(map).forEach((arr) =>
+    arr.sort((a, b) => a.name.localeCompare(b.name, "ru"))
+  );
+
+  // Категории в нужном порядке: сначала из priority, потом остальные
   const sorted = {};
-  Object.keys(map)
-    .sort((a, b) => a.localeCompare(b, "ru"))
-    .forEach((cat) => {
-      // Сортируем товары внутри категории по имени
-      map[cat].sort((a, b) => a.name.localeCompare(b.name, "ru"));
+  priority.forEach((cat) => {
+    if (map[cat]) {
       sorted[cat] = map[cat];
-    });
+      delete map[cat];
+    }
+  });
+  // Остальные категории — в случайном порядке (или по алфавиту, если хотите)
+  Object.keys(map).forEach((cat) => {
+    sorted[cat] = map[cat];
+  });
+
   return sorted;
 };
 
@@ -1142,14 +1153,7 @@ const productsByCategory = groupByCategory(displayedProducts);
                       {items.map((product) => {
                         const quantity = getQuantity(product.id);
                         return (
-                          <div
-                            className={
-                              items.length === 1
-                                ? "product-card full-width"
-                                : "product-card"
-                            }
-                            key={product.id}
-                          >
+                          <div className="product-card" key={product.id}>
                             <button
                               className="favorite-button"
                               onClick={() =>
@@ -1266,7 +1270,7 @@ const productsByCategory = groupByCategory(displayedProducts);
               <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
                 Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
               </p>
-              <button className="send-button full-width" onClick={sendUpdateRequest}>
+              <button className="send-button" onClick={sendUpdateRequest}>
                 <RiTelegram2Fill className="telegram-icon" />
                 Запросить обновление
               </button>
