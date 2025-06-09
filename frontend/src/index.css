@@ -1531,3 +1531,25 @@ grid-column: span 2; /* Растягиваем карточку на всю ши
 .product-card.full-width {
   grid-column: span 2; /* На случай если останется один товар — он займет всю строку */
 }
+
+/* Для iOS: делаем дропдаун более современным и удобным */
+@media screen and (max-width: 600px) and (pointer: coarse) {
+  .category-select {
+    font-size: 18px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #d1c4e9;
+    background: #faf8fd;
+    color: #4b2e83;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(165,106,180,0.07);
+    transition: border 0.2s;
+  }
+  .category-select:focus {
+    border: 2px solid #a56ab4;
+    background: #f3eaff;
+  }
+}

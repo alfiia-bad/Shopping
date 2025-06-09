@@ -1032,14 +1032,12 @@ const productsByCategory = groupByCategory(displayedProducts);
               )}
               {viewCart && (
                 <>
-                  {/* КНОПКА "ДОБАВИТЬ ТОВАР" */}
-                  <div className="tooltip-wrapper tooltip-left">
+                  <div className="tooltip-wrapper">
                     <button
-                      className="icon-button purple"
-                      style={{ marginRight: "8px" }}
+                      className="add-button custom-add-button"
                       onClick={() => setIsAddModalOpen(true)}
                     >
-                      <FiPlus className="icon" />
+                      <FiPlus className="icon black-icon" />
                     </button>
                     <span className="tooltip">добавить товар</span>
                   </div>
@@ -1347,7 +1345,7 @@ const productsByCategory = groupByCategory(displayedProducts);
 
             {/* Дропдаун выбора категории */}
             <select
-              className="input-field"
+              className="input-field category-select"
               value={newProductCategory}
               onChange={(e) => setNewProductCategory(e.target.value)}
             >
