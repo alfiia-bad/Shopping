@@ -1031,15 +1031,28 @@ const productsByCategory = groupByCategory(displayedProducts);
                 </>
               )}
               {viewCart && (
-                <div className="tooltip-wrapper tooltip-left">
-                  <button
-                    className="icon-button"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    <MdOutlineDelete className="icon" />
-                  </button>
-                  <span className="tooltip">очистить корзину</span>
-                </div>
+                <>
+                  {/* КНОПКА "ДОБАВИТЬ ТОВАР" */}
+                  <div className="tooltip-wrapper tooltip-left">
+                    <button
+                      className="icon-button purple"
+                      style={{ marginRight: "8px" }}
+                      onClick={() => setIsAddModalOpen(true)}
+                    >
+                      <FiPlus className="icon" />
+                    </button>
+                    <span className="tooltip">добавить товар</span>
+                  </div>
+                  <div className="tooltip-wrapper tooltip-left">
+                    <button
+                      className="icon-button"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      <MdOutlineDelete className="icon" />
+                    </button>
+                    <span className="tooltip">очистить корзину</span>
+                  </div>
+                </>
               )}
               {viewCart && totalItems > 0 && (
                 <div className="item-count-badge">{totalItems}</div>
