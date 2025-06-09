@@ -1623,21 +1623,29 @@ const productsByCategory = groupByCategory(displayedProducts);
       )}
 
       {isCommentModalOpen && ( // Модальное окно для редактирования комментария к товару
-        <div className="modal-overlay">
-          <div className="modal">
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            // Закрываем модалку при клике по фону (но не по самой модалке)
+            if (e.target.classList.contains("modal-overlay")) {
+              handleCancelComment();
+            }
+          }}
+        >
+          <div className="modal" onClick={e => e.stopPropagation()}>
             <h3 className="modal-title">Комментарий для товара:</h3>
-<p className="modal-product-name">{products.find((p) => p.id === currentProductId)?.name || "Неизвестный товар"}</p>
+            <p className="modal-product-name">
+              {products.find((p) => p.id === currentProductId)?.name || "Неизвестный товар"}
+            </p>
             <div className="comment-wrapper">
               <textarea
                 className={`comment-input ${currentComment.length >= 50 ? "input-error" : ""}`}
                 value={currentComment}
-                maxLength={50} // Ограничение на 50 символов
-                onChange={(e) => setCurrentComment(e.target.value)} // Обновляем локальное состояние
+                maxLength={50}
+                onChange={(e) => setCurrentComment(e.target.value)}
                 placeholder="Введите комментарий..."
               />
-              <div
-                className={`char-counter ${currentComment.length >= 50 ? "limit-reached" : ""}`}
-              >
+              <div className={`char-counter ${currentComment.length >= 50 ? "limit-reached" : ""}`}>
                 {currentComment.length}/50
               </div>
             </div>
