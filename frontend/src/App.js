@@ -73,6 +73,7 @@ const App = () => {
   const [editedName, setEditedName] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [productToDelete, setProductToDelete] = useState(null);
+  const [newProductCategory, setNewProductCategory] = useState("Без категории");
 
   const hasGeneralCommentFromUrl = useRef(false);
   const generalCommentFromUrl = useRef("");
