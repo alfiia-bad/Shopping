@@ -65,7 +65,6 @@ const App = () => {
   const [activeTab, setActiveTab] = useState("products");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newProductName, setNewProductName] = useState("");
-  const [newProductImage, setNewProductImage] = useState("");
   const [newProductNameError, setNewProductNameError] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -768,7 +767,7 @@ const incrementCart = (productId, name, delta) => {
   const saveComment = async () => {
     try {
       let updatedCart;
-  
+
       if (currentProductId === "general") {
         // Если редактируем общий комментарий — отдельный API-запрос
         await fetch("/comment", {
@@ -788,12 +787,11 @@ const incrementCart = (productId, name, delta) => {
         );
         setCart(updatedCart);
       } else {
-        // Иначе — обновляем комментарий у товара
         updatedCart = cart.map((item) =>
           item.id === currentProductId ? { ...item, comment: currentComment } : item
         );
-        setCart(updatedCart);
-        updateCart(updatedCart.filter((item) => item.id !== "general"));
+        // УБРАТЬ setCart(updatedCart);
+        await updateCart(updatedCart.filter((item) => item.id !== "general"));
       }
   
       // Если корзина (без general) стала пустой — удаляем общий комментарий
@@ -1240,7 +1238,7 @@ const productsByCategory = groupByCategory(displayedProducts);
               <p style={{ fontSize: "16px", fontWeight: "normal", marginTop: "8px", marginBottom: "16px" }}>
                 Для отправки уведомления в Telegram о необходимости обновления списка покупок нажми кнопку ниже
               </p>
-              <button className="send-button" onClick={sendUpdateRequest}>
+              <button className="send-button full-width" onClick={sendUpdateRequest}>
                 <RiTelegram2Fill className="telegram-icon" />
                 Запросить обновление
               </button>
