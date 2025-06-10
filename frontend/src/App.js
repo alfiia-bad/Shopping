@@ -979,7 +979,7 @@ const incrementCart = (productId, name, delta) => {
 
   // Группировка и сортировка товаров по категориям с приоритетом
 const groupByCategory = (productsList) => {
-  const priority = ["Напитки", "Овощи", "Мясо"];
+  const priority = ["Напитки", "Овощи", "Мясо", "Фрукты", "Ягоды", "Заморозки"];
   const map = {};
   productsList.forEach((product) => {
     const cat = product.category || "Без категории";
