@@ -123,6 +123,10 @@ const App = () => {
     fetchData();
   }, []);
 
+  useEffect(() => { // Устанавливаем заголовок страницы
+    document.title = "Корзина покупок";
+  }, []);
+
   const fetchCart = async () => {
     try {
       const res = await fetch(`${API_URL}/cart`);
